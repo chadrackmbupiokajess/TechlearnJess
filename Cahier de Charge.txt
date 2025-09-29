@@ -1,0 +1,174 @@
+Voici le **cahier des charges détaillé** pour ton site **TechLearnJess** — une plateforme de formation en ligne temps réel développée en **Django**, **Python**, **SQLite3**, **WebSockets** et **TailwindCSS**, avec front-end sans React.
+
+---
+
+## 🔖 Informations générales
+
+* **Nom du projet :** TechLearnJess
+* **Slogan :** *"Apprendre ici, réussir partout."*
+* **Créateur :** Jess (Chadrack Mbu Jess)
+* **Technologies :**
+
+  * Backend : Django (Python)
+  * Base de données : SQLite3 (pour développement) — option PostgreSQL en production
+  * Frontend : HTML5, TailwindCSS, JavaScript Vanilla
+  * Communication temps réel : WebSockets (via Django Channels)
+  * Paiement : E-money adapté à la RDC (Orange Money, Airtel Money, M-Pesa)
+  * Hébergement : PythonAnywhere (actuellement)
+* **Lien portfolio :** [https://chadrackmbu.pythonanywhere.com/](https://chadrackmbu.pythonanywhere.com/)
+
+---
+
+## 📁 Structure des menus et fonctionnalités
+
+### 1. **Page d’Accueil**
+
+* Slogan mis en valeur
+* Présentation de la plateforme
+* Call to Action (s’inscrire / se connecter)
+* Aperçu des derniers cours disponibles
+* Témoignages ou avis
+* Lien vers le portfolio personnel
+* Lien vers la page "À propos"
+
+---
+
+### 2. **À propos**
+
+* Historique et vision de TechLearnJess
+* Objectif de la plateforme (former les jeunes et professionnels en ligne à Matadi et ailleurs)
+* Informations sur le créateur
+* Lien vers le portfolio de Jess
+
+---
+
+### 3. **Tableau de bord (après connexion)**
+
+* Vue synthétique pour chaque utilisateur :
+
+  * Cours en cours
+  * Sessions Live planifiées
+  * Progrès par cours
+  * Dernières notifications
+  * Raccourcis vers les forums ou discussions récentes
+
+---
+
+### 4. **Cours**
+
+* Liste de cours organisés par catégories (programmation, design, business…)
+* Détail d’un cours :
+
+  * Description
+  * Vidéos (via lien externe)
+  * Ressources téléchargeables
+  * QCM intégrés
+  * Progression sauvegardée
+* Statut du cours (gratuit / payant)
+* Accès après inscription ou achat
+
+---
+
+### 5. **Forum**
+
+* Forums publics ou liés à un cours
+* Création de sujets et réponses
+* Modération des contenus
+* Système de likes et signalements
+* Notifications pour nouvelles réponses
+
+---
+
+### 6. **Sessions Live**
+
+* Intégration de streaming live ou visioconférence (via WebSockets.)
+* Planning des sessions
+* Notifications et rappels
+* Possibilité de poser des questions en direct
+
+---
+
+### 7. **Chat en temps réel**
+
+* Chat général entre utilisateurs
+* Chat privé (user-to-user)
+* Groupe de discussion lié à un cours
+* Notifications en temps réel
+* Statut en ligne / hors ligne
+
+---
+
+### 8. **Certificats**
+
+* Génération de certificats PDF téléchargeables après réussite
+* Signature automatique (numérique)
+* Intégration du nom de l’utilisateur, date, titre du cours
+* QR code pour vérification d’authenticité
+
+---
+
+### 9. **Notifications**
+
+* Système centralisé de notification
+* Notifications pour :
+
+  * Nouveau message
+  * Nouveau cours publié
+  * Prochaine session Live
+  * Réponse dans un forum
+  * Attestation disponible
+* Lecture/Non-lu
+
+---
+
+### 10. **Profil utilisateur**
+
+* Informations personnelles
+* Photo de profil
+* Historique d’apprentissage
+* Paiements effectués (reçus, factures)
+* Paramètres de sécurité (mot de passe, email)
+* Statistiques (taux de complétion, certificats obtenus)
+
+---
+
+### 11. **Système de paiement (E-Money)**
+
+* Paiement via :
+
+  * Orange Money
+  * Airtel Money
+  * M-Pesa
+* Conversion automatique à partir de la devise utilisée
+* Tableau de bord de paiement pour administrateur
+
+---
+
+### 12. **Administration**
+
+* Gestion des cours, utilisateurs, paiements, sessions live
+* Modération forum/chat
+* Tableau de bord analytique (nombre de cours suivis, revenus, utilisateurs actifs)
+* Export CSV des données
+
+---
+
+### 🔐 Sécurité
+
+* Authentification sécurisée (avec email, et possibilité de OTP)
+* Permissions selon rôle (apprenant, formateur, modérateur, admin)
+* Protection CSRF, XSS
+* Historique des connexions
+
+---
+
+### 📦 Bonus à intégrer
+
+* Système de recommandation de cours basé sur l’historique
+* Interface mobile responsive avec TailwindCSS 
+* Mode sombre
+
+
+utiliser (tailwind.config.js) et non avec CDN
+---
+

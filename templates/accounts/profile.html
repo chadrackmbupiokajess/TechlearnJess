@@ -1,0 +1,424 @@
+{% extends 'base.html' %}
+
+{% block title %}Profil de {{ profile_user.get_full_name|default:profile_user.username }} - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Header du profil -->
+<section class="relative py-16 gradient-bg text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row items-center md:items-start space-y-6 md:space-y-0 md:space-x-8">
+            <!-- Photo de profil -->
+            <div class="relative">
+                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full border-4 border-white/20 overflow-hidden bg-white/10 backdrop-blur-sm">
+                    {% if profile.avatar %}
+                        <img src="{{ profile.avatar.url }}" alt="{{ profile_user.get_full_name|default:profile_user.username }}" class="w-full h-full object-cover">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ profile_user.get_full_name|default:profile_user.username }}&background=3B82F6&color=fff&size=160" alt="Avatar" class="w-full h-full object-cover">
+                    {% endif %}
+                </div>
+                
+                {% if profile.is_verified %}
+                    <div class="absolute -bottom-2 -right-2 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center border-4 border-white">
+                        <i class="fas fa-check text-white text-sm"></i>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Informations du profil -->
+            <div class="flex-1 text-center md:text-left">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-bold font-heading mb-2">
+                            {{ profile_user.get_full_name|default:profile_user.username }}
+                            {% if profile.is_verified %}
+                                <i class="fas fa-badge-check text-green-400 ml-2" title="Compte vérifié"></i>
+                            {% endif %}
+                        </h1>
+                        <p class="text-xl opacity-90">
+                            {% if profile.is_instructor %}
+                                <i class="fas fa-chalkboard-teacher mr-2"></i>Formateur
+                            {% else %}
+                                <i class="fas fa-user-graduate mr-2"></i>Étudiant
+                            {% endif %}
+                        </p>
+                    </div>
+                    
+                    {% if is_own_profile %}
+                        <div class="mt-4 md:mt-0">
+                            <a href="{% url 'accounts:edit_profile' %}" class="bg-white/20 hover:bg-white/30 text-white px-6 py-3 rounded-lg font-medium transition-all backdrop-blur-sm border border-white/20">
+                                <i class="fas fa-edit mr-2"></i>
+                                Modifier le profil
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                {% if profile.bio %}
+                    <p class="text-lg opacity-90 mb-4 max-w-2xl">
+                        {{ profile.bio }}
+                    </p>
+                {% endif %}
+                
+                <!-- Informations supplémentaires -->
+                <div class="flex flex-wrap gap-4 text-sm opacity-80">
+                    {% if profile.city %}
+                        <div class="flex items-center">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            {{ profile.city }}{% if profile.country %}, {{ profile.country }}{% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar-alt mr-2"></i>
+                        Membre depuis {{ profile_user.date_joined|date:"F Y" }}
+                    </div>
+                    
+                    {% if profile.website %}
+                        <div class="flex items-center">
+                            <i class="fas fa-globe mr-2"></i>
+                            <a href="{{ profile.website }}" target="_blank" class="hover:text-blue-200 transition-colors">
+                                Site web
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Réseaux sociaux -->
+                {% if profile.linkedin or profile.github or profile.twitter %}
+                    <div class="flex space-x-4 mt-6">
+                        {% if profile.linkedin %}
+                            <a href="{{ profile.linkedin }}" target="_blank" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-all backdrop-blur-sm">
+                                <i class="fab fa-linkedin text-white"></i>
+                            </a>
+                        {% endif %}
+                        {% if profile.github %}
+                            <a href="{{ profile.github }}" target="_blank" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-all backdrop-blur-sm">
+                                <i class="fab fa-github text-white"></i>
+                            </a>
+                        {% endif %}
+                        {% if profile.twitter %}
+                            <a href="{{ profile.twitter }}" target="_blank" class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-lg flex items-center justify-center transition-all backdrop-blur-sm">
+                                <i class="fab fa-twitter text-white"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques -->
+<section class="py-12 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Cours suivis -->
+            <div class="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-200 dark:border-blue-700">
+                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-book-open text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-blue-900 dark:text-blue-100 mb-1">{{ stats.total_courses }}</div>
+                <div class="text-sm text-blue-600 dark:text-blue-400">Cours suivis</div>
+            </div>
+            
+            <!-- Cours terminés -->
+            <div class="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl border border-green-200 dark:border-green-700">
+                <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-check-circle text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-green-900 dark:text-green-100 mb-1">{{ stats.completed_courses }}</div>
+                <div class="text-sm text-green-600 dark:text-green-400">Cours terminés</div>
+            </div>
+            
+            <!-- Certificats -->
+            <div class="text-center p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-xl border border-yellow-200 dark:border-yellow-700">
+                <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-certificate text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-yellow-900 dark:text-yellow-100 mb-1">{{ stats.certificates }}</div>
+                <div class="text-sm text-yellow-600 dark:text-yellow-400">Certificats</div>
+            </div>
+            
+            <!-- Membre depuis -->
+            <div class="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl border border-purple-200 dark:border-purple-700">
+                <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-calendar-alt text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-purple-900 dark:text-purple-100 mb-1">{{ stats.join_date|timesince|truncatewords:1 }}</div>
+                <div class="text-sm text-purple-600 dark:text-purple-400">Membre depuis</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contenu principal -->
+<section class="py-12 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Colonne principale -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Cours récents -->
+                {% if is_own_profile and recent_courses %}
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-xl font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-clock text-blue-500 mr-2"></i>
+                            Cours Récents
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            {% for enrollment in recent_courses %}
+                            <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                <div class="flex-shrink-0">
+                                    {% if enrollment.course.thumbnail %}
+                                        <img src="{{ enrollment.course.thumbnail.url }}" alt="{{ enrollment.course.title }}" class="w-16 h-16 rounded-lg object-cover">
+                                    {% else %}
+                                        <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-play text-white text-xl"></i>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="ml-4 flex-1">
+                                    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">
+                                        {{ enrollment.course.title }}
+                                    </h3>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                        {{ enrollment.course.category.name }}
+                                    </p>
+                                    
+                                    <!-- Barre de progression -->
+                                    <div class="flex items-center">
+                                        <div class="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-2 mr-3">
+                                            <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300" style="width: {{ enrollment.progress_percentage }}%"></div>
+                                        </div>
+                                        <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ enrollment.progress_percentage }}%</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="ml-4">
+                                    {% if enrollment.is_completed %}
+                                        <span class="bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 px-3 py-1 rounded-full text-sm font-medium">
+                                            <i class="fas fa-check mr-1"></i>Terminé
+                                        </span>
+                                    {% else %}
+                                        <a href="{% url 'courses:learn' enrollment.course.slug %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                            Continuer
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="mt-6 text-center">
+                            <a href="{% url 'courses:my_courses' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+                                Voir tous mes cours →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                
+                <!-- Activité récente -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-xl font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-activity text-green-500 mr-2"></i>
+                            Activité Récente
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="space-y-4">
+                            <!-- Exemple d'activités -->
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-book text-blue-600 dark:text-blue-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-900 dark:text-white">
+                                        A commencé le cours <strong>"Introduction au Python"</strong>
+                                    </p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Il y a 2 jours</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-certificate text-green-600 dark:text-green-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-900 dark:text-white">
+                                        A obtenu le certificat <strong>"Développement Web"</strong>
+                                    </p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Il y a 1 semaine</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mr-4">
+                                    <i class="fas fa-comments text-purple-600 dark:text-purple-400"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <p class="text-gray-900 dark:text-white">
+                                        A participé à une discussion sur le forum
+                                    </p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Il y a 2 semaines</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="space-y-8">
+                <!-- Informations personnelles -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-lg font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                            Informations
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6 space-y-4">
+                        {% if profile.phone %}
+                            <div class="flex items-center">
+                                <i class="fas fa-phone text-gray-400 mr-3 w-5"></i>
+                                <span class="text-gray-900 dark:text-white">{{ profile.phone }}</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="flex items-center">
+                            <i class="fas fa-envelope text-gray-400 mr-3 w-5"></i>
+                            <span class="text-gray-900 dark:text-white">{{ profile_user.email }}</span>
+                        </div>
+                        
+                        {% if profile.birth_date %}
+                            <div class="flex items-center">
+                                <i class="fas fa-birthday-cake text-gray-400 mr-3 w-5"></i>
+                                <span class="text-gray-900 dark:text-white">{{ profile.birth_date|date:"d F Y" }}</span>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="flex items-center">
+                            <i class="fas fa-globe text-gray-400 mr-3 w-5"></i>
+                            <span class="text-gray-900 dark:text-white">{{ profile.language|default:"Français" }}</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Badges et réalisations -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-lg font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                            Badges & Réalisations
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="grid grid-cols-3 gap-4">
+                            <!-- Badge premier cours -->
+                            {% if stats.completed_courses > 0 %}
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-graduation-cap text-blue-600 dark:text-blue-400"></i>
+                                    </div>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">Premier cours</p>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Badge certificat -->
+                            {% if stats.certificates > 0 %}
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-certificate text-yellow-600 dark:text-yellow-400"></i>
+                                    </div>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">Certifié</p>
+                                </div>
+                            {% endif %}
+                            
+                            <!-- Badge membre vérifié -->
+                            {% if profile.is_verified %}
+                                <div class="text-center">
+                                    <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-2">
+                                        <i class="fas fa-check-circle text-green-600 dark:text-green-400"></i>
+                                    </div>
+                                    <p class="text-xs text-gray-600 dark:text-gray-400">Vérifié</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        {% if stats.completed_courses == 0 and stats.certificates == 0 %}
+                            <div class="text-center py-6">
+                                <i class="fas fa-trophy text-3xl text-gray-300 dark:text-gray-600 mb-2"></i>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
+                                    {% if is_own_profile %}
+                                        Terminez votre premier cours pour débloquer des badges !
+                                    {% else %}
+                                        Aucun badge pour le moment
+                                    {% endif %}
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Actions rapides (si c'est son propre profil) -->
+                {% if is_own_profile %}
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-lg font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-bolt text-yellow-500 mr-2"></i>
+                            Actions Rapides
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6 space-y-3">
+                        <a href="{% url 'accounts:edit_profile' %}" class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors group">
+                            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-edit text-white"></i>
+                            </div>
+                            <span class="ml-3 text-gray-900 dark:text-white font-medium">Modifier le profil</span>
+                        </a>
+                        
+                        <a href="{% url 'accounts:change_password' %}" class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors group">
+                            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-key text-white"></i>
+                            </div>
+                            <span class="ml-3 text-gray-900 dark:text-white font-medium">Changer le mot de passe</span>
+                        </a>
+                        
+                        <a href="{% url 'certificates:my_certificates' %}" class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors group">
+                            <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-certificate text-white"></i>
+                            </div>
+                            <span class="ml-3 text-gray-900 dark:text-white font-medium">Mes certificats</span>
+                        </a>
+                        
+                        <a href="{% url 'accounts:login_history' %}" class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors group">
+                            <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-history text-white"></i>
+                            </div>
+                            <span class="ml-3 text-gray-900 dark:text-white font-medium">Historique de connexion</span>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

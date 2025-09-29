@@ -1,0 +1,449 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Sessions Live - TechLearnJess{% endblock %}
+
+{% block extra_css %}
+<style>
+    .session-card {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .session-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+    
+    .live-indicator {
+        animation: pulse 2s infinite;
+        background: #ef4444;
+    }
+    
+    .upcoming-indicator {
+        background: #f59e0b;
+    }
+    
+    .past-indicator {
+        background: #6b7280;
+    }
+    
+    .viewer-count {
+        animation: countUp 0.5s ease-out;
+    }
+    
+    @keyframes countUp {
+        from { transform: scale(0.8); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+    }
+    
+    .session-timer {
+        font-family: 'Courier New', monospace;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                <i class="fas fa-video text-red-600 dark:text-red-400 mr-3"></i>
+                Sessions Live
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Participez aux cours en direct et webinaires interactifs
+            </p>
+        </div>
+
+        <!-- Filtres et recherche -->
+        <div class="mb-8">
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="flex flex-wrap gap-2">
+                    <button class="px-4 py-2 bg-red-500 text-white rounded-full text-sm font-medium hover:bg-red-600 transition-colors">
+                        <i class="fas fa-circle text-xs mr-2"></i>En Direct
+                    </button>
+                    <button class="px-4 py-2 bg-amber-500 text-white rounded-full text-sm font-medium hover:bg-amber-600 transition-colors">
+                        <i class="fas fa-clock text-xs mr-2"></i>À Venir
+                    </button>
+                    <button class="px-4 py-2 bg-gray-500 text-white rounded-full text-sm font-medium hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-history text-xs mr-2"></i>Passées
+                    </button>
+                    <button class="px-4 py-2 bg-indigo-500 text-white rounded-full text-sm font-medium hover:bg-indigo-600 transition-colors">
+                        <i class="fas fa-star text-xs mr-2"></i>Mes Favoris
+                    </button>
+                </div>
+                
+                <div class="relative">
+                    <input type="text" placeholder="Rechercher une session..." 
+                           class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-full bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Session en direct principale -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-broadcast-tower text-red-500 mr-3"></i>
+                En Direct Maintenant
+            </h2>
+            
+            <div class="session-card rounded-2xl p-6 mb-6">
+                <div class="flex flex-col lg:flex-row gap-6">
+                    <!-- Vidéo principale -->
+                    <div class="lg:w-2/3">
+                        <div class="relative bg-black rounded-xl overflow-hidden aspect-video">
+                            <img src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop" 
+                                 alt="Session live" class="w-full h-full object-cover">
+                            <div class="absolute top-4 left-4 flex items-center space-x-2">
+                                <span class="live-indicator px-3 py-1 text-white text-sm font-bold rounded-full flex items-center">
+                                    <i class="fas fa-circle text-xs mr-2"></i>EN DIRECT
+                                </span>
+                                <span class="bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                                    <i class="fas fa-eye mr-2"></i>
+                                    <span class="viewer-count">1,247</span> spectateurs
+                                </span>
+                            </div>
+                            <div class="absolute bottom-4 right-4">
+                                <button class="bg-white/20 hover:bg-white/30 text-white p-3 rounded-full transition-colors">
+                                    <i class="fas fa-expand text-lg"></i>
+                                </button>
+                            </div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <button class="bg-white/20 hover:bg-white/30 text-white p-6 rounded-full transition-all transform hover:scale-110">
+                                    <i class="fas fa-play text-3xl"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Informations de la session -->
+                    <div class="lg:w-1/3">
+                        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-3">
+                            Maîtriser React.js - Les Hooks Avancés
+                        </h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            Découvrez les hooks personnalisés et les patterns avancés pour optimiser vos applications React.
+                        </p>
+                        
+                        <div class="flex items-center mb-4">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face" 
+                                 alt="Instructeur" class="w-12 h-12 rounded-full mr-3">
+                            <div>
+                                <p class="font-semibold text-gray-900 dark:text-white">Dr. Jean Dupont</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Expert React & JavaScript</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                                <i class="fas fa-clock mr-3 text-indigo-500"></i>
+                                Commencé il y a <span class="session-timer">23:45</span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                                <i class="fas fa-users mr-3 text-green-500"></i>
+                                1,247 participants connectés
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                                <i class="fas fa-comments mr-3 text-blue-500"></i>
+                                Chat en direct actif
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-3">
+                            <button class="w-full bg-gradient-to-r from-red-500 to-red-600 text-white py-3 rounded-xl font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                                <i class="fas fa-video mr-2"></i>
+                                Rejoindre la Session
+                            </button>
+                            <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-3 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                                <i class="fas fa-heart mr-2"></i>
+                                Ajouter aux Favoris
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions à venir -->
+        <div class="mb-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-calendar-alt text-amber-500 mr-3"></i>
+                Sessions à Venir
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Session à venir 1 -->
+                <div class="session-card rounded-2xl p-6">
+                    <div class="relative mb-4">
+                        <img src="https://images.unsplash.com/photo-1517077304055-6e89abbf09b0?w=400&h=200&fit=crop" 
+                             alt="Session" class="w-full h-32 object-cover rounded-lg">
+                        <span class="upcoming-indicator absolute top-2 left-2 px-2 py-1 text-white text-xs font-bold rounded-full">
+                            DANS 2H
+                        </span>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                        Python pour l'IA - Introduction
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                        Les bases de Python appliquées à l'intelligence artificielle et au machine learning.
+                    </p>
+                    
+                    <div class="flex items-center mb-3">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=30&h=30&fit=crop&crop=face" 
+                             alt="Instructeur" class="w-8 h-8 rounded-full mr-2">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Marie Martin</span>
+                    </div>
+                    
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-calendar mr-2"></i>
+                            Aujourd'hui, 16:00
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-clock mr-2"></i>
+                            Durée: 1h30
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-users mr-2"></i>
+                            245 inscrits
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300">
+                        <i class="fas fa-bell mr-2"></i>
+                        Me Rappeler
+                    </button>
+                </div>
+
+                <!-- Session à venir 2 -->
+                <div class="session-card rounded-2xl p-6">
+                    <div class="relative mb-4">
+                        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop" 
+                             alt="Session" class="w-full h-32 object-cover rounded-lg">
+                        <span class="upcoming-indicator absolute top-2 left-2 px-2 py-1 text-white text-xs font-bold rounded-full">
+                            DEMAIN
+                        </span>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                        Design UX/UI Moderne
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                        Créer des interfaces utilisateur modernes et intuitives avec Figma.
+                    </p>
+                    
+                    <div class="flex items-center mb-3">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=30&h=30&fit=crop&crop=face" 
+                             alt="Instructeur" class="w-8 h-8 rounded-full mr-2">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Pierre Durand</span>
+                    </div>
+                    
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-calendar mr-2"></i>
+                            Demain, 14:00
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-clock mr-2"></i>
+                            Durée: 2h00
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-users mr-2"></i>
+                            189 inscrits
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300">
+                        <i class="fas fa-bell mr-2"></i>
+                        Me Rappeler
+                    </button>
+                </div>
+
+                <!-- Session à venir 3 -->
+                <div class="session-card rounded-2xl p-6">
+                    <div class="relative mb-4">
+                        <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop" 
+                             alt="Session" class="w-full h-32 object-cover rounded-lg">
+                        <span class="upcoming-indicator absolute top-2 left-2 px-2 py-1 text-white text-xs font-bold rounded-full">
+                            VENDREDI
+                        </span>
+                    </div>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">
+                        Marketing Digital 2024
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                        Les dernières tendances et stratégies du marketing digital.
+                    </p>
+                    
+                    <div class="flex items-center mb-3">
+                        <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=30&h=30&fit=crop&crop=face" 
+                             alt="Instructeur" class="w-8 h-8 rounded-full mr-2">
+                        <span class="text-sm text-gray-700 dark:text-gray-300">Sophie Dubois</span>
+                    </div>
+                    
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-calendar mr-2"></i>
+                            Vendredi, 10:00
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-clock mr-2"></i>
+                            Durée: 3h00
+                        </div>
+                        <div class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-users mr-2"></i>
+                            312 inscrits
+                        </div>
+                    </div>
+                    
+                    <button class="w-full bg-gradient-to-r from-amber-500 to-orange-500 text-white py-2 rounded-lg font-semibold hover:from-amber-600 hover:to-orange-600 transition-all duration-300">
+                        <i class="fas fa-bell mr-2"></i>
+                        Me Rappeler
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sessions passées -->
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-history text-gray-500 mr-3"></i>
+                Sessions Passées
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Session passée 1 -->
+                <div class="session-card rounded-2xl p-4">
+                    <div class="relative mb-3">
+                        <img src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=150&fit=crop" 
+                             alt="Session" class="w-full h-24 object-cover rounded-lg">
+                        <span class="past-indicator absolute top-2 left-2 px-2 py-1 text-white text-xs font-bold rounded-full">
+                            TERMINÉE
+                        </span>
+                    </div>
+                    
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-2">
+                        Node.js Avancé
+                    </h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        Il y a 2 jours • 1h45
+                    </p>
+                    
+                    <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-play mr-2"></i>
+                        Voir le Replay
+                    </button>
+                </div>
+
+                <!-- Session passée 2 -->
+                <div class="session-card rounded-2xl p-4">
+                    <div class="relative mb-3">
+                        <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?w=300&h=150&fit=crop" 
+                             alt="Session" class="w-full h-24 object-cover rounded-lg">
+                        <span class="past-indicator absolute top-2 left-2 px-2 py-1 text-white text-xs font-bold rounded-full">
+                            TERMINÉE
+                        </span>
+                    </div>
+                    
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-2">
+                        CSS Grid & Flexbox
+                    </h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        Il y a 5 jours • 2h30
+                    </p>
+                    
+                    <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-play mr-2"></i>
+                        Voir le Replay
+                    </button>
+                </div>
+
+                <!-- Session passée 3 -->
+                <div class="session-card rounded-2xl p-4">
+                    <div class="relative mb-3">
+                        <img src="https://images.unsplash.com/photo-1504639725590-34d0984388bd?w=300&h=150&fit=crop" 
+                             alt="Session" class="w-full h-24 object-cover rounded-lg">
+                        <span class="past-indicator absolute top-2 left-2 px-2 py-1 text-white text-xs font-bold rounded-full">
+                            TERMINÉE
+                        </span>
+                    </div>
+                    
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-2">
+                        Cybersécurité 101
+                    </h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        Il y a 1 semaine • 1h15
+                    </p>
+                    
+                    <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-play mr-2"></i>
+                        Voir le Replay
+                    </button>
+                </div>
+
+                <!-- Session passée 4 -->
+                <div class="session-card rounded-2xl p-4">
+                    <div class="relative mb-3">
+                        <img src="https://images.unsplash.com/photo-1556075798-4825dfaaf498?w=300&h=150&fit=crop" 
+                             alt="Session" class="w-full h-24 object-cover rounded-lg">
+                        <span class="past-indicator absolute top-2 left-2 px-2 py-1 text-white text-xs font-bold rounded-full">
+                            TERMINÉE
+                        </span>
+                    </div>
+                    
+                    <h4 class="text-sm font-bold text-gray-900 dark:text-white mb-2">
+                        Blockchain Basics
+                    </h4>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">
+                        Il y a 2 semaines • 2h00
+                    </p>
+                    
+                    <button class="w-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-2 rounded-lg text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-play mr-2"></i>
+                        Voir le Replay
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Simulation du compteur de spectateurs en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    const viewerCount = document.querySelector('.viewer-count');
+    let count = 1247;
+    
+    setInterval(() => {
+        // Variation aléatoire du nombre de spectateurs
+        const change = Math.floor(Math.random() * 10) - 5;
+        count = Math.max(1, count + change);
+        viewerCount.textContent = count.toLocaleString();
+    }, 3000);
+    
+    // Mise à jour du timer de session
+    const timer = document.querySelector('.session-timer');
+    let minutes = 23;
+    let seconds = 45;
+    
+    setInterval(() => {
+        seconds++;
+        if (seconds >= 60) {
+            seconds = 0;
+            minutes++;
+        }
+        
+        const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timer.textContent = formattedTime;
+    }, 1000);
+});
+</script>
+{% endblock %}

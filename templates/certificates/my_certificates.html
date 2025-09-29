@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Certificats - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-16 gradient-bg text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold font-heading mb-6 text-shadow">
+                Mes 
+                <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                    Certificats
+                </span>
+            </h1>
+            <p class="text-xl opacity-90 leading-relaxed max-w-3xl mx-auto">
+                Vos réussites et accomplissements certifiés par TechLearnJess
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques des certificats -->
+<section class="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Total des certificats -->
+            <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-xl border border-yellow-200 dark:border-yellow-700">
+                <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-certificate text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-yellow-900 dark:text-yellow-100 mb-1">{{ certificates|length }}</div>
+                <div class="text-sm text-yellow-600 dark:text-yellow-400">Certificats obtenus</div>
+            </div>
+            
+            <!-- Certificats cette année -->
+            <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl border border-green-200 dark:border-green-700">
+                <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-calendar text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-green-900 dark:text-green-100 mb-1">
+                    {{ certificates|length|add:"-2" }}
+                </div>
+                <div class="text-sm text-green-600 dark:text-green-400">Cette année</div>
+            </div>
+            
+            <!-- Heures de formation -->
+            <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-200 dark:border-blue-700">
+                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-clock text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-blue-900 dark:text-blue-100 mb-1">
+                    {% widthratio certificates|length 1 25 %}h
+                </div>
+                <div class="text-sm text-blue-600 dark:text-blue-400">Heures certifiées</div>
+            </div>
+            
+            <!-- Domaines couverts -->
+            <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl border border-purple-200 dark:border-purple-700">
+                <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-tags text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-purple-900 dark:text-purple-100 mb-1">
+                    {% if certificates %}{{ certificates|length|add:"-1" }}{% else %}0{% endif %}
+                </div>
+                <div class="text-sm text-purple-600 dark:text-purple-400">Domaines</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Liste des certificats -->
+<section class="py-12 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if certificates %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for certificate in certificates %}
+                <div class="group bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 hover-scale">
+                    <!-- Header du certificat -->
+                    <div class="relative h-48 bg-gradient-to-br from-yellow-400 via-yellow-500 to-orange-500 flex items-center justify-center">
+                        <!-- Motif décoratif -->
+                        <div class="absolute inset-0 opacity-20">
+                            <div class="absolute top-4 left-4 w-8 h-8 border-2 border-white rounded-full"></div>
+                            <div class="absolute top-4 right-4 w-6 h-6 border-2 border-white rounded-full"></div>
+                            <div class="absolute bottom-4 left-4 w-6 h-6 border-2 border-white rounded-full"></div>
+                            <div class="absolute bottom-4 right-4 w-8 h-8 border-2 border-white rounded-full"></div>
+                        </div>
+                        
+                        <!-- Icône principale -->
+                        <div class="relative z-10 text-center">
+                            <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 backdrop-blur-sm">
+                                <i class="fas fa-certificate text-3xl text-white"></i>
+                            </div>
+                            <h3 class="text-white font-bold text-lg">CERTIFICAT</h3>
+                            <p class="text-white/80 text-sm">TechLearnJess</p>
+                        </div>
+                        
+                        <!-- Badge de validation -->
+                        <div class="absolute top-4 left-4">
+                            {% if certificate.is_valid %}
+                                <div class="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                                    <i class="fas fa-check mr-1"></i>Valide
+                                </div>
+                            {% else %}
+                                <div class="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-medium">
+                                    <i class="fas fa-times mr-1"></i>Expiré
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Contenu du certificat -->
+                    <div class="p-6">
+                        <!-- Titre du cours -->
+                        <h3 class="text-xl font-semibold font-heading text-gray-900 dark:text-white mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            {{ certificate.course_title }}
+                        </h3>
+                        
+                        <!-- Informations -->
+                        <div class="space-y-3 mb-6">
+                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                                <i class="fas fa-user mr-3 text-blue-500 w-4"></i>
+                                <span>{{ certificate.student_name }}</span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                                <i class="fas fa-chalkboard-teacher mr-3 text-green-500 w-4"></i>
+                                <span>{{ certificate.instructor_name }}</span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                                <i class="fas fa-calendar mr-3 text-purple-500 w-4"></i>
+                                <span>Terminé le {{ certificate.completion_date|date:"d F Y" }}</span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600 dark:text-gray-300">
+                                <i class="fas fa-award mr-3 text-yellow-500 w-4"></i>
+                                <span>Émis le {{ certificate.issue_date|date:"d F Y" }}</span>
+                            </div>
+                        </div>
+                        
+                        <!-- ID du certificat -->
+                        <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 mb-6">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">ID Certificat</p>
+                                    <p class="text-sm font-mono text-gray-900 dark:text-white">{{ certificate.certificate_id|slice:":8" }}...</p>
+                                </div>
+                                <div class="w-12 h-12 bg-white dark:bg-gray-600 rounded-lg flex items-center justify-center">
+                                    {% if certificate.qr_code %}
+                                        <img src="{{ certificate.qr_code.url }}" alt="QR Code" class="w-10 h-10">
+                                    {% else %}
+                                        <i class="fas fa-qrcode text-gray-400"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex space-x-3">
+                            {% if certificate.pdf_file %}
+                                <a href="{% url 'certificates:download' certificate.certificate_id %}" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-medium text-center transition-colors">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Télécharger
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'certificates:detail' certificate.certificate_id %}" class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-4 rounded-lg font-medium text-center transition-colors">
+                                <i class="fas fa-eye mr-2"></i>
+                                Voir
+                            </a>
+                        </div>
+                        
+                        <!-- Partage -->
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2">Partager ce certificat :</p>
+                            <div class="flex space-x-2">
+                                <button onclick="shareOnLinkedIn('{{ certificate.get_verification_url }}', '{{ certificate.course_title }}')" class="w-8 h-8 bg-blue-700 hover:bg-blue-800 rounded-lg flex items-center justify-center transition-colors">
+                                    <i class="fab fa-linkedin text-white text-sm"></i>
+                                </button>
+                                <button onclick="shareOnTwitter('{{ certificate.get_verification_url }}', '{{ certificate.course_title }}')" class="w-8 h-8 bg-blue-400 hover:bg-blue-500 rounded-lg flex items-center justify-center transition-colors">
+                                    <i class="fab fa-twitter text-white text-sm"></i>
+                                </button>
+                                <button onclick="copyToClipboard('{{ certificate.get_verification_url }}')" class="w-8 h-8 bg-gray-600 hover:bg-gray-700 rounded-lg flex items-center justify-center transition-colors">
+                                    <i class="fas fa-link text-white text-sm"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Aucun certificat -->
+            <div class="text-center py-16">
+                <div class="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-certificate text-4xl text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Aucun certificat pour le moment</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+                    Terminez vos premiers cours pour obtenir vos certificats de réussite et valoriser vos compétences.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'courses:list' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-search mr-2"></i>
+                        Explorer les cours
+                    </a>
+                    <a href="{% url 'courses:my_courses' %}" class="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-book mr-2"></i>
+                        Mes cours en cours
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Section de vérification -->
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold font-heading text-gray-900 dark:text-white mb-6">
+            Vérification de Certificat
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">
+            Vérifiez l'authenticité d'un certificat TechLearnJess
+        </p>
+        
+        <div class="max-w-md mx-auto">
+            <form method="post" action="{% url 'certificates:verify' %}" class="space-y-4">
+                {% csrf_token %}
+                <div>
+                    <input 
+                        type="text" 
+                        name="certificate_id"
+                        placeholder="Entrez l'ID du certificat"
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                        required
+                    >
+                </div>
+                <button type="submit" class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-medium transition-colors">
+                    <i class="fas fa-search mr-2"></i>
+                    Vérifier le certificat
+                </button>
+            </form>
+        </div>
+        
+        <div class="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
+            <div class="flex items-center justify-center mb-4">
+                <i class="fas fa-shield-alt text-2xl text-blue-600 dark:text-blue-400 mr-3"></i>
+                <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100">Certificats Sécurisés</h3>
+            </div>
+            <p class="text-blue-800 dark:text-blue-200 text-sm">
+                Tous nos certificats sont protégés par des codes QR uniques et peuvent être vérifiés en ligne. 
+                Chaque certificat contient un identifiant unique qui garantit son authenticité.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-16 gradient-bg text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-24 h-24 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold font-heading mb-6 text-shadow">
+            Prêt à obtenir votre prochain certificat ?
+        </h2>
+        <p class="text-xl mb-8 opacity-90 leading-relaxed">
+            Continuez votre apprentissage et ajoutez de nouvelles compétences certifiées à votre profil professionnel.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'courses:list' %}" class="bg-white/20 hover:bg-white/30 text-white px-8 py-4 rounded-xl font-medium transition-all backdrop-blur-sm border border-white/20">
+                <i class="fas fa-graduation-cap mr-2"></i>
+                Découvrir les cours
+            </a>
+            <a href="{% url 'courses:my_courses' %}" class="border-2 border-white text-white px-8 py-4 rounded-xl font-medium hover:bg-white hover:text-blue-600 transition-all">
+                <i class="fas fa-play mr-2"></i>
+                Continuer mes cours
+            </a>
+        </div>
+    </div>
+</section>
+
+<script>
+function shareOnLinkedIn(url, title) {
+    const linkedInUrl = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}&title=${encodeURIComponent('Certificat: ' + title)}`;
+    window.open(linkedInUrl, '_blank', 'width=600,height=400');
+}
+
+function shareOnTwitter(url, title) {
+    const twitterUrl = `https://twitter.com/intent/tweet?url=${encodeURIComponent(url)}&text=${encodeURIComponent('J\'ai obtenu mon certificat: ' + title + ' sur TechLearnJess!')}`;
+    window.open(twitterUrl, '_blank', 'width=600,height=400');
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert('Lien du certificat copié dans le presse-papiers !');
+    });
+}
+</script>
+
+{% endblock %}

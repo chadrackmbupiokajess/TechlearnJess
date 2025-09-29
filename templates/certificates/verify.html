@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+
+{% block title %}Vérification de Certificat - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-16 gradient-bg text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold font-heading mb-6 text-shadow">
+            Vérification de 
+            <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                Certificat
+            </span>
+        </h1>
+        <p class="text-xl opacity-90 leading-relaxed max-w-3xl mx-auto">
+            Vérifiez l'authenticité d'un certificat émis par TechLearnJess
+        </p>
+    </div>
+</section>
+
+<!-- Formulaire de vérification -->
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
+            <div class="text-center mb-8">
+                <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-search text-2xl text-blue-600 dark:text-blue-400"></i>
+                </div>
+                <h2 class="text-2xl font-bold font-heading text-gray-900 dark:text-white mb-2">
+                    Vérifier un Certificat
+                </h2>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Entrez l'ID du certificat pour vérifier son authenticité
+                </p>
+            </div>
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <label for="certificate_id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <i class="fas fa-id-card mr-2 text-blue-500"></i>
+                        ID du Certificat
+                    </label>
+                    <input 
+                        type="text" 
+                        id="certificate_id"
+                        name="certificate_id" 
+                        placeholder="Entrez l'ID complet du certificat (ex: 12345678-1234-1234-1234-123456789012)"
+                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
+                        required
+                        value="{{ request.POST.certificate_id|default:'' }}"
+                    >
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        L'ID du certificat se trouve sur le certificat PDF ou peut être scanné via le code QR
+                    </p>
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-semibold text-lg transition-all hover-scale neon-glow">
+                    <i class="fas fa-shield-check mr-2"></i>
+                    Vérifier le Certificat
+                </button>
+            </form>
+            
+            <!-- Instructions -->
+            <div class="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-700">
+                <h3 class="text-lg font-semibold text-blue-900 dark:text-blue-100 mb-4">
+                    <i class="fas fa-info-circle mr-2"></i>
+                    Comment trouver l'ID du certificat ?
+                </h3>
+                <ul class="space-y-2 text-blue-800 dark:text-blue-200 text-sm">
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1 flex-shrink-0"></i>
+                        <span>L'ID se trouve en bas du certificat PDF</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1 flex-shrink-0"></i>
+                        <span>Scannez le code QR présent sur le certificat</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check text-blue-600 dark:text-blue-400 mr-2 mt-1 flex-shrink-0"></i>
+                        <span>L'ID est un identifiant unique de 36 caractères</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Résultat de la vérification -->
+{% if certificate or error_message %}
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if certificate %}
+            <!-- Certificat trouvé et valide -->
+            <div class="bg-green-50 dark:bg-green-900/20 border-2 border-green-200 dark:border-green-700 rounded-2xl p-8 mb-8">
+                <div class="text-center mb-8">
+                    <div class="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-shield-check text-3xl text-white"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-green-800 dark:text-green-200 mb-2">
+                        Certificat Vérifié avec Succès !
+                    </h2>
+                    <p class="text-green-700 dark:text-green-300 text-lg">
+                        Ce certificat est authentique et a été émis par TechLearnJess
+                    </p>
+                </div>
+                
+                <!-- Informations du certificat -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-lg border border-green-200 dark:border-green-700">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                                Informations du Certificat
+                            </h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Étudiant</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">{{ certificate.student_name }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Cours</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">{{ certificate.course_title }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Formateur</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">{{ certificate.instructor_name }}</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                                Détails de Validation
+                            </h3>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Date de fin</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">{{ certificate.completion_date|date:"d F Y" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">Date d'émission</p>
+                                    <p class="font-semibold text-gray-900 dark:text-white">{{ certificate.issue_date|date:"d F Y" }}</p>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-600 dark:text-gray-400">ID Certificat</p>
+                                    <p class="font-mono text-sm text-gray-900 dark:text-white break-all">{{ certificate.certificate_id }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700 text-center">
+                        <a href="{% url 'certificates:detail' certificate.certificate_id %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-eye mr-2"></i>
+                            Voir le Certificat Complet
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% elif error_message %}
+            <!-- Erreur de vérification -->
+            <div class="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-700 rounded-2xl p-8">
+                <div class="text-center">
+                    <div class="w-20 h-20 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-3xl text-white"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-red-800 dark:text-red-200 mb-2">
+                        Certificat Non Trouvé
+                    </h2>
+                    <p class="text-red-700 dark:text-red-300 text-lg mb-6">
+                        {{ error_message }}
+                    </p>
+                    
+                    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 text-left">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                            Vérifications à effectuer :
+                        </h3>
+                        <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-red-500 mr-2 mt-1 flex-shrink-0"></i>
+                                <span>Vérifiez que l'ID du certificat est correct et complet</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-red-500 mr-2 mt-1 flex-shrink-0"></i>
+                                <span>Assurez-vous qu'il n'y a pas d'espaces supplémentaires</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-red-500 mr-2 mt-1 flex-shrink-0"></i>
+                                <span>Le certificat doit avoir été émis par TechLearnJess</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-check text-red-500 mr-2 mt-1 flex-shrink-0"></i>
+                                <span>Contactez-nous si vous pensez qu'il y a une erreur</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}
+
+<!-- Section informative -->
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold font-heading text-gray-900 dark:text-white mb-4">
+                Pourquoi Vérifier un Certificat ?
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                La vérification garantit l'authenticité et la valeur de la certification
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Authenticité -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 text-center">
+                <div class="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-shield-alt text-2xl text-blue-600 dark:text-blue-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Authenticité Garantie</h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Chaque certificat TechLearnJess est protégé par des mesures de sécurité 
+                    avancées pour prévenir la falsification.
+                </p>
+            </div>
+            
+            <!-- Confiance -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 text-center">
+                <div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-handshake text-2xl text-green-600 dark:text-green-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Confiance des Employeurs</h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Les employeurs peuvent vérifier instantanément la validité 
+                    des compétences certifiées de leurs candidats.
+                </p>
+            </div>
+            
+            <!-- Reconnaissance -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-8 shadow-lg border border-gray-200 dark:border-gray-700 text-center">
+                <div class="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-award text-2xl text-purple-600 dark:text-purple-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Reconnaissance Professionnelle</h3>
+                <p class="text-gray-600 dark:text-gray-300">
+                    Nos certificats vérifiables ajoutent de la crédibilité 
+                    à votre profil professionnel et à votre CV.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Section FAQ -->
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold font-heading text-gray-900 dark:text-white mb-4">
+                Questions Fréquentes
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Tout ce que vous devez savoir sur la vérification des certificats
+            </p>
+        </div>
+        
+        <div class="space-y-6" x-data="{ openFaq: null }">
+            <!-- FAQ 1 -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
+                <button @click="openFaq = openFaq === 1 ? null : 1" class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors rounded-xl">
+                    <span class="font-semibold text-gray-900 dark:text-white">Combien de temps faut-il pour vérifier un certificat ?</span>
+                    <i class="fas fa-chevron-down transition-transform" :class="{ 'rotate-180': openFaq === 1 }"></i>
+                </button>
+                <div x-show="openFaq === 1" x-transition class="px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-300">
+                        La vérification est instantanée. Dès que vous entrez l'ID du certificat, 
+                        notre système vérifie immédiatement son authenticité dans notre base de données.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- FAQ 2 -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
+                <button @click="openFaq = openFaq === 2 ? null : 2" class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors rounded-xl">
+                    <span class="font-semibold text-gray-900 dark:text-white">Que faire si mon certificat n'est pas trouvé ?</span>
+                    <i class="fas fa-chevron-down transition-transform" :class="{ 'rotate-180': openFaq === 2 }"></i>
+                </button>
+                <div x-show="openFaq === 2" x-transition class="px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Vérifiez d'abord que l'ID est correct. Si le problème persiste, 
+                        contactez notre support avec votre ID de certificat et nous vous aiderons.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- FAQ 3 -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
+                <button @click="openFaq = openFaq === 3 ? null : 3" class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors rounded-xl">
+                    <span class="font-semibold text-gray-900 dark:text-white">Les certificats TechLearnJess expirent-ils ?</span>
+                    <i class="fas fa-chevron-down transition-transform" :class="{ 'rotate-180': openFaq === 3 }"></i>
+                </button>
+                <div x-show="openFaq === 3" x-transition class="px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Non, nos certificats sont valides à vie. Une fois émis, 
+                        ils peuvent être vérifiés indéfiniment via notre système.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- FAQ 4 -->
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
+                <button @click="openFaq = openFaq === 4 ? null : 4" class="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors rounded-xl">
+                    <span class="font-semibold text-gray-900 dark:text-white">Puis-je partager le lien de vérification ?</span>
+                    <i class="fas fa-chevron-down transition-transform" :class="{ 'rotate-180': openFaq === 4 }"></i>
+                </button>
+                <div x-show="openFaq === 4" x-transition class="px-6 pb-4">
+                    <p class="text-gray-600 dark:text-gray-300">
+                        Oui, vous pouvez partager le lien de vérification avec des employeurs 
+                        ou toute personne souhaitant vérifier l'authenticité de votre certificat.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-16 gradient-bg text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-24 h-24 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold font-heading mb-6 text-shadow">
+            Besoin d'aide avec la vérification ?
+        </h2>
+        <p class="text-xl mb-8 opacity-90 leading-relaxed">
+            Notre équipe de support est là pour vous aider avec toute question concernant vos certificats
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'core:about' %}" class="bg-white/20 hover:bg-white/30 text-white px-8 py-4 rounded-xl font-medium transition-all backdrop-blur-sm border border-white/20">
+                <i class="fas fa-envelope mr-2"></i>
+                Contacter le Support
+            </a>
+            <a href="{% url 'core:faq' %}" class="border-2 border-white text-white px-8 py-4 rounded-xl font-medium hover:bg-white hover:text-blue-600 transition-all">
+                <i class="fas fa-question-circle mr-2"></i>
+                Voir toutes les FAQ
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

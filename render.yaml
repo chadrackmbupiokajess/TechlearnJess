@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: techlearnjess
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python start_server.py"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.1
+      - key: DEBUG
+        value: false

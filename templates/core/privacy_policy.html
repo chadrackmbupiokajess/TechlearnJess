@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Politique de confidentialité - {{ company_name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- En-tête -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                Politique de confidentialité
+            </h1>
+            <p class="text-lg text-gray-600">
+                Version {{ privacy_policy_version }} - Mise à jour le {{ privacy_policy_date }}
+            </p>
+        </div>
+
+        <!-- Contenu -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12">
+            <div class="prose prose-lg max-w-none">
+                
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Responsable du traitement</h2>
+                <p class="mb-6">
+                    Le responsable du traitement des données personnelles est :
+                </p>
+                <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                    <p><strong>{{ company_name }}</strong></p>
+                    <p>{{ company_address }}</p>
+                    <p>Email : <a href="mailto:{{ company_email }}" class="text-blue-600 hover:text-blue-800">{{ company_email }}</a></p>
+                    <p>Téléphone : {{ company_phone }}</p>
+                </div>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Données collectées</h2>
+                <p class="mb-4">Nous collectons les données suivantes :</p>
+                <ul class="list-disc pl-6 mb-6">
+                    <li><strong>Données d'identification :</strong> nom, prénom, adresse email</li>
+                    <li><strong>Données de connexion :</strong> mot de passe chiffré, date de dernière connexion</li>
+                    <li><strong>Données d'utilisation :</strong> progression dans les cours, résultats aux quiz</li>
+                    <li><strong>Données techniques :</strong> adresse IP, type de navigateur, système d'exploitation</li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. Finalités du traitement</h2>
+                <p class="mb-4">Vos données sont utilisées pour :</p>
+                <ul class="list-disc pl-6 mb-6">
+                    <li>Créer et gérer votre compte utilisateur</li>
+                    <li>Vous donner accès aux cours et contenus pédagogiques</li>
+                    <li>Suivre votre progression et délivrer des certificats</li>
+                    <li>Vous envoyer des notifications importantes</li>
+                    <li>Améliorer nos services et contenus</li>
+                    <li>Assurer la sécurité de la plateforme</li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Base légale</h2>
+                <p class="mb-6">
+                    Le traitement de vos données repose sur votre consentement lors de l'inscription 
+                    et sur l'exécution du contrat de service que vous acceptez en utilisant notre plateforme.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Durée de conservation</h2>
+                <p class="mb-6">
+                    Vos données sont conservées pendant toute la durée d'utilisation de votre compte, 
+                    puis supprimées dans un délai de 3 ans après la fermeture de votre compte, 
+                    sauf obligation légale contraire.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Vos droits</h2>
+                <p class="mb-4">Vous disposez des droits suivants :</p>
+                <ul class="list-disc pl-6 mb-6">
+                    <li><strong>Droit d'accès :</strong> obtenir une copie de vos données</li>
+                    <li><strong>Droit de rectification :</strong> corriger vos données inexactes</li>
+                    <li><strong>Droit à l'effacement :</strong> supprimer vos données</li>
+                    <li><strong>Droit à la portabilité :</strong> récupérer vos données dans un format structuré</li>
+                    <li><strong>Droit d'opposition :</strong> vous opposer au traitement de vos données</li>
+                </ul>
+                <p class="mb-6">
+                    Pour exercer ces droits, contactez-nous à : 
+                    <a href="mailto:{{ data_protection_email }}" class="text-blue-600 hover:text-blue-800">{{ data_protection_email }}</a>
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Sécurité</h2>
+                <p class="mb-6">
+                    Nous mettons en œuvre des mesures techniques et organisationnelles appropriées 
+                    pour protéger vos données contre tout accès non autorisé, altération, divulgation ou destruction.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. Cookies</h2>
+                <p class="mb-6">
+                    Notre site utilise des cookies techniques nécessaires au fonctionnement de la plateforme. 
+                    Vous pouvez configurer votre navigateur pour refuser les cookies, mais cela peut affecter 
+                    certaines fonctionnalités.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. Contact</h2>
+                <p class="mb-6">
+                    Pour toute question concernant cette politique de confidentialité, contactez-nous :
+                </p>
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <p><strong>{{ data_controller }}</strong></p>
+                    <p>Email : <a href="mailto:{{ data_protection_email }}" class="text-blue-600 hover:text-blue-800">{{ data_protection_email }}</a></p>
+                    <p>Téléphone : {{ company_phone }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton retour -->
+        <div class="text-center mt-8">
+            <a href="{% url 'core:home' %}" 
+               class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Retour à l'accueil
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

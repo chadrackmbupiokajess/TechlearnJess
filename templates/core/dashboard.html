@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+
+{% block title %}Tableau de bord - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Header du dashboard -->
+<section class="bg-gradient-to-r from-blue-600 to-purple-700 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col md:flex-row items-center justify-between">
+            <div class="mb-6 md:mb-0">
+                <h1 class="text-3xl md:text-4xl font-bold font-heading mb-2">
+                    Bonjour, {{ user.get_full_name|default:user.username }} ! 👋
+                </h1>
+                <p class="text-xl opacity-90">
+                    Bienvenue sur votre tableau de bord personnel
+                </p>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="text-center">
+                    <div class="text-2xl font-bold">{{ user_stats.completion_rate }}%</div>
+                    <div class="text-sm opacity-80">Taux de réussite</div>
+                </div>
+                <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                    <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=3B82F6&color=fff&size=64" alt="Avatar" class="w-12 h-12 rounded-full">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques rapides -->
+<section class="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Cours en cours -->
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 p-6 rounded-xl border border-blue-200 dark:border-blue-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-blue-600 dark:text-blue-400">Cours en cours</p>
+                        <p class="text-2xl font-bold text-blue-900 dark:text-blue-100">{{ current_enrollments|length }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-book-open text-white"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cours terminés -->
+            <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 p-6 rounded-xl border border-green-200 dark:border-green-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-green-600 dark:text-green-400">Cours terminés</p>
+                        <p class="text-2xl font-bold text-green-900 dark:text-green-100">{{ user_stats.completed_courses }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-check-circle text-white"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Certificats -->
+            <div class="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 p-6 rounded-xl border border-yellow-200 dark:border-yellow-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-yellow-600 dark:text-yellow-400">Certificats</p>
+                        <p class="text-2xl font-bold text-yellow-900 dark:text-yellow-100">{{ user_stats.certificates_earned }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-certificate text-white"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Messages forum -->
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 p-6 rounded-xl border border-purple-200 dark:border-purple-700">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-sm font-medium text-purple-600 dark:text-purple-400">Messages forum</p>
+                        <p class="text-2xl font-bold text-purple-900 dark:text-purple-100">{{ user_stats.forum_posts }}</p>
+                    </div>
+                    <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-comments text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contenu principal -->
+<section class="py-12 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Colonne principale -->
+            <div class="lg:col-span-2 space-y-8">
+                <!-- Cours en cours -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-xl font-semibold font-heading text-gray-900 dark:text-white">
+                                <i class="fas fa-play-circle text-blue-500 mr-2"></i>
+                                Mes Cours en Cours
+                            </h2>
+                            <a href="{% url 'courses:my_courses' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium">
+                                Voir tout
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        {% if current_enrollments %}
+                            <div class="space-y-4">
+                                {% for enrollment in current_enrollments %}
+                                <div class="flex items-center p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                                    <div class="flex-shrink-0">
+                                        {% if enrollment.course.thumbnail %}
+                                            <img src="{{ enrollment.course.thumbnail.url }}" alt="{{ enrollment.course.title }}" class="w-16 h-16 rounded-lg object-cover">
+                                        {% else %}
+                                            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-play text-white text-xl"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="ml-4 flex-1">
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">
+                                            {{ enrollment.course.title }}
+                                        </h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                            {{ enrollment.course.category.name }} • {{ enrollment.course.instructor.get_full_name|default:enrollment.course.instructor.username }}
+                                        </p>
+                                        
+                                        <!-- Barre de progression -->
+                                        <div class="flex items-center">
+                                            <div class="flex-1 bg-gray-200 dark:bg-gray-600 rounded-full h-2 mr-3">
+                                                <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300" style="width: {{ enrollment.progress_percentage }}%"></div>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">{{ enrollment.progress_percentage }}%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ml-4">
+                                        <a href="{% url 'courses:learn' enrollment.course.slug %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                            Continuer
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-12">
+                                <i class="fas fa-book-open text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Aucun cours en cours</h3>
+                                <p class="text-gray-500 dark:text-gray-400 mb-6">Commencez votre apprentissage dès maintenant !</p>
+                                <a href="{% url 'courses:list' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                    Explorer les cours
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <!-- Cours terminés récents -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-xl font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                            Cours Terminés Récemment
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        {% if completed_enrollments %}
+                            <div class="space-y-4">
+                                {% for enrollment in completed_enrollments %}
+                                <div class="flex items-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-700">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center">
+                                            <i class="fas fa-check text-white"></i>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ml-4 flex-1">
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                                            {{ enrollment.course.title }}
+                                        </h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                            Terminé le {{ enrollment.completed_at|date:"d/m/Y" }}
+                                        </p>
+                                    </div>
+                                    
+                                    <div class="ml-4">
+                                        <a href="{% url 'certificates:my_certificates' %}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                            <i class="fas fa-certificate mr-1"></i>
+                                            Certificat
+                                        </a>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-8">
+                                <i class="fas fa-trophy text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                                <p class="text-gray-500 dark:text-gray-400">Aucun cours terminé pour le moment</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="space-y-8">
+                <!-- Sessions live à venir -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-lg font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-video text-red-500 mr-2"></i>
+                            Sessions Live
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        {% if upcoming_sessions %}
+                            <div class="space-y-4">
+                                {% for session in upcoming_sessions %}
+                                <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-700">
+                                    <h3 class="font-medium text-gray-900 dark:text-white mb-2">{{ session.title }}</h3>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-calendar mr-2"></i>
+                                            {{ session.start_time|date:"d/m/Y" }}
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-clock mr-2"></i>
+                                            {{ session.start_time|time:"H:i" }}
+                                        </div>
+                                    </div>
+                                    <a href="{% url 'live_sessions:detail' session.session_id %}" class="mt-3 block w-full bg-red-600 hover:bg-red-700 text-white text-center py-2 rounded-lg text-sm font-medium transition-colors">
+                                        Rejoindre
+                                    </a>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-6">
+                                <i class="fas fa-video text-3xl text-gray-300 dark:text-gray-600 mb-2"></i>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Aucune session programmée</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <a href="{% url 'live_sessions:list' %}" class="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 text-sm font-medium">
+                                Voir toutes les sessions →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Notifications récentes -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-lg font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-bell text-blue-500 mr-2"></i>
+                            Notifications
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6">
+                        {% if recent_notifications %}
+                            <div class="space-y-3">
+                                {% for notification in recent_notifications %}
+                                <div class="flex items-start p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-700">
+                                    <div class="flex-shrink-0">
+                                        <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                            <i class="fas fa-{% if notification.notification_type == 'course_new' %}book{% elif notification.notification_type == 'message' %}envelope{% elif notification.notification_type == 'live_session' %}video{% else %}bell{% endif %} text-white text-xs"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ml-3 flex-1">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ notification.title }}</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ notification.created_at|timesince }} ago</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center py-6">
+                                <i class="fas fa-bell text-3xl text-gray-300 dark:text-gray-600 mb-2"></i>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Aucune notification</p>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <a href="{% url 'notifications:list' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm font-medium">
+                                Voir toutes les notifications →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actions rapides -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-lg font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-bolt text-yellow-500 mr-2"></i>
+                            Actions Rapides
+                        </h2>
+                    </div>
+                    
+                    <div class="p-6 space-y-3">
+                        <a href="{% url 'courses:list' %}" class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors group">
+                            <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-search text-white"></i>
+                            </div>
+                            <span class="ml-3 text-gray-900 dark:text-white font-medium">Explorer les cours</span>
+                        </a>
+                        
+                        <a href="{% url 'forum:index' %}" class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors group">
+                            <div class="w-10 h-10 bg-purple-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-comments text-white"></i>
+                            </div>
+                            <span class="ml-3 text-gray-900 dark:text-white font-medium">Rejoindre le forum</span>
+                        </a>
+                        
+                        <a href="{% url 'accounts:edit_profile' %}" class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors group">
+                            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-user-edit text-white"></i>
+                            </div>
+                            <span class="ml-3 text-gray-900 dark:text-white font-medium">Modifier mon profil</span>
+                        </a>
+                        
+                        <a href="{% url 'certificates:my_certificates' %}" class="flex items-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors group">
+                            <div class="w-10 h-10 bg-yellow-500 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-certificate text-white"></i>
+                            </div>
+                            <span class="ml-3 text-gray-900 dark:text-white font-medium">Mes certificats</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Script pour les animations -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation des barres de progression
+    const progressBars = document.querySelectorAll('[style*="width:"]');
+    
+    const progressObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const bar = entry.target;
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+                progressObserver.unobserve(bar);
+            }
+        });
+    }, { threshold: 0.5 });
+    
+    progressBars.forEach(bar => {
+        progressObserver.observe(bar);
+    });
+});
+</script>
+
+{% endblock %}

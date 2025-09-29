@@ -1,0 +1,27 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://techlearnjess.onrender.com/sitemap.xml
+
+# Pages importantes pour le SEO
+Allow: /
+Allow: /about/
+Allow: /courses/
+Allow: /forum/
+Allow: /live-sessions/
+Allow: /faq/
+
+# Bloquer les pages administratives
+Disallow: /admin/
+Disallow: /accounts/logout/
+Disallow: /api/
+
+# Bloquer les fichiers temporaires
+Disallow: /*.tmp$
+Disallow: /*.log$
+
+# Informations sur le fondateur Chadrack Mbu Jess
+# Site créé par Chadrack Mbu Jess (Chadrackmbujess)
+# Contact: chadrackmbujess@gmail.com
+# Portfolio: https://chadrackmbu.pythonanywhere.com/

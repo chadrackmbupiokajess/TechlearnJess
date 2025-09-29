@@ -1,0 +1,427 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ session.title }} - Sessions Live - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Hero Section de la session -->
+<section class="relative py-16 bg-gray-900 text-white overflow-hidden">
+    <!-- Background image -->
+    {% if session.thumbnail %}
+        <div class="absolute inset-0">
+            <img src="{{ session.thumbnail.url }}" alt="{{ session.title }}" class="w-full h-full object-cover opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-r from-black/80 to-black/40"></div>
+        </div>
+    {% else %}
+        <div class="absolute inset-0 bg-gradient-to-r from-red-600 to-purple-600 opacity-80"></div>
+    {% endif %}
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Informations principales -->
+            <div class="lg:col-span-2">
+                <!-- Breadcrumb -->
+                <nav class="mb-6">
+                    <ol class="flex items-center space-x-2 text-sm">
+                        <li><a href="{% url 'core:home' %}" class="text-gray-300 hover:text-white transition-colors">Accueil</a></li>
+                        <li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+                        <li><a href="{% url 'live_sessions:list' %}" class="text-gray-300 hover:text-white transition-colors">Sessions Live</a></li>
+                        <li><i class="fas fa-chevron-right text-gray-400 mx-2"></i></li>
+                        <li class="text-white">{{ session.title }}</li>
+                    </ol>
+                </nav>
+                
+                <!-- Badge de statut -->
+                <div class="flex flex-wrap gap-3 mb-6">
+                    {% if session.status == 'live' %}
+                        <span class="bg-red-500 text-white px-4 py-2 rounded-full text-sm font-bold animate-pulse">
+                            <i class="fas fa-circle mr-1"></i>EN DIRECT
+                        </span>
+                    {% elif session.status == 'scheduled' %}
+                        <span class="bg-amber-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                            <i class="fas fa-clock mr-1"></i>À VENIR
+                        </span>
+                    {% elif session.status == 'ended' %}
+                        <span class="bg-gray-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                            <i class="fas fa-history mr-1"></i>TERMINÉE
+                        </span>
+                    {% endif %}
+                    
+                    {% if session.is_free %}
+                        <span class="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-medium">
+                            <i class="fas fa-gift mr-1"></i>GRATUIT
+                        </span>
+                    {% endif %}
+                </div>
+                
+                <!-- Titre -->
+                <h1 class="text-4xl md:text-5xl font-bold font-heading mb-6 text-shadow">
+                    {{ session.title }}
+                </h1>
+                
+                <!-- Description -->
+                <p class="text-xl mb-8 opacity-90 leading-relaxed">
+                    {{ session.description }}
+                </p>
+                
+                <!-- Métadonnées -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-2 backdrop-blur-sm">
+                            <i class="fas fa-calendar text-white"></i>
+                        </div>
+                        <div class="text-lg font-bold">{{ session.start_time|date:"d/m" }}</div>
+                        <div class="text-sm opacity-80">{{ session.start_time|date:"H:i" }}</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-2 backdrop-blur-sm">
+                            <i class="fas fa-clock text-white"></i>
+                        </div>
+                        <div class="text-lg font-bold">{{ session.duration_minutes }}</div>
+                        <div class="text-sm opacity-80">minutes</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-2 backdrop-blur-sm">
+                            <i class="fas fa-users text-white"></i>
+                        </div>
+                        <div class="text-lg font-bold">{{ session.current_participants }}</div>
+                        <div class="text-sm opacity-80">participants</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center mx-auto mb-2 backdrop-blur-sm">
+                            <i class="fas fa-star text-white"></i>
+                        </div>
+                        <div class="text-lg font-bold">{{ session.level|default:"Tous" }}</div>
+                        <div class="text-sm opacity-80">niveaux</div>
+                    </div>
+                </div>
+                
+                <!-- Instructeur -->
+                <div class="flex items-center p-6 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
+                    <img src="https://ui-avatars.com/api/?name={{ session.instructor.get_full_name|default:session.instructor.username }}&background=3B82F6&color=fff&size=64" 
+                         alt="{{ session.instructor.get_full_name|default:session.instructor.username }}" 
+                         class="w-16 h-16 rounded-full mr-4">
+                    <div>
+                        <h3 class="text-lg font-semibold">{{ session.instructor.get_full_name|default:session.instructor.username }}</h3>
+                        <p class="text-sm opacity-80">Instructeur expert</p>
+                        <p class="text-sm opacity-70 mt-1">
+                            <i class="fas fa-video mr-1"></i>
+                            Sessions animées avec passion
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar d'action -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-8 sticky top-8">
+                    <!-- Prix -->
+                    {% if not session.is_free %}
+                        <div class="text-center mb-6">
+                            <div class="text-3xl font-bold text-gray-900 dark:text-white mb-2">{{ session.price }}€</div>
+                            <p class="text-gray-600 dark:text-gray-400">Session premium</p>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Actions selon le statut -->
+                    {% if session.status == 'live' %}
+                        {% if can_join %}
+                            <button onclick="joinSession('{{ session.session_id }}')" 
+                                    class="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors mb-4 animate-pulse">
+                                <i class="fas fa-video mr-2"></i>
+                                Rejoindre Maintenant
+                            </button>
+                        {% else %}
+                            <div class="bg-red-100 dark:bg-red-900/30 border border-red-200 dark:border-red-700 rounded-lg p-4 text-center mb-4">
+                                <i class="fas fa-exclamation-circle text-red-600 dark:text-red-400 text-2xl mb-2"></i>
+                                <p class="text-red-800 dark:text-red-200 font-medium">{{ join_message }}</p>
+                            </div>
+                        {% endif %}
+                    {% elif session.status == 'scheduled' %}
+                        {% if user.is_authenticated %}
+                            {% if is_enrolled %}
+                                <div class="bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-700 rounded-lg p-4 text-center mb-4">
+                                    <i class="fas fa-check-circle text-green-600 dark:text-green-400 text-2xl mb-2"></i>
+                                    <p class="text-green-800 dark:text-green-200 font-medium">Vous êtes inscrit</p>
+                                </div>
+                            {% else %}
+                                <button onclick="joinSession('{{ session.session_id }}')" 
+                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors mb-4">
+                                    <i class="fas fa-calendar-plus mr-2"></i>
+                                    S'inscrire à la Session
+                                </button>
+                            {% endif %}
+                        {% else %}
+                            <a href="{% url 'accounts:login' %}?next={{ request.path }}" 
+                               class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors flex items-center justify-center mb-4">
+                                <i class="fas fa-sign-in-alt mr-2"></i>
+                                Se connecter pour s'inscrire
+                            </a>
+                        {% endif %}
+                    {% elif session.status == 'ended' and session.recording_url %}
+                        <a href="{% url 'live_sessions:recording' session.session_id %}" 
+                           class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors flex items-center justify-center mb-4">
+                            <i class="fas fa-play mr-2"></i>
+                            Voir l'Enregistrement
+                        </a>
+                    {% endif %}
+                    
+                    <!-- Informations complémentaires -->
+                    <div class="space-y-3 text-sm">
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Date et heure</span>
+                            <span class="font-medium text-gray-900 dark:text-white">{{ session.start_time|date:"d/m/Y H:i" }}</span>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Durée</span>
+                            <span class="font-medium text-gray-900 dark:text-white">{{ session.duration_minutes }} min</span>
+                        </div>
+                        {% if session.max_participants %}
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Places</span>
+                            <span class="font-medium text-gray-900 dark:text-white">{{ session.current_participants }}/{{ session.max_participants }}</span>
+                        </div>
+                        {% endif %}
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-600 dark:text-gray-400">Langue</span>
+                            <span class="font-medium text-gray-900 dark:text-white">Français</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Partage -->
+                    <div class="mt-6 pt-6 border-t border-gray-200 dark:border-gray-600">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mb-3">Partager cette session</p>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg transition-colors">
+                                <i class="fab fa-facebook"></i>
+                            </button>
+                            <button class="flex-1 bg-blue-400 hover:bg-blue-500 text-white p-2 rounded-lg transition-colors">
+                                <i class="fab fa-twitter"></i>
+                            </button>
+                            <button class="flex-1 bg-blue-700 hover:bg-blue-800 text-white p-2 rounded-lg transition-colors">
+                                <i class="fab fa-linkedin"></i>
+                            </button>
+                            <button onclick="copyToClipboard('{{ request.build_absolute_uri }}')" 
+                                    class="flex-1 bg-gray-600 hover:bg-gray-700 text-white p-2 rounded-lg transition-colors">
+                                <i class="fas fa-link"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contenu détaillé -->
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-12">
+            <!-- Contenu principal -->
+            <div class="lg:col-span-2">
+                <!-- Navigation des onglets -->
+                <div class="border-b border-gray-200 dark:border-gray-700 mb-8" x-data="{ activeTab: 'description' }">
+                    <nav class="flex space-x-8">
+                        <button @click="activeTab = 'description'" 
+                                :class="{ 'border-blue-500 text-blue-600 dark:text-blue-400': activeTab === 'description', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': activeTab !== 'description' }" 
+                                class="py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                            Description
+                        </button>
+                        <button @click="activeTab = 'agenda'" 
+                                :class="{ 'border-blue-500 text-blue-600 dark:text-blue-400': activeTab === 'agenda', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': activeTab !== 'agenda' }" 
+                                class="py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                            Programme
+                        </button>
+                        <button @click="activeTab = 'questions'" 
+                                :class="{ 'border-blue-500 text-blue-600 dark:text-blue-400': activeTab === 'questions', 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300': activeTab !== 'questions' }" 
+                                class="py-4 px-1 border-b-2 font-medium text-sm transition-colors">
+                            Questions ({{ questions|length }})
+                        </button>
+                    </nav>
+                    
+                    <!-- Contenu des onglets -->
+                    <div class="mt-8">
+                        <!-- Description -->
+                        <div x-show="activeTab === 'description'" x-transition>
+                            <div class="prose prose-lg max-w-none dark:prose-invert">
+                                <h3>À propos de cette session</h3>
+                                <p>{{ session.description }}</p>
+                                
+                                {% if session.agenda %}
+                                <h3>Ce que vous apprendrez</h3>
+                                <div>{{ session.agenda|linebreaks }}</div>
+                                {% endif %}
+                                
+                                {% if session.requirements %}
+                                <h3>Prérequis</h3>
+                                <div>{{ session.requirements|linebreaks }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <!-- Programme -->
+                        <div x-show="activeTab === 'agenda'" x-transition>
+                            {% if session.agenda %}
+                                <div class="prose prose-lg max-w-none dark:prose-invert">
+                                    {{ session.agenda|linebreaks }}
+                                </div>
+                            {% else %}
+                                <div class="text-center py-12">
+                                    <i class="fas fa-list text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                                    <p class="text-gray-500 dark:text-gray-400">Le programme détaillé sera bientôt disponible.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Questions -->
+                        <div x-show="activeTab === 'questions'" x-transition>
+                            {% if questions %}
+                                <div class="space-y-6">
+                                    {% for question in questions %}
+                                    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                                        <div class="flex items-start">
+                                            <img src="https://ui-avatars.com/api/?name={{ question.user.get_full_name|default:question.user.username }}&background=3B82F6&color=fff&size=48" 
+                                                 alt="{{ question.user.get_full_name|default:question.user.username }}" 
+                                                 class="w-12 h-12 rounded-full mr-4">
+                                            <div class="flex-1">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <h4 class="font-medium text-gray-900 dark:text-white">{{ question.user.get_full_name|default:question.user.username }}</h4>
+                                                    <span class="text-sm text-gray-500 dark:text-gray-400">{{ question.asked_at|timesince }} ago</span>
+                                                </div>
+                                                <p class="text-gray-600 dark:text-gray-300">{{ question.question }}</p>
+                                                {% if question.answer %}
+                                                    <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-500">
+                                                        <p class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">Réponse de l'instructeur :</p>
+                                                        <p class="text-blue-700 dark:text-blue-300">{{ question.answer }}</p>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                
+                                <!-- Formulaire de question -->
+                                {% if user.is_authenticated and is_enrolled %}
+                                    <div class="mt-8 bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
+                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Poser une question</h3>
+                                        <form onsubmit="askQuestion(event, '{{ session.session_id }}')">
+                                            <textarea name="question" 
+                                                      class="w-full p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                                                      rows="4" 
+                                                      placeholder="Posez votre question ici..."
+                                                      required></textarea>
+                                            <button type="submit" 
+                                                    class="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                                <i class="fas fa-paper-plane mr-2"></i>
+                                                Envoyer la Question
+                                            </button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            {% else %}
+                                <div class="text-center py-12">
+                                    <i class="fas fa-question-circle text-4xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                                    <p class="text-gray-500 dark:text-gray-400">Aucune question pour le moment. Soyez le premier à poser une question !</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <!-- Sessions similaires -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+                        <i class="fas fa-video text-red-500 mr-2"></i>
+                        Autres Sessions
+                    </h3>
+                    <div class="space-y-4">
+                        <!-- Placeholder pour sessions similaires -->
+                        <div class="text-center py-8">
+                            <i class="fas fa-calendar-alt text-3xl text-gray-300 dark:text-gray-600 mb-3"></i>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm">
+                                Découvrez d'autres sessions passionnantes
+                            </p>
+                            <a href="{% url 'live_sessions:list' %}" 
+                               class="inline-block mt-3 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium text-sm">
+                                Voir toutes les sessions →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+// Rejoindre une session
+async function joinSession(sessionId) {
+    try {
+        const response = await fetch(`/sessions-live/${sessionId}/rejoindre/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            if (data.meeting_url) {
+                window.open(data.meeting_url, '_blank');
+            }
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la connexion à la session');
+    }
+}
+
+// Poser une question
+async function askQuestion(event, sessionId) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    try {
+        const response = await fetch(`/sessions-live/${sessionId}/question/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+            },
+            body: formData
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(data.message);
+            form.reset();
+            location.reload();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de l\'envoi de la question');
+    }
+}
+
+// Copier le lien
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert('Lien copié dans le presse-papiers !');
+    });
+}
+</script>
+
+{% endblock %}

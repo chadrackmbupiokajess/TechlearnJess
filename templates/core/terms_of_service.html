@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Conditions d'utilisation - {{ company_name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- En-tête -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                Conditions d'utilisation
+            </h1>
+            <p class="text-lg text-gray-600">
+                Version {{ terms_version }} - Mise à jour le {{ terms_date }}
+            </p>
+        </div>
+
+        <!-- Contenu -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12">
+            <div class="prose prose-lg max-w-none">
+                
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Objet</h2>
+                <p class="mb-6">
+                    Les présentes conditions générales d'utilisation (CGU) régissent l'utilisation 
+                    de la plateforme d'apprentissage en ligne {{ company_name }}, accessible à l'adresse 
+                    <a href="{{ company_website }}" class="text-blue-600 hover:text-blue-800">{{ company_website }}</a>.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Éditeur</h2>
+                <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                    <p><strong>{{ company_name }}</strong></p>
+                    <p>{{ company_address }}</p>
+                    <p>Email : <a href="mailto:{{ company_email }}" class="text-blue-600 hover:text-blue-800">{{ company_email }}</a></p>
+                    <p>Téléphone : {{ company_phone }}</p>
+                </div>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. Acceptation des conditions</h2>
+                <p class="mb-6">
+                    L'utilisation de la plateforme {{ company_name }} implique l'acceptation pleine et entière 
+                    des présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, 
+                    vous ne devez pas utiliser nos services.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Description des services</h2>
+                <p class="mb-4">{{ company_name }} propose :</p>
+                <ul class="list-disc pl-6 mb-6">
+                    <li>Des cours en ligne dans divers domaines technologiques</li>
+                    <li>Des sessions de formation en direct</li>
+                    <li>Un forum de discussion entre apprenants</li>
+                    <li>Un système de chat en temps réel</li>
+                    <li>La délivrance de certificats de formation</li>
+                    <li>Un système de paiement sécurisé</li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Inscription et compte utilisateur</h2>
+                <p class="mb-4">Pour accéder aux services, vous devez :</p>
+                <ul class="list-disc pl-6 mb-6">
+                    <li>Créer un compte avec des informations exactes et à jour</li>
+                    <li>Être âgé d'au moins 16 ans ou avoir l'autorisation parentale</li>
+                    <li>Maintenir la confidentialité de vos identifiants</li>
+                    <li>Nous informer immédiatement de toute utilisation non autorisée</li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Obligations de l'utilisateur</h2>
+                <p class="mb-4">En utilisant nos services, vous vous engagez à :</p>
+                <ul class="list-disc pl-6 mb-6">
+                    <li>Respecter les lois et règlements en vigueur</li>
+                    <li>Ne pas porter atteinte aux droits de tiers</li>
+                    <li>Ne pas diffuser de contenu illégal, offensant ou inapproprié</li>
+                    <li>Ne pas tenter de contourner les mesures de sécurité</li>
+                    <li>Ne pas partager vos accès avec des tiers</li>
+                    <li>Respecter les autres utilisateurs dans les forums et chats</li>
+                </ul>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Propriété intellectuelle</h2>
+                <p class="mb-6">
+                    Tous les contenus présents sur la plateforme (cours, vidéos, textes, images, logos) 
+                    sont protégés par le droit d'auteur et appartiennent à {{ company_name }} ou à ses partenaires. 
+                    Toute reproduction, distribution ou utilisation commerciale est interdite sans autorisation écrite.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. Paiements et remboursements</h2>
+                <p class="mb-4">Les paiements s'effectuent via :</p>
+                <ul class="list-disc pl-6 mb-4">
+                    <li>Orange Money</li>
+                    <li>Airtel Money</li>
+                    <li>M-Pesa</li>
+                </ul>
+                <p class="mb-6">
+                    Les remboursements sont possibles dans les 7 jours suivant l'achat, 
+                    sous réserve que moins de 20% du cours n'ait été consulté.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. Suspension et résiliation</h2>
+                <p class="mb-6">
+                    Nous nous réservons le droit de suspendre ou résilier votre compte en cas de 
+                    violation des présentes conditions, sans préavis et sans indemnité.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. Limitation de responsabilité</h2>
+                <p class="mb-6">
+                    {{ company_name }} ne peut être tenu responsable des dommages directs ou indirects 
+                    résultant de l'utilisation ou de l'impossibilité d'utiliser la plateforme, 
+                    sauf en cas de faute lourde ou intentionnelle.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">11. Modification des conditions</h2>
+                <p class="mb-6">
+                    Nous nous réservons le droit de modifier ces conditions à tout moment. 
+                    Les utilisateurs seront informés des modifications par email ou notification sur la plateforme.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">12. Droit applicable</h2>
+                <p class="mb-6">
+                    Les présentes conditions sont régies par le {{ governing_law }}. 
+                    Tout litige sera soumis aux tribunaux compétents de Matadi, Kongo-Central.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">13. Contact</h2>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <p>Pour toute question concernant ces conditions :</p>
+                    <p><strong>{{ company_name }}</strong></p>
+                    <p>Email : <a href="mailto:{{ company_email }}" class="text-blue-600 hover:text-blue-800">{{ company_email }}</a></p>
+                    <p>Téléphone : {{ company_phone }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton retour -->
+        <div class="text-center mt-8">
+            <a href="{% url 'core:home' %}" 
+               class="inline-flex items-center px-6 py-3 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Retour à l'accueil
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

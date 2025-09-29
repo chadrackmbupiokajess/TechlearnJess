@@ -1,0 +1,460 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications - TechLearnJess{% endblock %}
+
+{% block extra_css %}
+<style>
+    .notification-card {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .notification-card:hover {
+        transform: translateX(5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .notification-unread {
+        border-left: 4px solid #3b82f6;
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(99, 102, 241, 0.1) 100%);
+    }
+    
+    .notification-read {
+        opacity: 0.7;
+    }
+    
+    .notification-new {
+        animation: slideInNotification 0.5s ease-out;
+    }
+    
+    @keyframes slideInNotification {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .notification-badge {
+        animation: pulse 2s infinite;
+    }
+    
+    .filter-active {
+        background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        color: white;
+    }
+    
+    .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        color: white;
+    }
+    
+    .icon-course { background: linear-gradient(135deg, #10b981, #059669); }
+    .icon-forum { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+    .icon-chat { background: linear-gradient(135deg, #06b6d4, #0891b2); }
+    .icon-certificate { background: linear-gradient(135deg, #f59e0b, #d97706); }
+    .icon-payment { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .icon-system { background: linear-gradient(135deg, #6b7280, #4b5563); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                <i class="fas fa-bell text-indigo-600 dark:text-indigo-400 mr-3"></i>
+                Centre de Notifications
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Restez informé de toutes vos activités sur TechLearnJess
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Sidebar - Filtres et statistiques -->
+            <div class="lg:col-span-1">
+                <div class="notification-card rounded-2xl p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <i class="fas fa-filter mr-2"></i>
+                        Filtres
+                    </h3>
+                    
+                    <div class="space-y-2">
+                        <button class="filter-active w-full text-left px-3 py-2 rounded-lg transition-colors text-sm font-medium">
+                            <i class="fas fa-inbox mr-2"></i>
+                            Toutes (24)
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/20 transition-colors text-sm text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-circle text-blue-500 mr-2"></i>
+                            Non lues (8)
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/20 transition-colors text-sm text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-graduation-cap mr-2"></i>
+                            Cours (12)
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/20 transition-colors text-sm text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-comments mr-2"></i>
+                            Forum (5)
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/20 transition-colors text-sm text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-certificate mr-2"></i>
+                            Certificats (3)
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/20 transition-colors text-sm text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-credit-card mr-2"></i>
+                            Paiements (2)
+                        </button>
+                        <button class="w-full text-left px-3 py-2 rounded-lg hover:bg-white/20 transition-colors text-sm text-gray-700 dark:text-gray-300">
+                            <i class="fas fa-cog mr-2"></i>
+                            Système (2)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Actions rapides -->
+                <div class="notification-card rounded-2xl p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <i class="fas fa-bolt mr-2"></i>
+                        Actions Rapides
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <button class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                            <i class="fas fa-check-double mr-2"></i>
+                            Tout marquer comme lu
+                        </button>
+                        <button class="w-full bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                            <i class="fas fa-trash mr-2"></i>
+                            Supprimer les lues
+                        </button>
+                        <button class="w-full bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                            <i class="fas fa-cog mr-2"></i>
+                            Préférences
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des notifications -->
+            <div class="lg:col-span-3">
+                <!-- Actions en haut -->
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center space-x-4">
+                        <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
+                            Notifications Récentes
+                        </h2>
+                        <span class="notification-badge bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                            8 nouvelles
+                        </span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <button class="p-2 text-gray-500 hover:text-indigo-600 transition-colors">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                        <button class="p-2 text-gray-500 hover:text-indigo-600 transition-colors">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Notifications -->
+                <div class="space-y-4">
+                    <!-- Notification non lue - Nouveau cours -->
+                    <div class="notification-card notification-unread notification-new rounded-2xl p-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="notification-icon icon-course">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        Nouveau cours disponible
+                                    </h4>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        Il y a 5 min
+                                    </span>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-300 mb-3">
+                                    Le cours "Vue.js 3 - Composition API" est maintenant disponible dans votre parcours Frontend.
+                                </p>
+                                <div class="flex items-center space-x-3">
+                                    <button class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        <i class="fas fa-play mr-2"></i>
+                                        Commencer
+                                    </button>
+                                    <button class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm">
+                                        Marquer comme lu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification non lue - Réponse forum -->
+                    <div class="notification-card notification-unread rounded-2xl p-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="notification-icon icon-forum">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        Nouvelle réponse à votre question
+                                    </h4>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        Il y a 15 min
+                                    </span>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-300 mb-3">
+                                    <strong>Marie Martin</strong> a répondu à votre question "Comment optimiser les performances React ?"
+                                </p>
+                                <div class="flex items-center space-x-3">
+                                    <button class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        <i class="fas fa-eye mr-2"></i>
+                                        Voir la réponse
+                                    </button>
+                                    <button class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm">
+                                        Marquer comme lu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification non lue - Message chat -->
+                    <div class="notification-card notification-unread rounded-2xl p-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="notification-icon icon-chat">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        Message privé reçu
+                                    </h4>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        Il y a 30 min
+                                    </span>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-300 mb-3">
+                                    <strong>Jean Dupont</strong> vous a envoyé un message concernant le projet de groupe.
+                                </p>
+                                <div class="flex items-center space-x-3">
+                                    <button class="bg-cyan-500 hover:bg-cyan-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        <i class="fas fa-reply mr-2"></i>
+                                        Répondre
+                                    </button>
+                                    <button class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm">
+                                        Marquer comme lu
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification lue - Certificat -->
+                    <div class="notification-card notification-read rounded-2xl p-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="notification-icon icon-certificate">
+                                <i class="fas fa-certificate"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        Certificat généré avec succès
+                                    </h4>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        Il y a 2h
+                                    </span>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-300 mb-3">
+                                    Félicitations ! Votre certificat pour le cours "JavaScript ES6+" est prêt à être téléchargé.
+                                </p>
+                                <div class="flex items-center space-x-3">
+                                    <button class="bg-amber-500 hover:bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        <i class="fas fa-download mr-2"></i>
+                                        Télécharger
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification lue - Paiement -->
+                    <div class="notification-card notification-read rounded-2xl p-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="notification-icon icon-payment">
+                                <i class="fas fa-credit-card"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        Paiement confirmé
+                                    </h4>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        Il y a 1 jour
+                                    </span>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-300 mb-3">
+                                    Votre paiement de 29,99€ pour le cours "Python pour l'IA" a été traité avec succès.
+                                </p>
+                                <div class="flex items-center space-x-3">
+                                    <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        <i class="fas fa-receipt mr-2"></i>
+                                        Voir la facture
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notification système -->
+                    <div class="notification-card notification-read rounded-2xl p-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="notification-icon icon-system">
+                                <i class="fas fa-cog"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                        Mise à jour de sécurité
+                                    </h4>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        Il y a 2 jours
+                                    </span>
+                                </div>
+                                <p class="text-gray-600 dark:text-gray-300 mb-3">
+                                    Nous avons mis à jour nos mesures de sécurité. Votre compte est maintenant plus sécurisé.
+                                </p>
+                                <div class="flex items-center space-x-3">
+                                    <button class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        En savoir plus
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="flex items-center justify-center mt-8">
+                    <nav class="flex items-center space-x-2">
+                        <button class="px-3 py-2 text-gray-500 hover:text-indigo-600 transition-colors">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="px-3 py-2 bg-indigo-500 text-white rounded-lg">1</button>
+                        <button class="px-3 py-2 text-gray-500 hover:text-indigo-600 transition-colors">2</button>
+                        <button class="px-3 py-2 text-gray-500 hover:text-indigo-600 transition-colors">3</button>
+                        <button class="px-3 py-2 text-gray-500 hover:text-indigo-600 transition-colors">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Simulation de nouvelles notifications en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    // Simulation d'une nouvelle notification toutes les 30 secondes
+    setInterval(() => {
+        if (Math.random() > 0.7) { // 30% de chance
+            addNewNotification();
+        }
+    }, 30000);
+    
+    function addNewNotification() {
+        const notifications = [
+            {
+                type: 'course',
+                icon: 'fas fa-graduation-cap',
+                iconClass: 'icon-course',
+                title: 'Nouveau chapitre disponible',
+                message: 'Le chapitre "Hooks personnalisés" est maintenant disponible.',
+                action: 'Commencer',
+                actionClass: 'bg-green-500 hover:bg-green-600'
+            },
+            {
+                type: 'forum',
+                icon: 'fas fa-comments',
+                iconClass: 'icon-forum',
+                title: 'Nouvelle mention dans le forum',
+                message: 'Vous avez été mentionné dans une discussion.',
+                action: 'Voir',
+                actionClass: 'bg-purple-500 hover:bg-purple-600'
+            }
+        ];
+        
+        const notification = notifications[Math.floor(Math.random() * notifications.length)];
+        const notificationsList = document.querySelector('.space-y-4');
+        
+        const newNotificationHTML = `
+            <div class="notification-card notification-unread notification-new rounded-2xl p-4">
+                <div class="flex items-start space-x-4">
+                    <div class="notification-icon ${notification.iconClass}">
+                        <i class="${notification.icon}"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                ${notification.title}
+                            </h4>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">
+                                À l'instant
+                            </span>
+                        </div>
+                        <p class="text-gray-600 dark:text-gray-300 mb-3">
+                            ${notification.message}
+                        </p>
+                        <div class="flex items-center space-x-3">
+                            <button class="${notification.actionClass} text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                <i class="fas fa-eye mr-2"></i>
+                                ${notification.action}
+                            </button>
+                            <button class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm">
+                                Marquer comme lu
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        notificationsList.insertAdjacentHTML('afterbegin', newNotificationHTML);
+        
+        // Mettre à jour le badge
+        const badge = document.querySelector('.notification-badge');
+        const currentCount = parseInt(badge.textContent.match(/\d+/)[0]);
+        badge.textContent = `${currentCount + 1} nouvelles`;
+    }
+    
+    // Gestion des clics sur "Marquer comme lu"
+    document.addEventListener('click', function(e) {
+        if (e.target.textContent.includes('Marquer comme lu')) {
+            const notificationCard = e.target.closest('.notification-card');
+            notificationCard.classList.remove('notification-unread');
+            notificationCard.classList.add('notification-read');
+            e.target.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

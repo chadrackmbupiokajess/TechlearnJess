@@ -1,0 +1,267 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}Modifier mon profil - TechLearnJess{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- En-tête -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">
+                <i class="fas fa-user-edit text-blue-600 mr-3"></i>
+                Modifier mon profil
+            </h1>
+            <p class="text-gray-600">
+                Mettez à jour vos informations personnelles
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Sidebar avec avatar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-24">
+                    <!-- Avatar actuel -->
+                    <div class="text-center mb-6">
+                        <div class="relative inline-block">
+                            <img class="w-32 h-32 rounded-full border-4 border-blue-200 shadow-lg mx-auto" 
+                                 src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=3B82F6&color=fff&size=128" 
+                                 alt="Avatar">
+                            <button class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700 transition-colors shadow-lg">
+                                <i class="fas fa-camera text-sm"></i>
+                            </button>
+                        </div>
+                        <h3 class="text-xl font-semibold text-gray-900 mt-4">
+                            {{ user.get_full_name|default:user.username }}
+                        </h3>
+                        <p class="text-gray-500">{{ user.email }}</p>
+                    </div>
+
+                    <!-- Statistiques rapides -->
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-book text-blue-600 mr-2"></i>
+                                <span class="text-sm text-gray-700">Cours suivis</span>
+                            </div>
+                            <span class="font-semibold text-blue-600">12</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-certificate text-green-600 mr-2"></i>
+                                <span class="text-sm text-gray-700">Certificats</span>
+                            </div>
+                            <span class="font-semibold text-green-600">5</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-purple-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar text-purple-600 mr-2"></i>
+                                <span class="text-sm text-gray-700">Membre depuis</span>
+                            </div>
+                            <span class="font-semibold text-purple-600">{{ user.date_joined|date:"M Y" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulaire principal -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-2xl shadow-xl p-8">
+                    <form method="post" enctype="multipart/form-data" class="space-y-6">
+                        {% csrf_token %}
+                        
+                        <!-- Informations personnelles -->
+                        <div class="border-b border-gray-200 pb-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-user text-blue-600 mr-2"></i>
+                                Informations personnelles
+                            </h2>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="id_first_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Prénom
+                                    </label>
+                                    <input type="text" 
+                                           name="first_name" 
+                                           id="id_first_name"
+                                           value="{{ user.first_name }}"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                </div>
+                                
+                                <div>
+                                    <label for="id_last_name" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Nom
+                                    </label>
+                                    <input type="text" 
+                                           name="last_name" 
+                                           id="id_last_name"
+                                           value="{{ user.last_name }}"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <label for="id_email" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Adresse email
+                                </label>
+                                <input type="email" 
+                                       name="email" 
+                                       id="id_email"
+                                       value="{{ user.email }}"
+                                       class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                            </div>
+                        </div>
+
+                        <!-- Informations supplémentaires -->
+                        <div class="border-b border-gray-200 pb-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-info-circle text-green-600 mr-2"></i>
+                                Informations supplémentaires
+                            </h2>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label for="id_phone" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Téléphone
+                                    </label>
+                                    <input type="tel" 
+                                           name="phone" 
+                                           id="id_phone"
+                                           placeholder="+243 XXX XXX XXX"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                </div>
+                                
+                                <div>
+                                    <label for="id_city" class="block text-sm font-medium text-gray-700 mb-2">
+                                        Ville
+                                    </label>
+                                    <input type="text" 
+                                           name="city" 
+                                           id="id_city"
+                                           placeholder="Kinshasa, Matadi, Lubumbashi..."
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                </div>
+                            </div>
+                            
+                            <div class="mt-6">
+                                <label for="id_bio" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Biographie
+                                </label>
+                                <textarea name="bio" 
+                                          id="id_bio"
+                                          rows="4"
+                                          placeholder="Parlez-nous de vous, vos objectifs d'apprentissage..."
+                                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Préférences -->
+                        <div class="pb-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-cog text-purple-600 mr-2"></i>
+                                Préférences
+                            </h2>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <h3 class="font-medium text-gray-900">Notifications par email</h3>
+                                        <p class="text-sm text-gray-500">Recevoir les notifications de cours et actualités</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="email_notifications" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                                
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <h3 class="font-medium text-gray-900">Profil public</h3>
+                                        <p class="text-sm text-gray-500">Permettre aux autres utilisateurs de voir votre profil</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="public_profile" class="sr-only peer" checked>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                            <button type="submit" 
+                                    class="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-3 rounded-lg font-medium hover:from-blue-700 hover:to-blue-800 transition-all transform hover:scale-105 shadow-lg">
+                                <i class="fas fa-save mr-2"></i>
+                                Enregistrer les modifications
+                            </button>
+                            
+                            <a href="{% url 'accounts:profile' %}" 
+                               class="flex-1 bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors text-center">
+                                <i class="fas fa-times mr-2"></i>
+                                Annuler
+                            </a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Section changement de mot de passe -->
+                <div class="bg-white rounded-2xl shadow-xl p-8 mt-8">
+                    <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                        <i class="fas fa-lock text-red-600 mr-2"></i>
+                        Sécurité du compte
+                    </h2>
+                    
+                    <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                        <div class="flex items-start">
+                            <i class="fas fa-exclamation-triangle text-red-600 mt-1 mr-3"></i>
+                            <div>
+                                <h3 class="font-medium text-red-800">Zone sensible</h3>
+                                <p class="text-sm text-red-700 mt-1">
+                                    Les modifications de mot de passe nécessitent une confirmation par email.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="{% url 'accounts:change_password' %}" 
+                           class="flex-1 bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors text-center">
+                            <i class="fas fa-key mr-2"></i>
+                            Changer le mot de passe
+                        </a>
+                        
+                        <button type="button" 
+                                class="flex-1 bg-gray-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-shield-alt mr-2"></i>
+                            Authentification 2FA
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Prévisualisation de l'avatar
+document.addEventListener('DOMContentLoaded', function() {
+    const avatarInput = document.getElementById('id_avatar');
+    const avatarImg = document.querySelector('img[alt="Avatar"]');
+    
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarImg.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

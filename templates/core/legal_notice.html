@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Mentions légales - {{ company_name }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-purple-50 via-white to-pink-50 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- En-tête -->
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                Mentions légales
+            </h1>
+            <p class="text-lg text-gray-600">
+                Informations légales et réglementaires
+            </p>
+        </div>
+
+        <!-- Contenu -->
+        <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12">
+            <div class="prose prose-lg max-w-none">
+                
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Identification de l'éditeur</h2>
+                <div class="bg-gray-50 p-6 rounded-lg mb-6">
+                    <p><strong>Dénomination sociale :</strong> {{ company_name }}</p>
+                    <p><strong>Adresse du siège social :</strong> {{ company_address }}</p>
+                    <p><strong>Téléphone :</strong> {{ company_phone }}</p>
+                    <p><strong>Email :</strong> <a href="mailto:{{ company_email }}" class="text-blue-600 hover:text-blue-800">{{ company_email }}</a></p>
+                    <p><strong>Site web :</strong> <a href="{{ company_website }}" class="text-blue-600 hover:text-blue-800">{{ company_website }}</a></p>
+                </div>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Représentant légal</h2>
+                <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                    <p><strong>{{ legal_representative }}</strong></p>
+                    <p><strong>Fonction :</strong> {{ legal_title }}</p>
+                    <p>En qualité de représentant légal de {{ company_name }}</p>
+                </div>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. Informations d'enregistrement</h2>
+                <div class="bg-green-50 p-6 rounded-lg mb-6">
+                    <p><strong>Numéro d'enregistrement :</strong> {{ registration_number }}</p>
+                    <p><strong>Numéro fiscal :</strong> {{ tax_number }}</p>
+                    <p><strong>Juridiction :</strong> République Démocratique du Congo</p>
+                </div>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Activité</h2>
+                <p class="mb-6">
+                    {{ company_name }} est une plateforme d'apprentissage en ligne spécialisée dans 
+                    la formation technologique. Nous proposons des cours, formations et certifications 
+                    dans les domaines de l'informatique, du développement web, de la programmation 
+                    et des nouvelles technologies.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Hébergement</h2>
+                <div class="bg-purple-50 p-6 rounded-lg mb-6">
+                    <p><strong>Hébergeur :</strong> Render</p>
+                    <p><strong>Adresse :</strong> 525 Brannan Street, Suite 300, San Francisco, CA 94107, USA</p>
+                    <p><strong>Site web :</strong> <a href="https://render.com" class="text-blue-600 hover:text-blue-800" target="_blank">https://render.com</a></p>
+                </div>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Propriété intellectuelle</h2>
+                <p class="mb-6">
+                    L'ensemble des éléments composant le site {{ company_name }} (textes, images, vidéos, 
+                    sons, logos, structure, logiciels, etc.) sont protégés par le droit d'auteur, 
+                    le droit des marques et/ou le droit des producteurs de bases de données.
+                </p>
+                <p class="mb-6">
+                    Ces éléments sont la propriété exclusive de {{ company_name }} ou de ses partenaires. 
+                    Toute reproduction, représentation, adaptation, traduction et/ou transformation, 
+                    partielle ou intégrale, par quelque procédé que ce soit, est strictement interdite 
+                    sans l'autorisation écrite préalable de {{ company_name }}.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Données personnelles</h2>
+                <p class="mb-6">
+                    Les informations recueillies sur ce site sont nécessaires à la gestion de votre compte 
+                    et à la fourniture de nos services. Elles font l'objet d'un traitement informatique 
+                    conforme à notre <a href="{% url 'core:privacy_policy' %}" class="text-blue-600 hover:text-blue-800">politique de confidentialité</a>.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. Cookies</h2>
+                <p class="mb-6">
+                    Ce site utilise des cookies techniques nécessaires à son bon fonctionnement. 
+                    Ces cookies permettent notamment de maintenir votre session de connexion et 
+                    de mémoriser vos préférences d'utilisation.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. Droit applicable et juridiction</h2>
+                <p class="mb-6">
+                    Les présentes mentions légales sont régies par le droit de la République Démocratique du Congo. 
+                    En cas de litige, les tribunaux de Matadi, Kongo-Central seront seuls compétents.
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. Signalement de contenu</h2>
+                <p class="mb-6">
+                    Si vous constatez la présence sur notre site d'un contenu illicite ou portant atteinte 
+                    à vos droits, vous pouvez nous le signaler à l'adresse : 
+                    <a href="mailto:{{ company_email }}" class="text-blue-600 hover:text-blue-800">{{ company_email }}</a>
+                </p>
+
+                <h2 class="text-2xl font-semibold text-gray-900 mb-4">11. Contact</h2>
+                <div class="bg-yellow-50 p-6 rounded-lg">
+                    <p class="mb-2">Pour toute question concernant ces mentions légales :</p>
+                    <p><strong>{{ company_name }}</strong></p>
+                    <p>{{ company_address }}</p>
+                    <p>Email : <a href="mailto:{{ company_email }}" class="text-blue-600 hover:text-blue-800">{{ company_email }}</a></p>
+                    <p>Téléphone : {{ company_phone }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bouton retour -->
+        <div class="text-center mt-8">
+            <a href="{% url 'core:home' %}" 
+               class="inline-flex items-center px-6 py-3 bg-purple-600 text-white font-medium rounded-lg hover:bg-purple-700 transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Retour à l'accueil
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

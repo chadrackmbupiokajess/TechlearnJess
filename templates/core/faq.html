@@ -1,0 +1,301 @@
+{% extends 'base.html' %}
+
+{% block title %}FAQ - Questions Fréquentes - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-20 gradient-bg text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold font-heading mb-6 text-shadow">
+            Questions 
+            <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                Fréquentes
+            </span>
+        </h1>
+        <p class="text-xl opacity-90 leading-relaxed mb-8">
+            Trouvez rapidement les réponses à vos questions sur TechLearnJess
+        </p>
+        
+        <!-- Barre de recherche -->
+        <div class="max-w-2xl mx-auto" x-data="{ searchQuery: '' }">
+            <div class="relative">
+                <input 
+                    type="text" 
+                    x-model="searchQuery"
+                    placeholder="Rechercher une question..."
+                    class="w-full px-6 py-4 pl-12 text-gray-900 bg-white/90 backdrop-blur-sm rounded-xl border-0 focus:ring-2 focus:ring-white/50 focus:outline-none text-lg"
+                >
+                <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filtres par catégorie -->
+<section class="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap justify-center gap-4">
+            <a href="?category=all" class="px-6 py-3 rounded-full text-sm font-medium transition-all {% if current_category == 'all' or not current_category %}bg-blue-600 text-white{% else %}bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600{% endif %}">
+                <i class="fas fa-list mr-2"></i>Toutes
+            </a>
+            {% for category_key, category_name in categories %}
+            <a href="?category={{ category_key }}" class="px-6 py-3 rounded-full text-sm font-medium transition-all {% if current_category == category_key %}bg-blue-600 text-white{% else %}bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600{% endif %}">
+                <i class="fas fa-{% if category_key == 'general' %}info-circle{% elif category_key == 'courses' %}book{% elif category_key == 'payment' %}credit-card{% elif category_key == 'technical' %}cog{% elif category_key == 'certificates' %}certificate{% else %}question{% endif %} mr-2"></i>{{ category_name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Content -->
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if faq_categories %}
+            <div x-data="{ openFaq: null, searchQuery: '' }" class="space-y-8">
+                {% for category, faqs in faq_categories.items %}
+                <div class="animate-on-scroll">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold font-heading text-gray-900 dark:text-white flex items-center">
+                            <div class="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center mr-4">
+                                <i class="fas fa-{% if category == 'general' %}info-circle{% elif category == 'courses' %}book{% elif category == 'payment' %}credit-card{% elif category == 'technical' %}cog{% elif category == 'certificates' %}certificate{% else %}question{% endif %} text-white"></i>
+                            </div>
+                            {% for cat_key, cat_name in categories %}
+                                {% if cat_key == category %}{{ cat_name }}{% endif %}
+                            {% endfor %}
+                        </h2>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        {% for faq in faqs %}
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                            <button 
+                                @click="openFaq = openFaq === '{{ category }}_{{ forloop.counter }}' ? null : '{{ category }}_{{ forloop.counter }}'" 
+                                class="w-full px-6 py-5 text-left flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors group"
+                            >
+                                <div class="flex items-center flex-1">
+                                    <div class="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mr-4 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors">
+                                        <i class="fas fa-question text-blue-600 dark:text-blue-400 text-sm"></i>
+                                    </div>
+                                    <span class="font-semibold text-gray-900 dark:text-white text-lg">{{ faq.question }}</span>
+                                </div>
+                                <div class="ml-4">
+                                    <i class="fas fa-chevron-down text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': openFaq === '{{ category }}_{{ forloop.counter }}' }"></i>
+                                </div>
+                            </button>
+                            
+                            <div 
+                                x-show="openFaq === '{{ category }}_{{ forloop.counter }}'" 
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 transform -translate-y-2"
+                                x-transition:enter-end="opacity-100 transform translate-y-0"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100 transform translate-y-0"
+                                x-transition:leave-end="opacity-0 transform -translate-y-2"
+                                class="px-6 pb-6"
+                            >
+                                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 ml-12">
+                                    <div class="flex items-start">
+                                        <div class="w-8 h-8 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mr-4 flex-shrink-0">
+                                            <i class="fas fa-check text-green-600 dark:text-green-400 text-sm"></i>
+                                        </div>
+                                        <div class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                                            {{ faq.answer|linebreaks }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-16">
+                <div class="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-question-circle text-4xl text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Aucune FAQ trouvée</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-8">
+                    {% if current_category and current_category != 'all' %}
+                        Aucune question trouvée dans cette catégorie.
+                    {% else %}
+                        Les questions fréquentes seront bientôt disponibles.
+                    {% endif %}
+                </p>
+                <a href="?category=all" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Voir toutes les catégories
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Section d'aide supplémentaire -->
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold font-heading text-gray-900 dark:text-white mb-4">
+                Vous ne trouvez pas votre réponse ?
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Notre équipe est là pour vous aider
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Contact par email -->
+            <div class="text-center group">
+                <div class="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-envelope text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold font-heading text-gray-900 dark:text-white mb-4">
+                    Contactez-nous par email
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">
+                    Envoyez-nous un email et nous vous répondrons dans les plus brefs délais.
+                </p>
+                <a href="mailto:support@techlearnjess.com" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center">
+                    <i class="fas fa-paper-plane mr-2"></i>
+                    Envoyer un email
+                </a>
+            </div>
+            
+            <!-- Forum communauté -->
+            <div class="text-center group">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-comments text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold font-heading text-gray-900 dark:text-white mb-4">
+                    Rejoignez le forum
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">
+                    Posez vos questions à la communauté et obtenez de l'aide rapidement.
+                </p>
+                <a href="{% url 'forum:index' %}" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center">
+                    <i class="fas fa-users mr-2"></i>
+                    Accéder au forum
+                </a>
+            </div>
+            
+            <!-- Chat en direct -->
+            <div class="text-center group">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-comment-dots text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold font-heading text-gray-900 dark:text-white mb-4">
+                    Chat en direct
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">
+                    Discutez en temps réel avec notre équipe de support et la communauté.
+                </p>
+                <a href="{% url 'chat:liste_salons' %}" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors inline-flex items-center">
+                    <i class="fas fa-comments mr-2"></i>
+                    Démarrer le chat
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Section ressources utiles -->
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold font-heading text-gray-900 dark:text-white mb-4">
+                Ressources Utiles
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Découvrez d'autres moyens d'obtenir de l'aide
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Guide de démarrage -->
+            <a href="{% url 'core:about' %}" class="group bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover-scale">
+                <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4 group-hover:bg-blue-200 dark:group-hover:bg-blue-800/50 transition-colors">
+                    <i class="fas fa-rocket text-blue-600 dark:text-blue-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Guide de démarrage</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Apprenez les bases de TechLearnJess</p>
+            </a>
+            
+            <!-- Tutoriels vidéo -->
+            <a href="{% url 'courses:list' %}" class="group bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover-scale">
+                <div class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mb-4 group-hover:bg-red-200 dark:group-hover:bg-red-800/50 transition-colors">
+                    <i class="fas fa-play text-red-600 dark:text-red-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Tutoriels vidéo</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Regardez nos tutoriels pas à pas</p>
+            </a>
+            
+            <!-- Documentation -->
+            <a href="#" class="group bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover-scale">
+                <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4 group-hover:bg-green-200 dark:group-hover:bg-green-800/50 transition-colors">
+                    <i class="fas fa-book text-green-600 dark:text-green-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Documentation</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Consultez notre documentation complète</p>
+            </a>
+            
+            <!-- Blog -->
+            <a href="#" class="group bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all hover-scale">
+                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-4 group-hover:bg-purple-200 dark:group-hover:bg-purple-800/50 transition-colors">
+                    <i class="fas fa-blog text-purple-600 dark:text-purple-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Blog</h3>
+                <p class="text-gray-600 dark:text-gray-300 text-sm">Lisez nos derniers articles et conseils</p>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Script pour la recherche -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Recherche en temps réel dans les FAQ
+    const searchInput = document.querySelector('input[x-model="searchQuery"]');
+    const faqItems = document.querySelectorAll('[x-show*="openFaq"]').map(el => el.closest('.bg-white'));
+    
+    if (searchInput) {
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            
+            document.querySelectorAll('.bg-white.dark\\:bg-gray-800').forEach(faqItem => {
+                const question = faqItem.querySelector('span.font-semibold');
+                const answer = faqItem.querySelector('.text-gray-700');
+                
+                if (question && answer) {
+                    const questionText = question.textContent.toLowerCase();
+                    const answerText = answer.textContent.toLowerCase();
+                    
+                    if (questionText.includes(query) || answerText.includes(query) || query === '') {
+                        faqItem.style.display = 'block';
+                        // Surligner les termes de recherche
+                        if (query !== '') {
+                            highlightText(question, query);
+                        }
+                    } else {
+                        faqItem.style.display = 'none';
+                    }
+                }
+            });
+        });
+    }
+    
+    function highlightText(element, query) {
+        const text = element.textContent;
+        const regex = new RegExp(`(${query})`, 'gi');
+        const highlightedText = text.replace(regex, '<mark class="bg-yellow-200 dark:bg-yellow-800">$1</mark>');
+        element.innerHTML = highlightedText;
+    }
+});
+</script>
+
+{% endblock %}

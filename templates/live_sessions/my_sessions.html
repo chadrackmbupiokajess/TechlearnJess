@@ -1,0 +1,403 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Sessions Live - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-16 gradient-bg text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold font-heading mb-6 text-shadow">
+                Mes Sessions 
+                <span class="bg-gradient-to-r from-red-400 to-pink-500 bg-clip-text text-transparent">
+                    Live
+                </span>
+            </h1>
+            <p class="text-xl opacity-90 leading-relaxed max-w-3xl mx-auto">
+                Gérez vos sessions live et suivez votre participation
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques rapides -->
+<section class="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Sessions à venir -->
+            <div class="text-center p-4 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 rounded-xl border border-amber-200 dark:border-amber-700">
+                <div class="w-12 h-12 bg-amber-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-calendar-alt text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-amber-900 dark:text-amber-100 mb-1">{{ upcoming_sessions|length }}</div>
+                <div class="text-sm text-amber-600 dark:text-amber-400">À venir</div>
+            </div>
+            
+            <!-- Sessions passées -->
+            <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl border border-purple-200 dark:border-purple-700">
+                <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-history text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-purple-900 dark:text-purple-100 mb-1">{{ past_sessions.paginator.count }}</div>
+                <div class="text-sm text-purple-600 dark:text-purple-400">Participées</div>
+            </div>
+            
+            <!-- Total sessions -->
+            <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-200 dark:border-blue-700">
+                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-video text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-blue-900 dark:text-blue-100 mb-1">{{ upcoming_sessions|length|add:past_sessions.paginator.count }}</div>
+                <div class="text-sm text-blue-600 dark:text-blue-400">Total</div>
+            </div>
+            
+            <!-- Temps d'apprentissage -->
+            <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl border border-green-200 dark:border-green-700">
+                <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-clock text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-green-900 dark:text-green-100 mb-1">
+                    {% widthratio past_sessions.paginator.count 1 90 %}h
+                </div>
+                <div class="text-sm text-green-600 dark:text-green-400">Temps estimé</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sessions à venir -->
+{% if upcoming_sessions %}
+<section class="py-12 bg-amber-50 dark:bg-amber-900/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                <i class="fas fa-calendar-alt text-amber-500 mr-3"></i>
+                Mes Prochaines Sessions
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Sessions auxquelles vous êtes inscrit
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for session in upcoming_sessions %}
+            <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 group">
+                <!-- Image -->
+                <div class="relative h-48 overflow-hidden">
+                    {% if session.thumbnail %}
+                        <img src="{{ session.thumbnail.url }}" alt="{{ session.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                    {% else %}
+                        <div class="w-full h-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                            <i class="fas fa-video text-white text-4xl"></i>
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Badge de statut -->
+                    <div class="absolute top-4 left-4">
+                        {% if session.status == 'live' %}
+                            <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold animate-pulse">
+                                <i class="fas fa-circle mr-1"></i>EN DIRECT
+                            </span>
+                        {% else %}
+                            <span class="bg-amber-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                <i class="fas fa-clock mr-1"></i>À VENIR
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Temps restant -->
+                    <div class="absolute bottom-4 right-4">
+                        <span class="bg-black/70 text-white px-2 py-1 rounded text-xs">
+                            {% now "U" as current_timestamp %}
+                            {% if session.start_time|date:"U"|add:"0" > current_timestamp %}
+                                Dans {{ session.start_time|timeuntil }}
+                            {% else %}
+                                Maintenant
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- Contenu -->
+                <div class="p-6">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                        {{ session.title }}
+                    </h3>
+                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">
+                        {{ session.description|truncatewords:15 }}
+                    </p>
+                    
+                    <!-- Informations -->
+                    <div class="space-y-2 mb-4">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-user mr-2"></i>
+                            {{ session.instructor.get_full_name|default:session.instructor.username }}
+                        </div>
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-calendar mr-2"></i>
+                            {{ session.start_time|date:"d/m/Y à H:i" }}
+                        </div>
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-clock mr-2"></i>
+                            Durée: {{ session.duration_minutes }} min
+                        </div>
+                    </div>
+                    
+                    <!-- Actions -->
+                    <div class="flex space-x-2">
+                        {% if session.status == 'live' %}
+                            <button onclick="joinSession('{{ session.session_id }}')" 
+                                    class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors animate-pulse">
+                                <i class="fas fa-video mr-1"></i>
+                                Rejoindre
+                            </button>
+                        {% else %}
+                            <a href="{% url 'live_sessions:detail' session.session_id %}" 
+                               class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors text-center">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Détails
+                            </a>
+                        {% endif %}
+                        <button onclick="leaveSession('{{ session.session_id }}')" 
+                                class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
+                            <i class="fas fa-times mr-1"></i>
+                            Se désinscrire
+                        </button>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Sessions passées -->
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                <i class="fas fa-history text-purple-500 mr-3"></i>
+                Sessions Passées
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Historique de vos participations
+            </p>
+        </div>
+        
+        {% if past_sessions %}
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {% for session in past_sessions %}
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 group">
+                    <!-- Image -->
+                    <div class="relative h-40 overflow-hidden">
+                        {% if session.thumbnail %}
+                            <img src="{{ session.thumbnail.url }}" alt="{{ session.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                        {% else %}
+                            <div class="w-full h-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
+                                <i class="fas fa-play text-white text-3xl"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Badge terminée -->
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                <i class="fas fa-check mr-1"></i>TERMINÉE
+                            </span>
+                        </div>
+                        
+                        <!-- Badge replay si disponible -->
+                        {% if session.recording_url %}
+                        <div class="absolute top-3 right-3">
+                            <span class="bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                <i class="fas fa-play mr-1"></i>REPLAY
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Contenu -->
+                    <div class="p-5">
+                        <h4 class="text-lg font-bold text-gray-900 dark:text-white mb-2 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
+                            {{ session.title }}
+                        </h4>
+                        
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-user mr-2"></i>
+                                {{ session.instructor.get_full_name|default:session.instructor.username }}
+                            </div>
+                            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-calendar mr-2"></i>
+                                {{ session.end_time|date:"d/m/Y" }}
+                            </div>
+                            <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-clock mr-2"></i>
+                                {{ session.duration_minutes }} min
+                            </div>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex space-x-2">
+                            {% if session.recording_url %}
+                                <a href="{% url 'live_sessions:recording' session.session_id %}" 
+                                   class="flex-1 bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors text-center">
+                                    <i class="fas fa-play mr-1"></i>
+                                    Replay
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'live_sessions:detail' session.session_id %}" 
+                               class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors text-center">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Détails
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if past_sessions.has_other_pages %}
+            <div class="flex justify-center mt-12">
+                <nav class="flex items-center space-x-2">
+                    {% if past_sessions.has_previous %}
+                        <a href="?page={{ past_sessions.previous_page_number }}" 
+                           class="px-3 py-2 text-gray-500 hover:text-indigo-600 transition-colors">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in past_sessions.paginator.page_range %}
+                        {% if past_sessions.number == num %}
+                            <span class="px-3 py-2 bg-indigo-500 text-white rounded-lg">{{ num }}</span>
+                        {% elif num > past_sessions.number|add:'-3' and num < past_sessions.number|add:'3' %}
+                            <a href="?page={{ num }}" 
+                               class="px-3 py-2 text-gray-500 hover:text-indigo-600 transition-colors">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if past_sessions.has_next %}
+                        <a href="?page={{ past_sessions.next_page_number }}" 
+                           class="px-3 py-2 text-gray-500 hover:text-indigo-600 transition-colors">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="text-center py-16">
+                <div class="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-video text-4xl text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    Aucune session passée
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+                    Vous n'avez pas encore participé à des sessions live. Découvrez nos prochaines sessions !
+                </p>
+                <a href="{% url 'live_sessions:list' %}" 
+                   class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                    <i class="fas fa-search mr-2"></i>
+                    Découvrir les Sessions
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Aucune session à venir -->
+{% if not upcoming_sessions %}
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="w-24 h-24 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fas fa-calendar-plus text-4xl text-amber-600 dark:text-amber-400"></i>
+        </div>
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Aucune session programmée
+        </h2>
+        <p class="text-xl text-gray-600 dark:text-gray-300 mb-8">
+            Découvrez nos prochaines sessions live et inscrivez-vous dès maintenant
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'live_sessions:list' %}" 
+               class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-colors">
+                <i class="fas fa-calendar-alt mr-2"></i>
+                Voir les Sessions Disponibles
+            </a>
+            <a href="{% url 'courses:list' %}" 
+               class="border-2 border-blue-600 text-blue-600 dark:text-blue-400 px-8 py-3 rounded-lg font-semibold hover:bg-blue-600 hover:text-white transition-colors">
+                <i class="fas fa-book mr-2"></i>
+                Explorer les Cours
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<script>
+// Rejoindre une session
+async function joinSession(sessionId) {
+    try {
+        const response = await fetch(`/sessions-live/${sessionId}/rejoindre/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            if (data.meeting_url) {
+                window.open(data.meeting_url, '_blank');
+            }
+            alert(data.message);
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la connexion à la session');
+    }
+}
+
+// Quitter une session
+async function leaveSession(sessionId) {
+    if (!confirm('Êtes-vous sûr de vouloir vous désinscrire de cette session ?')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/sessions-live/${sessionId}/quitter/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert(data.message);
+            location.reload();
+        } else {
+            alert('Erreur: ' + data.error);
+        }
+    } catch (error) {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la désinscription');
+    }
+}
+</script>
+
+{% endblock %}

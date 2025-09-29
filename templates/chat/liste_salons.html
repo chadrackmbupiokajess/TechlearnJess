@@ -1,0 +1,416 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Salons de Chat - TechLearnJess{% endblock %}
+
+{% block extra_css %}
+<style>
+    .salon-card {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .salon-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        border-color: rgba(99, 102, 241, 0.3);
+    }
+    
+    .online-indicator {
+        animation: pulse 2s infinite;
+        background: #10b981;
+    }
+    
+    .message-preview {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(5px);
+    }
+    
+    .create-salon-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    
+    .create-salon-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+    
+    .search-input {
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .search-input:focus {
+        background: rgba(255, 255, 255, 1);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                <i class="fas fa-comments text-indigo-600 dark:text-indigo-400 mr-3"></i>
+                Salons de Chat
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Rejoignez les discussions et échangez avec la communauté
+            </p>
+        </div>
+
+        <!-- Barre de recherche et actions -->
+        <div class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-6 sm:mb-8 space-y-4 sm:space-y-0 space-x-0 sm:space-x-4">
+            <div class="relative flex-1 max-w-full sm:max-w-md">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-search text-gray-400"></i>
+                </div>
+                <input type="text" 
+                       class="search-input w-full pl-10 pr-4 py-2 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base text-gray-900 placeholder-gray-500"
+                       placeholder="Rechercher un salon..."
+                       id="search-salons">
+            </div>
+            
+            <button class="create-salon-btn text-white px-4 sm:px-6 py-2 sm:py-3 rounded-2xl font-medium transition-all duration-300 flex items-center justify-center space-x-2 text-sm sm:text-base flex-shrink-0"
+                    onclick="openCreateSalonModal()">
+                <i class="fas fa-plus"></i>
+                <span class="hidden xs:inline">Créer un Salon</span>
+                <span class="xs:hidden">Créer</span>
+            </button>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+            <div class="salon-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center">
+                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-1 sm:mb-2">{{ salons.count }}</div>
+                <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">Salons Actifs</div>
+            </div>
+            <div class="salon-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center">
+                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 dark:text-green-400 mb-1 sm:mb-2">127</div>
+                <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">En Ligne</div>
+            </div>
+            <div class="salon-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center">
+                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1 sm:mb-2">1,234</div>
+                <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">Messages</div>
+            </div>
+            <div class="salon-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center">
+                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1 sm:mb-2">45</div>
+                <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">Nouveaux</div>
+            </div>
+        </div>
+
+        <!-- Liste des salons -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6" id="salons-grid">
+            {% for salon in salons %}
+            <div class="salon-card rounded-2xl p-6 cursor-pointer" onclick="window.location.href='{% url 'chat:salon_chat' salon.id %}'">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                        <i class="fas fa-hashtag text-indigo-500 mr-2"></i>
+                        {{ salon.nom }}
+                    </h3>
+                    <div class="flex items-center space-x-2">
+                        <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full text-xs font-medium">
+                            {{ salon.participants.count }} membres
+                        </span>
+                        {% if salon.est_prive %}
+                        <i class="fas fa-lock text-gray-400" title="Salon privé"></i>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+                    {{ salon.description|default:"Aucune description disponible" }}
+                </p>
+                
+                <!-- Dernier message -->
+                {% if salon.messages.last %}
+                <div class="message-preview rounded-lg p-3 mb-4">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=24&h=24&fit=crop&crop=face" 
+                             alt="Avatar" class="w-6 h-6 rounded-full">
+                        <span class="text-sm font-medium text-gray-700">{{ salon.messages.last.auteur.username }}</span>
+                        <span class="text-xs text-gray-500">{{ salon.messages.last.timestamp|timesince }}</span>
+                    </div>
+                    <p class="text-sm text-gray-600 line-clamp-1">{{ salon.messages.last.contenu }}</p>
+                </div>
+                {% endif %}
+                
+                <!-- Participants récents -->
+                <div class="flex items-center justify-between">
+                    <div class="flex -space-x-2">
+                        {% for participant in salon.participants.all|slice:":4" %}
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
+                             alt="{{ participant.username }}" 
+                             class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800"
+                             title="{{ participant.username }}">
+                        {% endfor %}
+                        {% if salon.participants.count > 4 %}
+                        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                            <span class="text-xs font-medium text-gray-600 dark:text-gray-300">+{{ salon.participants.count|add:"-4" }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <div class="w-2 h-2 online-indicator rounded-full mr-2"></div>
+                        Actif
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Salons par défaut si aucun salon n'existe -->
+            <div class="salon-card rounded-2xl p-6 cursor-pointer" onclick="window.location.href='#'">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                        <i class="fas fa-hashtag text-indigo-500 mr-2"></i>
+                        Général
+                    </h3>
+                    <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full text-xs font-medium">
+                        45 membres
+                    </span>
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-300 mb-4">
+                    Discussion générale pour tous les sujets liés à l'apprentissage
+                </p>
+                
+                <div class="message-preview rounded-lg p-3 mb-4">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=24&h=24&fit=crop&crop=face" 
+                             alt="Avatar" class="w-6 h-6 rounded-full">
+                        <span class="text-sm font-medium text-gray-700">Jean Dupont</span>
+                        <span class="text-xs text-gray-500">il y a 5 min</span>
+                    </div>
+                    <p class="text-sm text-gray-600">Quelqu'un peut m'aider avec JavaScript ?</p>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex -space-x-2">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
+                             alt="User" class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=32&h=32&fit=crop&crop=face" 
+                             alt="User" class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face" 
+                             alt="User" class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                            <span class="text-xs font-medium text-gray-600 dark:text-gray-300">+42</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <div class="w-2 h-2 online-indicator rounded-full mr-2"></div>
+                        Actif
+                    </div>
+                </div>
+            </div>
+
+            <div class="salon-card rounded-2xl p-6 cursor-pointer" onclick="window.location.href='#'">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                        <i class="fas fa-hashtag text-blue-500 mr-2"></i>
+                        Aide & Support
+                    </h3>
+                    <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs font-medium">
+                        23 membres
+                    </span>
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-300 mb-4">
+                    Obtenez de l'aide sur les cours et les exercices
+                </p>
+                
+                <div class="message-preview rounded-lg p-3 mb-4">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=24&h=24&fit=crop&crop=face" 
+                             alt="Avatar" class="w-6 h-6 rounded-full">
+                        <span class="text-sm font-medium text-gray-700">Marie Martin</span>
+                        <span class="text-xs text-gray-500">il y a 12 min</span>
+                    </div>
+                    <p class="text-sm text-gray-600">Voici la solution pour l'exercice 3</p>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex -space-x-2">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=32&h=32&fit=crop&crop=face" 
+                             alt="User" class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face" 
+                             alt="User" class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                            <span class="text-xs font-medium text-gray-600 dark:text-gray-300">+21</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <div class="w-2 h-2 online-indicator rounded-full mr-2"></div>
+                        Actif
+                    </div>
+                </div>
+            </div>
+
+            <div class="salon-card rounded-2xl p-6 cursor-pointer" onclick="window.location.href='#'">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+                        <i class="fas fa-hashtag text-purple-500 mr-2"></i>
+                        Projets
+                    </h3>
+                    <span class="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full text-xs font-medium">
+                        18 membres
+                    </span>
+                </div>
+                
+                <p class="text-gray-600 dark:text-gray-300 mb-4">
+                    Partagez vos projets et collaborez avec d'autres
+                </p>
+                
+                <div class="message-preview rounded-lg p-3 mb-4">
+                    <div class="flex items-center space-x-2 mb-1">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=24&h=24&fit=crop&crop=face" 
+                             alt="Avatar" class="w-6 h-6 rounded-full">
+                        <span class="text-sm font-medium text-gray-700">Pierre Durand</span>
+                        <span class="text-xs text-gray-500">il y a 1h</span>
+                    </div>
+                    <p class="text-sm text-gray-600">Mon nouveau projet React est en ligne !</p>
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex -space-x-2">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face" 
+                             alt="User" class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
+                             alt="User" class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800">
+                        <div class="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 border-2 border-white dark:border-gray-800 flex items-center justify-center">
+                            <span class="text-xs font-medium text-gray-600 dark:text-gray-300">+16</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <div class="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+                        Inactif
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Message si aucun salon -->
+        {% if not salons %}
+        <div class="text-center py-12">
+            <div class="salon-card rounded-2xl p-8 max-w-md mx-auto">
+                <i class="fas fa-comments text-6xl text-gray-400 mb-4"></i>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Aucun salon trouvé</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">
+                    Vous n'êtes membre d'aucun salon pour le moment.
+                </p>
+                <button class="create-salon-btn text-white px-6 py-3 rounded-2xl font-medium transition-all duration-300"
+                        onclick="openCreateSalonModal()">
+                    Créer votre premier salon
+                </button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal de création de salon -->
+<div id="createSalonModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Créer un Nouveau Salon</h3>
+            <button onclick="closeCreateSalonModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <form id="createSalonForm">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Nom du salon
+                </label>
+                <input type="text" 
+                       class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                       placeholder="Ex: Développement Web"
+                       required>
+            </div>
+            
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Description
+                </label>
+                <textarea class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                          rows="3"
+                          placeholder="Décrivez le sujet de discussion..."></textarea>
+            </div>
+            
+            <div class="mb-6">
+                <label class="flex items-center">
+                    <input type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Salon privé (sur invitation uniquement)</span>
+                </label>
+            </div>
+            
+            <div class="flex space-x-3">
+                <button type="button" 
+                        onclick="closeCreateSalonModal()"
+                        class="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    Annuler
+                </button>
+                <button type="submit" 
+                        class="flex-1 create-salon-btn text-white px-4 py-3 rounded-lg font-medium transition-all duration-300">
+                    Créer le Salon
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Recherche de salons
+document.getElementById('search-salons').addEventListener('input', function(e) {
+    const searchTerm = e.target.value.toLowerCase();
+    const salonCards = document.querySelectorAll('#salons-grid > div');
+    
+    salonCards.forEach(card => {
+        const salonName = card.querySelector('h3').textContent.toLowerCase();
+        const salonDescription = card.querySelector('p').textContent.toLowerCase();
+        
+        if (salonName.includes(searchTerm) || salonDescription.includes(searchTerm)) {
+            card.style.display = 'block';
+        } else {
+            card.style.display = 'none';
+        }
+    });
+});
+
+// Modal de création de salon
+function openCreateSalonModal() {
+    document.getElementById('createSalonModal').classList.remove('hidden');
+    document.getElementById('createSalonModal').classList.add('flex');
+}
+
+function closeCreateSalonModal() {
+    document.getElementById('createSalonModal').classList.add('hidden');
+    document.getElementById('createSalonModal').classList.remove('flex');
+}
+
+// Fermer le modal en cliquant à l'extérieur
+document.getElementById('createSalonModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeCreateSalonModal();
+    }
+});
+
+// Gestion du formulaire de création
+document.getElementById('createSalonForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    // Ici, vous ajouteriez la logique pour créer le salon
+    alert('Fonctionnalité de création de salon à implémenter');
+    closeCreateSalonModal();
+});
+</script>
+{% endblock %}

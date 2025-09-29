@@ -1,0 +1,420 @@
+{% extends 'base.html' %}
+
+{% block title %}TechLearnJess - Formation en ligne par Chadrack Mbu Jess | Apprendre ici, réussir partout{% endblock %}
+
+{% block description %}Plateforme de formation technologique fondée par Chadrack Mbu Jess (Chadrackmbujess). Cours en ligne, certifications, sessions live en RDC. Développement web, programmation, technologies du futur.{% endblock %}
+
+{% block keywords %}TechLearnJess, Tech LearnJess, TechLearn Jess, Tech Learn Jess, techlearnjess, Chadrack Mbu Jess, Chadrackmbujess, Chadrack mbujess, Chadrackmbu jess, Chadrack, Chadrack mbu, mbu jess, mbu, mbu pioka, pioka, formation en ligne RDC, cours technologie Congo, développement web Matadi, programmation RDC, certifications en ligne{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Background avec gradient animé -->
+    <div class="absolute inset-0 gradient-bg"></div>
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments flottants animés -->
+    <div class="absolute top-20 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-20 right-10 w-32 h-32 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-white/10 rounded-full animate-float" style="animation-delay: 2s;"></div>
+    <div class="absolute top-1/3 right-1/4 w-24 h-24 bg-white/10 rounded-full animate-float" style="animation-delay: 3s;"></div>
+    
+    <!-- Contenu principal -->
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-white">
+        <div class="animate-on-scroll">
+            <h1 class="text-5xl md:text-7xl font-bold font-heading mb-8 text-shadow">
+                Apprenez les 
+                <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                    Technologies
+                </span>
+                <br>du Futur
+            </h1>
+            
+            <p class="text-xl md:text-2xl mb-12 max-w-4xl mx-auto opacity-90 leading-relaxed">
+                Développez vos compétences avec nos formations professionnelles de pointe. 
+                Cours interactifs, certifications reconnues et accompagnement personnalisé pour votre réussite.
+            </p>
+            
+            <div class="flex flex-col sm:flex-row gap-6 justify-center mb-16">
+                <a href="{% url 'courses:list' %}" class="group bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all hover-scale neon-glow inline-flex items-center justify-center">
+                    <i class="fas fa-play mr-3 group-hover:translate-x-1 transition-transform"></i>
+                    Commencer maintenant
+                </a>
+                <a href="#fonctionnalites" class="group border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all inline-flex items-center justify-center">
+                    <i class="fas fa-info-circle mr-3 group-hover:rotate-12 transition-transform"></i>
+                    En savoir plus
+                </a>
+            </div>
+            
+            <!-- Statistiques en temps réel -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold mb-2 text-yellow-400">{{ stats.total_courses|default:"50+" }}</div>
+                    <div class="text-sm opacity-80">Cours disponibles</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold mb-2 text-green-400">{{ stats.total_students|default:"1000+" }}</div>
+                    <div class="text-sm opacity-80">Étudiants actifs</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold mb-2 text-purple-400">{{ stats.total_enrollments|default:"500+" }}</div>
+                    <div class="text-sm opacity-80">Inscriptions</div>
+                </div>
+                <div class="text-center">
+                    <div class="text-3xl md:text-4xl font-bold mb-2 text-orange-400">98%</div>
+                    <div class="text-sm opacity-80">Satisfaction</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <i class="fas fa-chevron-down text-white text-2xl opacity-70"></i>
+    </div>
+</section>
+
+<!-- Fonctionnalités principales -->
+<section id="fonctionnalites" class="py-24 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-20 animate-on-scroll">
+            <h2 class="text-4xl md:text-5xl font-bold font-heading text-gray-900 dark:text-white mb-6">
+                Pourquoi choisir 
+                <span class="gradient-primary bg-clip-text text-transparent">TechLearnJess</span> ?
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
+                Une plateforme complète conçue pour votre réussite professionnelle avec des outils modernes et innovants
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Cours interactifs -->
+            <div class="group bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover-scale animate-on-scroll border border-gray-100 dark:border-gray-700">
+                <div class="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-laptop-code text-2xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-semibold font-heading mb-4 text-gray-900 dark:text-white">Cours Interactifs</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                    Apprenez avec des vidéos HD, des exercices pratiques et des projets concrets. 
+                    Suivez votre progression en temps réel avec notre système intelligent.
+                </p>
+                <a href="{% url 'courses:list' %}" class="inline-flex items-center text-blue-600 dark:text-blue-400 font-semibold hover:text-blue-700 dark:hover:text-blue-300 group">
+                    Découvrir les cours 
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Sessions live -->
+            <div class="group bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover-scale animate-on-scroll border border-gray-100 dark:border-gray-700">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-video text-2xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-semibold font-heading mb-4 text-gray-900 dark:text-white">Sessions Live</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                    Participez à des sessions en direct avec nos experts. 
+                    Posez vos questions et interagissez en temps réel avec la communauté.
+                </p>
+                <a href="{% url 'live_sessions:list' %}" class="inline-flex items-center text-green-600 dark:text-green-400 font-semibold hover:text-green-700 dark:hover:text-green-300 group">
+                    Voir les sessions 
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Communauté -->
+            <div class="group bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover-scale animate-on-scroll border border-gray-100 dark:border-gray-700">
+                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-users text-2xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-semibold font-heading mb-4 text-gray-900 dark:text-white">Communauté Active</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                    Rejoignez une communauté d'apprenants passionnés. 
+                    Partagez, entraidez-vous et progressez ensemble vers vos objectifs.
+                </p>
+                <a href="{% url 'forum:index' %}" class="inline-flex items-center text-purple-600 dark:text-purple-400 font-semibold hover:text-purple-700 dark:hover:text-purple-300 group">
+                    Rejoindre le forum 
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Certifications -->
+            <div class="group bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover-scale animate-on-scroll border border-gray-100 dark:border-gray-700">
+                <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-certificate text-2xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-semibold font-heading mb-4 text-gray-900 dark:text-white">Certifications Reconnues</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                    Obtenez des certificats valorisés par les entreprises. 
+                    Validez vos compétences avec nos évaluations rigoureuses.
+                </p>
+                <a href="{% url 'certificates:my_certificates' %}" class="inline-flex items-center text-yellow-600 dark:text-yellow-400 font-semibold hover:text-yellow-700 dark:hover:text-yellow-300 group">
+                    Voir les certificats 
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Paiement flexible -->
+            <div class="group bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover-scale animate-on-scroll border border-gray-100 dark:border-gray-700">
+                <div class="w-16 h-16 bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-mobile-alt text-2xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-semibold font-heading mb-4 text-gray-900 dark:text-white">Paiement Mobile</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                    Payez facilement avec Orange Money, Airtel Money ou M-Pesa. 
+                    Solutions de paiement adaptées à la RDC.
+                </p>
+                <a href="#" class="inline-flex items-center text-pink-600 dark:text-pink-400 font-semibold hover:text-pink-700 dark:hover:text-pink-300 group">
+                    En savoir plus 
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+            
+            <!-- Support 24/7 -->
+            <div class="group bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover-scale animate-on-scroll border border-gray-100 dark:border-gray-700">
+                <div class="w-16 h-16 bg-gradient-to-br from-teal-500 to-cyan-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-headset text-2xl text-white"></i>
+                </div>
+                <h3 class="text-2xl font-semibold font-heading mb-4 text-gray-900 dark:text-white">Support Dédié</h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
+                    Bénéficiez d'un accompagnement personnalisé. 
+                    Notre équipe est là pour vous aider à réussir vos projets.
+                </p>
+                <a href="{% url 'core:about' %}" class="inline-flex items-center text-teal-600 dark:text-teal-400 font-semibold hover:text-teal-700 dark:hover:text-teal-300 group">
+                    Nous contacter 
+                    <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Derniers cours -->
+<section class="py-24 bg-white dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 animate-on-scroll">
+            <h2 class="text-4xl md:text-5xl font-bold font-heading text-gray-900 dark:text-white mb-6">
+                Cours 
+                <span class="gradient-primary bg-clip-text text-transparent">Populaires</span>
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Découvrez nos formations les plus demandées par les professionnels
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+            {% for course in latest_courses %}
+            <div class="group bg-gray-50 dark:bg-gray-900 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover-scale animate-on-scroll border border-gray-200 dark:border-gray-700">
+                <div class="relative overflow-hidden">
+                    {% if course.thumbnail %}
+                        <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="w-full h-48 object-cover group-hover:scale-110 transition-transform duration-300">
+                    {% else %}
+                        <div class="w-full h-48 gradient-primary flex items-center justify-center">
+                            <i class="fas fa-play text-4xl text-white"></i>
+                        </div>
+                    {% endif %}
+                    <div class="absolute top-4 left-4">
+                        {% if course.is_free %}
+                            <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">Gratuit</span>
+                        {% else %}
+                            <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">${{ course.price }}</span>
+                        {% endif %}
+                    </div>
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-black/50 text-white px-2 py-1 rounded text-xs">{{ course.difficulty|capfirst }}</span>
+                    </div>
+                </div>
+                
+                <div class="p-6">
+                    <div class="flex items-center mb-3">
+                        <span class="bg-{{ course.category.color|default:'blue' }}-100 dark:bg-{{ course.category.color|default:'blue' }}-900/30 text-{{ course.category.color|default:'blue' }}-600 dark:text-{{ course.category.color|default:'blue' }}-400 px-3 py-1 rounded-full text-sm font-medium">
+                            {{ course.category.name }}
+                        </span>
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold font-heading mb-3 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        {{ course.title }}
+                    </h3>
+                    
+                    <p class="text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">
+                        {{ course.short_description }}
+                    </p>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-clock mr-1"></i>
+                            {{ course.duration_hours }}h
+                        </div>
+                        <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                            <i class="fas fa-users mr-1"></i>
+                            {{ course.total_enrollments }} étudiants
+                        </div>
+                        <div class="flex items-center text-sm text-yellow-500">
+                            <i class="fas fa-star mr-1"></i>
+                            {{ course.average_rating|floatformat:1 }}
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <img src="https://ui-avatars.com/api/?name={{ course.instructor.get_full_name|default:course.instructor.username }}&background=3B82F6&color=fff&size=32" alt="{{ course.instructor.get_full_name|default:course.instructor.username }}" class="w-8 h-8 rounded-full mr-2">
+                            <span class="text-sm text-gray-600 dark:text-gray-300">{{ course.instructor.get_full_name|default:course.instructor.username }}</span>
+                        </div>
+                        <a href="{% url 'courses:detail' course.slug %}" class="gradient-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all group">
+                            Voir le cours
+                            <i class="fas fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-book text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                <p class="text-xl text-gray-500 dark:text-gray-400">Aucun cours disponible pour le moment.</p>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="text-center animate-on-scroll">
+            <a href="{% url 'courses:list' %}" class="gradient-primary text-white px-8 py-4 rounded-xl font-semibold text-lg hover:shadow-lg neon-glow transition-all hover-scale inline-flex items-center">
+                Voir tous les cours
+                <i class="fas fa-arrow-right ml-3"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Témoignages -->
+<section class="py-24 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16 animate-on-scroll">
+            <h2 class="text-4xl md:text-5xl font-bold font-heading text-gray-900 dark:text-white mb-6">
+                Ce que disent nos 
+                <span class="gradient-primary bg-clip-text text-transparent">Étudiants</span>
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+                Découvrez les témoignages de ceux qui ont transformé leur carrière avec TechLearnJess
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {% for testimonial in testimonials %}
+            <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 animate-on-scroll border border-gray-200 dark:border-gray-700">
+                <div class="flex items-center mb-6">
+                    {% for i in "12345" %}
+                        {% if forloop.counter <= testimonial.rating %}
+                            <i class="fas fa-star text-yellow-400"></i>
+                        {% else %}
+                            <i class="fas fa-star text-gray-300 dark:text-gray-600"></i>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                
+                <blockquote class="text-gray-600 dark:text-gray-300 mb-6 italic leading-relaxed">
+                    "{{ testimonial.content }}"
+                </blockquote>
+                
+                <div class="flex items-center">
+                    {% if testimonial.photo %}
+                        <img src="{{ testimonial.photo.url }}" alt="{{ testimonial.name }}" class="w-12 h-12 rounded-full mr-4">
+                    {% else %}
+                        <img src="https://ui-avatars.com/api/?name={{ testimonial.name }}&background=3B82F6&color=fff&size=48" alt="{{ testimonial.name }}" class="w-12 h-12 rounded-full mr-4">
+                    {% endif %}
+                    <div>
+                        <div class="font-semibold text-gray-900 dark:text-white">{{ testimonial.name }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">{{ testimonial.position }}{% if testimonial.company %}, {{ testimonial.company }}{% endif %}</div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-span-full text-center py-12">
+                <i class="fas fa-quote-left text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                <p class="text-xl text-gray-500 dark:text-gray-400">Les témoignages arrivent bientôt...</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-24 gradient-bg text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-24 h-24 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center animate-on-scroll">
+        <h2 class="text-4xl md:text-5xl font-bold font-heading mb-6 text-shadow">
+            Prêt à transformer votre carrière ?
+        </h2>
+        <p class="text-xl mb-12 opacity-90 leading-relaxed">
+            Rejoignez des milliers d'étudiants qui ont déjà fait le choix de l'excellence. 
+            Commencez votre parcours d'apprentissage dès aujourd'hui.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-6 justify-center">
+            <a href="{% url 'accounts:register' %}" class="bg-white text-blue-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all hover-scale neon-glow inline-flex items-center justify-center">
+                <i class="fas fa-user-plus mr-3"></i>
+                Inscription Gratuite
+            </a>
+            <a href="{% url 'courses:list' %}" class="border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all inline-flex items-center justify-center">
+                <i class="fas fa-book mr-3"></i>
+                Explorer les cours
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Script pour les animations -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Animation des compteurs
+    const counters = document.querySelectorAll('[data-counter]');
+    const observerOptions = {
+        threshold: 0.5
+    };
+    
+    const counterObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const counter = entry.target;
+                const target = parseInt(counter.getAttribute('data-counter'));
+                let current = 0;
+                const increment = target / 100;
+                
+                const updateCounter = () => {
+                    if (current < target) {
+                        current += increment;
+                        counter.textContent = Math.ceil(current);
+                        requestAnimationFrame(updateCounter);
+                    } else {
+                        counter.textContent = target;
+                    }
+                };
+                
+                updateCounter();
+                counterObserver.unobserve(counter);
+            }
+        });
+    }, observerOptions);
+    
+    counters.forEach(counter => {
+        counterObserver.observe(counter);
+    });
+    
+    // Smooth scroll pour les ancres
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+});
+</script>
+
+{% endblock %}

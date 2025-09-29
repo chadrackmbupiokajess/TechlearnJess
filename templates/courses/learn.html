@@ -1,0 +1,1002 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ current_lesson.title }} - {{ course.title }} - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Interface d'apprentissage -->
+<div class="min-h-screen bg-gray-900 text-white" x-data="{ sidebarOpen: false, lessonCompleted: false }">
+    <!-- Header de l'interface d'apprentissage -->
+    <header class="bg-gray-800 border-b border-gray-700 px-4 py-3">
+        <div class="flex items-center justify-between">
+            <!-- Navigation -->
+            <div class="flex items-center space-x-4">
+                <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden p-2 rounded-lg hover:bg-gray-700 transition-colors">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <a href="{{ course.get_absolute_url }}" class="flex items-center text-gray-300 hover:text-white transition-colors">
+                    <i class="fas fa-arrow-left mr-2"></i>
+                    Retour au cours
+                </a>
+            </div>
+            
+            <!-- Titre du cours -->
+            <div class="hidden md:block text-center">
+                <h1 class="text-lg font-semibold">{{ course.title }}</h1>
+                <p class="text-sm text-gray-400">{{ current_lesson.title }}</p>
+            </div>
+            
+            <!-- Progression -->
+            <div class="flex items-center space-x-4">
+                <div class="hidden sm:flex items-center space-x-2">
+                    <span class="text-sm text-gray-400">Progression:</span>
+                    <div class="w-24 bg-gray-700 rounded-full h-2">
+                        <div class="bg-blue-500 h-2 rounded-full transition-all duration-300" style="width: {{ enrollment.progress_percentage }}%"></div>
+                    </div>
+                    <span class="text-sm font-medium">{{ enrollment.progress_percentage }}%</span>
+                </div>
+                
+                <!-- Menu utilisateur -->
+                <div class="relative" x-data="{ dropdownOpen: false }">
+                    <button @click="dropdownOpen = !dropdownOpen" class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-700 transition-colors">
+                        <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=3B82F6&color=fff&size=32" alt="Avatar" class="w-8 h-8 rounded-full">
+                        <i class="fas fa-chevron-down text-xs"></i>
+                    </button>
+                    
+                    <div x-show="dropdownOpen" @click.away="dropdownOpen = false" x-transition class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl py-2 z-50 border border-gray-700">
+                        <a href="{% url 'core:dashboard' %}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-tachometer-alt mr-2"></i>Tableau de bord
+                        </a>
+                        <a href="{% url 'courses:my_courses' %}" class="block px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-book mr-2"></i>Mes cours
+                        </a>
+                        <hr class="my-2 border-gray-700">
+                        <a href="{% url 'accounts:logout' %}" class="block px-4 py-2 text-sm text-red-400 hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Déconnexion
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="flex h-screen">
+        <!-- Sidebar des leçons -->
+        <aside class="w-80 bg-gray-800 border-r border-gray-700 overflow-y-auto" :class="{ 'hidden lg:block': !sidebarOpen, 'block': sidebarOpen }">
+            <div class="p-4">
+                <h2 class="text-lg font-semibold mb-4">
+                    <i class="fas fa-list mr-2 text-blue-400"></i>
+                    Programme du cours
+                </h2>
+                
+                <!-- Progression globale -->
+                <div class="mb-6 p-4 bg-gray-700 rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm text-gray-300">Progression globale</span>
+                        <span class="text-sm font-medium">{{ enrollment.progress_percentage }}%</span>
+                    </div>
+                    <div class="w-full bg-gray-600 rounded-full h-2">
+                        <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-300" style="width: {{ enrollment.progress_percentage }}%"></div>
+                    </div>
+                    <p class="text-xs text-gray-400 mt-2">
+                        {{ lessons|length }} leçons • {{ course.duration_hours }}h au total
+                    </p>
+                </div>
+                
+                <!-- Liste des leçons -->
+                <div class="space-y-2">
+                    {% for lesson in lessons %}
+                    <div class="relative">
+                        <a href="{% url 'courses:learn_lesson' course.slug lesson.slug %}" 
+                           class="block p-4 rounded-lg transition-all duration-200 {% if lesson == current_lesson %}bg-blue-600 text-white{% else %}bg-gray-700 hover:bg-gray-600 text-gray-300{% endif %}">
+                            <div class="flex items-center">
+                                <!-- Icône du type de leçon -->
+                                <div class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 {% if lesson == current_lesson %}bg-white/20{% else %}bg-gray-600{% endif %}">
+                                    <i class="fas fa-{% if lesson.lesson_type == 'video' %}play{% elif lesson.lesson_type == 'text' %}file-text{% elif lesson.lesson_type == 'quiz' %}question-circle{% else %}tasks{% endif %} text-sm"></i>
+                                </div>
+                                
+                                <div class="flex-1 min-w-0">
+                                    <h3 class="font-medium text-sm truncate">{{ lesson.title }}</h3>
+                                    <div class="flex items-center text-xs {% if lesson == current_lesson %}text-blue-100{% else %}text-gray-400{% endif %} mt-1">
+                                        <span>{{ lesson.get_lesson_type_display }}</span>
+                                        {% if lesson.duration_minutes %}
+                                            <span class="mx-1">•</span>
+                                            <span>{{ lesson.duration_minutes }} min</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                
+                                <!-- Statut de progression -->
+                                <div class="ml-2">
+                                    {% with progress=progress_dict|default_if_none:None %}
+                                        {% if progress and lesson.id in progress_dict %}
+                                            {% for lesson_id, lesson_progress in progress_dict.items %}
+                                                {% if lesson_id == lesson.id and lesson_progress.is_completed %}
+                                                    <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                                                        <i class="fas fa-check text-white text-xs"></i>
+                                                    </div>
+                                                {% elif lesson_id == lesson.id and not lesson_progress.is_completed and lesson == current_lesson %}
+                                                    <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                                        <i class="fas fa-play text-white text-xs"></i>
+                                                    </div>
+                                                {% elif lesson_id == lesson.id and not lesson_progress.is_completed %}
+                                                    <div class="w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center">
+                                                        <i class="fas fa-circle text-gray-400 text-xs"></i>
+                                                    </div>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% elif lesson == current_lesson %}
+                                            <div class="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-play text-white text-xs"></i>
+                                            </div>
+                                        {% else %}
+                                            <div class="w-6 h-6 bg-gray-600 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-circle text-gray-400 text-xs"></i>
+                                            </div>
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </aside>
+        
+        <!-- Contenu principal -->
+        <main class="flex-1 flex flex-col overflow-hidden">
+            <!-- Zone de contenu de la leçon -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="p-6">
+                    <!-- Header de la leçon -->
+                    <div class="mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h1 class="text-2xl font-bold text-white mb-2">{{ current_lesson.title }}</h1>
+                                <div class="flex items-center text-gray-400 text-sm">
+                                    <span class="bg-gray-700 px-3 py-1 rounded-full mr-3">{{ current_lesson.get_lesson_type_display }}</span>
+                                    {% if current_lesson.duration_minutes %}
+                                        <span class="flex items-center">
+                                            <i class="fas fa-clock mr-1"></i>
+                                            {{ current_lesson.duration_minutes }} minutes
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Actions -->
+                            <div class="flex items-center space-x-3">
+                                {% if not lesson_progress.is_completed %}
+                                    <button onclick="markAsCompleted()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                        <i class="fas fa-check mr-2"></i>
+                                        Marquer comme terminé
+                                    </button>
+                                {% else %}
+                                    <span class="bg-green-600 text-white px-4 py-2 rounded-lg font-medium">
+                                        <i class="fas fa-check mr-2"></i>
+                                        Terminé
+                                    </span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contenu de la leçon -->
+                    <div class="bg-gray-800 rounded-xl p-6">
+                        {% if current_lesson.lesson_type == 'video' and current_lesson.video_url %}
+                            <!-- Lecteur vidéo -->
+                            <div class="aspect-video bg-black rounded-lg mb-6 flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fas fa-play text-4xl text-white mb-4"></i>
+                                    <p class="text-gray-300">Lecteur vidéo</p>
+                                    <p class="text-sm text-gray-400">{{ current_lesson.video_url }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                        
+                        {% if current_lesson.content %}
+                            <!-- Contenu texte -->
+                            <div class="prose prose-invert prose-lg max-w-none">
+                                {{ current_lesson.content|linebreaks }}
+                            </div>
+                        {% endif %}
+                        
+                        {% if current_lesson.attachments %}
+                            <!-- Fichiers joints -->
+                            <div class="mt-6 p-4 bg-gray-700 rounded-lg">
+                                <h3 class="text-lg font-semibold text-white mb-3">
+                                    <i class="fas fa-paperclip mr-2"></i>
+                                    Ressources
+                                </h3>
+                                <a href="{{ current_lesson.attachments.url }}" download class="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors">
+                                    <i class="fas fa-download mr-2"></i>
+                                    Télécharger les ressources
+                                </a>
+                            </div>
+                        {% endif %}
+                        
+                        {% if current_lesson.lesson_type == 'quiz' or current_lesson.quiz %}
+                            <!-- Quiz Dynamique -->
+                            <div class="mt-6" x-data="quizManager()" x-init="loadQuizData()">
+                                <!-- Quiz Introduction -->
+                                <div x-show="!quizStarted && !showResults && !loading" class="bg-yellow-900/20 border border-yellow-700 rounded-lg p-6">
+                                    <h3 class="text-lg font-semibold text-yellow-200 mb-4">
+                                        <i class="fas fa-question-circle mr-2"></i>
+                                        <span x-text="quizData.title || 'Quiz de la leçon'"></span>
+                                    </h3>
+                                    <p class="text-yellow-100 mb-4" x-text="quizData.description || 'Testez vos connaissances avec ce quiz interactif.'"></p>
+                                    
+                                    <div class="text-sm text-yellow-200 mb-4" x-show="quizData.passing_score">
+                                        <i class="fas fa-info-circle mr-2"></i>
+                                        Score de réussite : <span x-text="quizData.passing_score"></span>% • 
+                                        Tentatives autorisées : <span x-text="quizData.max_attempts"></span>
+                                        <span x-show="quizData.time_limit_minutes">
+                                            • Temps limité : <span x-text="quizData.time_limit_minutes"></span> min
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Tentatives précédentes -->
+                                    <div x-show="attempts.length > 0" class="mb-4 p-3 bg-blue-900/20 rounded-lg">
+                                        <h4 class="text-sm font-semibold text-blue-200 mb-2">Tentatives précédentes :</h4>
+                                        <template x-for="attempt in attempts" :key="attempt.id">
+                                            <div class="text-xs text-blue-100 mb-1">
+                                                Tentative <span x-text="attempt.attempt_number"></span> : 
+                                                <span x-text="attempt.score.toFixed(1)"></span>% 
+                                                <span x-show="attempt.is_passed" class="text-green-400">(Réussi)</span>
+                                                <span x-show="!attempt.is_passed" class="text-red-400">(Échoué)</span>
+                                            </div>
+                                        </template>
+                                        <div class="text-xs text-blue-200 mt-2">
+                                            Tentatives restantes : <span x-text="remainingAttempts"></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button @click="startQuiz()" 
+                                            :disabled="!canStartNew" 
+                                            :class="canStartNew ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-gray-600 cursor-not-allowed'"
+                                            class="text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                        <i class="fas fa-play mr-2"></i>
+                                        <span x-text="canStartNew ? 'Commencer le quiz' : 'Nombre maximum de tentatives atteint'"></span>
+                                    </button>
+                                </div>
+                                
+                                <!-- Loading -->
+                                <div x-show="loading" class="bg-gray-800 rounded-xl p-6 text-center">
+                                    <i class="fas fa-spinner fa-spin text-2xl text-yellow-500 mb-4"></i>
+                                    <p class="text-white">Chargement du quiz...</p>
+                                </div>
+
+                                <!-- Quiz Questions -->
+                                <div x-show="quizStarted && !showResults" class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                                    <!-- Timer et Progress Bar -->
+                                    <div class="mb-6">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <span class="text-sm text-gray-300">Progression</span>
+                                            <div class="flex items-center space-x-4">
+                                                <span class="text-sm text-gray-300" x-text="`Question ${currentQuestion + 1} sur ${questions.length}`"></span>
+                                                <div x-show="timeLimit > 0" class="flex items-center text-sm" :class="timeRemaining <= 60 ? 'text-red-400' : 'text-yellow-400'">
+                                                    <i class="fas fa-clock mr-1"></i>
+                                                    <span x-text="formatTime(timeRemaining)"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="w-full bg-gray-700 rounded-full h-2">
+                                            <div class="bg-yellow-500 h-2 rounded-full transition-all duration-300" :style="`width: ${((currentQuestion + 1) / questions.length) * 100}%`"></div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Question Dynamique -->
+                                    <div x-show="questions.length > 0 && currentQuestion < questions.length" class="question-container">
+                                        <template x-for="(question, index) in questions" :key="question.id">
+                                            <div x-show="index === currentQuestion">
+                                                <h4 class="text-xl font-semibold text-white mb-4">
+                                                    <span class="bg-yellow-500 text-black px-3 py-1 rounded-full text-sm font-bold mr-3" x-text="index + 1"></span>
+                                                    <span x-text="question.text"></span>
+                                                    <span class="text-sm text-yellow-400 ml-2" x-text="`(${question.points} points)`"></span>
+                                                </h4>
+                                                
+                                                <!-- Choix Multiple / Vrai-Faux -->
+                                                <div x-show="question.type === 'multiple_choice' || question.type === 'true_false'" class="space-y-3">
+                                                    <template x-for="answer in question.answers" :key="answer.id">
+                                                        <label class="flex items-center p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors cursor-pointer">
+                                                            <input :type="question.type === 'multiple_choice' ? 'checkbox' : 'radio'" 
+                                                                   :name="`question_${question.id}`"
+                                                                   :value="answer.id" 
+                                                                   @change="updateAnswer(question.id, answer.id, question.type)"
+                                                                   class="mr-3 text-yellow-500">
+                                                            <span class="text-gray-200 flex items-center">
+                                                                <span x-show="question.type === 'true_false' && answer.text.toLowerCase().includes('vrai')" class="mr-2">
+                                                                    <i class="fas fa-check text-green-400"></i>
+                                                                </span>
+                                                                <span x-show="question.type === 'true_false' && answer.text.toLowerCase().includes('faux')" class="mr-2">
+                                                                    <i class="fas fa-times text-red-400"></i>
+                                                                </span>
+                                                                <span x-text="answer.text"></span>
+                                                            </span>
+                                                        </label>
+                                                    </template>
+                                                </div>
+                                                
+                                                <!-- Texte Libre -->
+                                                <div x-show="question.type === 'text'" class="space-y-3">
+                                                    <textarea :id="`text_${question.id}`"
+                                                              @input="updateTextAnswer(question.id, $event.target.value)"
+                                                              class="w-full p-4 bg-gray-700 border border-gray-600 rounded-lg text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none" 
+                                                              rows="4" 
+                                                              placeholder="Tapez votre réponse ici..."></textarea>
+                                                    <p class="text-sm text-gray-400">
+                                                        <i class="fas fa-info-circle mr-1"></i>
+                                                        Répondez de manière claire et précise
+                                                    </p>
+                                                </div>
+                                                
+                                                <!-- Feedback immédiat si réponse soumise -->
+                                                <div x-show="questionFeedback[question.id]" class="mt-4 p-4 rounded-lg" 
+                                                     :class="questionFeedback[question.id]?.is_correct ? 'bg-green-900/30 border border-green-700' : 'bg-red-900/30 border border-red-700'">
+                                                    <div class="flex items-center mb-2">
+                                                        <i :class="questionFeedback[question.id]?.is_correct ? 'fas fa-check text-green-400' : 'fas fa-times text-red-400'" class="mr-2"></i>
+                                                        <span :class="questionFeedback[question.id]?.is_correct ? 'text-green-200' : 'text-red-200'" class="font-medium">
+                                                            <span x-show="questionFeedback[question.id]?.is_correct">Correct !</span>
+                                                            <span x-show="!questionFeedback[question.id]?.is_correct">Incorrect</span>
+                                                            <span x-text="`(${questionFeedback[question.id]?.points_earned}/${questionFeedback[question.id]?.points_possible} points)`"></span>
+                                                        </span>
+                                                    </div>
+                                                    <p x-show="questionFeedback[question.id]?.explanation" 
+                                                       x-text="questionFeedback[question.id]?.explanation" 
+                                                       class="text-sm text-gray-300"></p>
+                                                    <div x-show="questionFeedback[question.id]?.correct_answers" class="mt-2">
+                                                        <p class="text-sm text-gray-400 mb-1">Bonne(s) réponse(s) :</p>
+                                                        <template x-for="correctAnswer in questionFeedback[question.id]?.correct_answers || []" :key="correctAnswer.id">
+                                                            <span class="inline-block bg-green-800 text-green-200 px-2 py-1 rounded text-xs mr-2" x-text="correctAnswer.text"></span>
+                                                        </template>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                    <!-- Navigation Buttons -->
+                                    <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-700">
+                                        <button @click="previousQuestion()" 
+                                                x-show="currentQuestion > 0"
+                                                class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                            <i class="fas fa-chevron-left mr-2"></i>
+                                            Précédent
+                                        </button>
+                                        <div x-show="currentQuestion === 0"></div>
+                                        
+                                        <div class="flex space-x-3">
+                                            <button @click="submitCurrentAnswer()" 
+                                                    x-show="!questionFeedback[questions[currentQuestion]?.id] && hasAnsweredCurrentQuestion()"
+                                                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                                <i class="fas fa-check mr-2"></i>
+                                                Valider la réponse
+                                            </button>
+                                            
+                                            <button @click="nextQuestion()" 
+                                                    x-show="currentQuestion < questions.length - 1 && questionFeedback[questions[currentQuestion]?.id]"
+                                                    class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                                <span>Suivant</span>
+                                                <i class="fas fa-chevron-right ml-2"></i>
+                                            </button>
+                                            
+                                            <button @click="finishQuiz()" 
+                                                    x-show="currentQuestion === questions.length - 1 && questionFeedback[questions[currentQuestion]?.id]"
+                                                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                                <i class="fas fa-flag-checkered mr-2"></i>
+                                                Terminer le quiz
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quiz Results -->
+                                <div x-show="showResults" class="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                                    <div class="text-center mb-6">
+                                        <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center" 
+                                             :class="finalResults.is_passed ? 'bg-green-500' : 'bg-red-500'">
+                                            <i class="fas text-2xl text-white" :class="finalResults.is_passed ? 'fa-trophy' : 'fa-times'"></i>
+                                        </div>
+                                        <h3 class="text-2xl font-bold text-white mb-2">Quiz Terminé !</h3>
+                                        <p class="text-lg" :class="finalResults.is_passed ? 'text-green-400' : 'text-red-400'">
+                                            Votre score : <span x-text="finalResults.score?.toFixed(1)"></span>%
+                                        </p>
+                                        <p class="text-gray-300 mt-2">
+                                            <span x-show="finalResults.is_passed">Félicitations ! Vous avez réussi le quiz.</span>
+                                            <span x-show="!finalResults.is_passed">
+                                                Vous devez obtenir au moins <span x-text="finalResults.passing_score"></span>% pour réussir.
+                                            </span>
+                                        </p>
+                                        <div class="text-sm text-gray-400 mt-2">
+                                            <span x-text="finalResults.earned_points"></span> / <span x-text="finalResults.total_points"></span> points • 
+                                            Tentative <span x-text="finalResults.attempt_number"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4 mb-6">
+                                        <h4 class="text-lg font-semibold text-white">Résultats détaillés :</h4>
+                                        
+                                        <template x-for="(question, index) in questions" :key="question.id">
+                                            <div class="p-4 bg-gray-700 rounded-lg">
+                                                <div class="flex items-center justify-between mb-2">
+                                                    <span class="text-gray-300">
+                                                        Question <span x-text="index + 1"></span> 
+                                                        (<span x-text="question.type === 'multiple_choice' ? 'Choix multiple' : question.type === 'true_false' ? 'Vrai/Faux' : 'Texte libre'"></span>)
+                                                    </span>
+                                                    <span x-show="questionFeedback[question.id]" 
+                                                          :class="questionFeedback[question.id]?.is_correct ? 'text-green-400' : 'text-red-400'">
+                                                        <i :class="questionFeedback[question.id]?.is_correct ? 'fas fa-check' : 'fas fa-times'"></i>
+                                                        <span x-text="questionFeedback[question.id]?.is_correct ? 'Correct' : 'Incorrect'"></span>
+                                                        <span x-text="`(${questionFeedback[question.id]?.points_earned}/${questionFeedback[question.id]?.points_possible} pts)`"></span>
+                                                    </span>
+                                                </div>
+                                                <p class="text-sm text-gray-400 mb-1" x-text="question.text"></p>
+                                                <p x-show="questionFeedback[question.id]?.explanation" 
+                                                   class="text-sm text-gray-300 italic" 
+                                                   x-text="questionFeedback[question.id]?.explanation"></p>
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                    <div class="flex justify-center space-x-4">
+                                        <button @click="resetQuiz()" 
+                                                x-show="finalResults.can_retake"
+                                                class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                            <i class="fas fa-redo mr-2"></i>
+                                            Recommencer
+                                        </button>
+                                        <button @click="finalResults.is_passed && markAsCompleted()" 
+                                                x-show="finalResults.is_passed"
+                                                class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                            <i class="fas fa-check mr-2"></i>
+                                            Valider la leçon
+                                        </button>
+                                        <div x-show="!finalResults.can_retake && !finalResults.is_passed" 
+                                             class="text-center text-gray-400 text-sm">
+                                            Nombre maximum de tentatives atteint
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navigation entre les leçons -->
+            <div class="bg-gray-800 border-t border-gray-700 p-4">
+                <div class="flex items-center justify-between">
+                    <!-- Leçon précédente -->
+                    <div>
+                        {% if lessons|first != current_lesson %}
+                            {% for lesson in lessons %}
+                                {% if forloop.next and lessons|slice:forloop.counter0|last == current_lesson %}
+                                    <a href="{% url 'courses:learn_lesson' course.slug lesson.slug %}" class="flex items-center text-gray-300 hover:text-white transition-colors">
+                                        <i class="fas fa-chevron-left mr-2"></i>
+                                        <div>
+                                            <div class="text-xs text-gray-400">Précédent</div>
+                                            <div class="font-medium">{{ lesson.title }}</div>
+                                        </div>
+                                    </a>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Leçon suivante -->
+                    <div>
+                        {% if lessons|last != current_lesson %}
+                            {% for lesson in lessons %}
+                                {% if forloop.counter0 > 0 %}
+                                    {% with prev_lesson=lessons|slice:forloop.counter0|last %}
+                                        {% if prev_lesson == current_lesson %}
+                                            <a href="{% url 'courses:learn_lesson' course.slug lesson.slug %}" class="flex items-center text-gray-300 hover:text-white transition-colors">
+                                                <div class="text-right">
+                                                    <div class="text-xs text-gray-400">Suivant</div>
+                                                    <div class="font-medium">{{ lesson.title }}</div>
+                                                </div>
+                                                <i class="fas fa-chevron-right ml-2"></i>
+                                            </a>
+                                        {% endif %}
+                                    {% endwith %}
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                            <!-- Cours terminé -->
+                            {% if enrollment.progress_percentage == 100 %}
+                                <div class="text-center">
+                                    <div class="bg-green-600 text-white px-6 py-3 rounded-lg">
+                                        <i class="fas fa-trophy mr-2"></i>
+                                        Cours terminé ! Félicitations !
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Overlay pour mobile -->
+<div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden" x-transition></div>
+
+<script>
+function markAsCompleted() {
+    fetch(`{% url 'courses:complete_lesson' course.slug current_lesson.slug %}`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Recharger la page pour mettre à jour l'interface
+            location.reload();
+        } else {
+            alert('Erreur lors de la mise à jour de la progression');
+        }
+    })
+    .catch(error => {
+        console.error('Erreur:', error);
+        alert('Erreur lors de la mise à jour de la progression');
+    });
+}
+
+// Raccourcis clavier
+document.addEventListener('keydown', function(e) {
+    // Échap pour fermer la sidebar
+    if (e.key === 'Escape') {
+        Alpine.store('sidebarOpen', false);
+    }
+    
+    // Flèches pour naviguer entre les leçons
+    if (e.key === 'ArrowLeft' && e.ctrlKey) {
+        const prevLink = document.querySelector('a[href*="learn_lesson"]:has(.fa-chevron-left)');
+        if (prevLink) prevLink.click();
+    }
+    
+    if (e.key === 'ArrowRight' && e.ctrlKey) {
+        const nextLink = document.querySelector('a[href*="learn_lesson"]:has(.fa-chevron-right)');
+        if (nextLink) nextLink.click();
+    }
+    
+    // Espace pour marquer comme terminé
+    if (e.key === ' ' && e.ctrlKey) {
+        e.preventDefault();
+        const completeBtn = document.querySelector('button[onclick="markAsCompleted()"]');
+        if (completeBtn) completeBtn.click();
+    }
+});
+
+// Sauvegarde automatique du temps passé
+let startTime = Date.now();
+setInterval(() => {
+    const timeSpent = Math.floor((Date.now() - startTime) / 1000 / 60); // en minutes
+    // Ici vous pouvez envoyer le temps passé au serveur
+}, 60000); // Toutes les minutes
+
+// Fonction pour démarrer le quiz
+function startQuiz() {
+    // Créer l'interface du quiz
+    const quizContainer = document.createElement('div');
+    quizContainer.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    quizContainer.innerHTML = `
+        <div class="bg-gray-800 rounded-2xl p-8 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-white">
+                    <i class="fas fa-question-circle text-yellow-500 mr-3"></i>
+                    {% if current_lesson.quiz %}{{ current_lesson.quiz.title }}{% else %}Quiz de la leçon{% endif %}
+                </h2>
+                <button onclick="closeQuiz()" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div id="quiz-content">
+                <div class="text-center py-8">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-500 mx-auto mb-4"></div>
+                    <p class="text-gray-300">Chargement du quiz...</p>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(quizContainer);
+    
+    // Simuler le chargement des questions du quiz
+    setTimeout(() => {
+        loadQuizQuestions();
+    }, 1000);
+}
+
+// Fonction pour fermer le quiz
+function closeQuiz() {
+    const quizContainer = document.querySelector('.fixed.inset-0.bg-black');
+    if (quizContainer) {
+        quizContainer.remove();
+    }
+}
+
+// Fonction pour charger les questions du quiz
+function loadQuizQuestions() {
+    const quizContent = document.getElementById('quiz-content');
+    
+    // Simulation d'une question (en production, cela viendrait du serveur)
+    const sampleQuestion = {
+        id: 1,
+        question: "Quel est le type de données utilisé pour stocker du texte en Python ?",
+        type: "multiple_choice",
+        answers: [
+            { id: 1, text: "int", is_correct: false },
+            { id: 2, text: "str", is_correct: true },
+            { id: 3, text: "float", is_correct: false },
+            { id: 4, text: "bool", is_correct: false }
+        ]
+    };
+    
+    quizContent.innerHTML = `
+        <div class="mb-6">
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-sm text-gray-400">Question 1 sur 1</span>
+                <div class="flex items-center text-sm text-gray-400">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span id="quiz-timer">Temps illimité</span>
+                </div>
+            </div>
+            <div class="w-full bg-gray-700 rounded-full h-2 mb-6">
+                <div class="bg-yellow-500 h-2 rounded-full transition-all duration-300" style="width: 100%"></div>
+            </div>
+        </div>
+        
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold text-white mb-6">${sampleQuestion.question}</h3>
+            
+            <div class="space-y-3">
+                ${sampleQuestion.answers.map(answer => `
+                    <label class="flex items-center p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors cursor-pointer">
+                        <input type="radio" name="question_${sampleQuestion.id}" value="${answer.id}" class="mr-4 text-yellow-500">
+                        <span class="text-white">${answer.text}</span>
+                    </label>
+                `).join('')}
+            </div>
+        </div>
+        
+        <div class="flex items-center justify-between">
+            <button onclick="closeQuiz()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                <i class="fas fa-times mr-2"></i>
+                Annuler
+            </button>
+            <button onclick="submitQuiz()" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                <i class="fas fa-check mr-2"></i>
+                Soumettre les réponses
+            </button>
+        </div>
+    `;
+}
+
+// Fonction pour soumettre le quiz
+function submitQuiz() {
+    const selectedAnswer = document.querySelector('input[name="question_1"]:checked');
+    
+    if (!selectedAnswer) {
+        alert('Veuillez sélectionner une réponse avant de soumettre.');
+        return;
+    }
+    
+    // Simuler la vérification de la réponse
+    const isCorrect = selectedAnswer.value === "2"; // La bonne réponse est "str"
+    const score = isCorrect ? 100 : 0;
+    
+    // Afficher les résultats
+    const quizContent = document.getElementById('quiz-content');
+    quizContent.innerHTML = `
+        <div class="text-center py-8">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center ${isCorrect ? 'bg-green-500' : 'bg-red-500'}">
+                <i class="fas fa-${isCorrect ? 'check' : 'times'} text-3xl text-white"></i>
+            </div>
+            
+            <h3 class="text-2xl font-bold text-white mb-4">
+                ${isCorrect ? 'Félicitations !' : 'Dommage !'}
+            </h3>
+            
+            <p class="text-gray-300 mb-6">
+                ${isCorrect ? 
+                    'Vous avez répondu correctement à la question !' : 
+                    'La bonne réponse était "str". Continuez à apprendre !'}
+            </p>
+            
+            <div class="bg-gray-700 rounded-lg p-6 mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-gray-300">Score obtenu :</span>
+                    <span class="text-2xl font-bold text-${isCorrect ? 'green' : 'red'}-400">${score}%</span>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-300">Score requis :</span>
+                    <span class="text-gray-300">70%</span>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 justify-center">
+                ${!isCorrect ? `
+                    <button onclick="startQuiz(); closeQuiz();" class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-redo mr-2"></i>
+                        Réessayer
+                    </button>
+                ` : ''}
+                <button onclick="closeQuiz()" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    <i class="fas fa-times mr-2"></i>
+                    Fermer
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+// Gestionnaire de quiz dynamique avec Alpine.js
+function quizManager() {
+    return {
+        // État du quiz
+        loading: false,
+        quizStarted: false,
+        showResults: false,
+        currentQuestion: 0,
+        
+        // Données du quiz
+        quizData: {},
+        questions: [],
+        attempts: [],
+        canStartNew: false,
+        remainingAttempts: 0,
+        
+        // Timer
+        timeLimit: 0,
+        timeRemaining: 0,
+        timerInterval: null,
+        startTime: null,
+        
+        // Réponses et feedback
+        currentAnswers: {},
+        questionFeedback: {},
+        currentAttemptId: null,
+        finalResults: {},
+        
+        // Charger les données du quiz
+        async loadQuizData() {
+            this.loading = true;
+            try {
+                const response = await fetch(`{% url 'courses:quiz_data' course.slug current_lesson.slug %}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    console.error('Erreur quiz:', data.error);
+                    return;
+                }
+                
+                this.quizData = data.quiz;
+                this.attempts = data.attempts;
+                this.canStartNew = data.can_start_new;
+                this.remainingAttempts = data.remaining_attempts;
+            } catch (error) {
+                console.error('Erreur lors du chargement du quiz:', error);
+            } finally {
+                this.loading = false;
+            }
+        },
+        
+        // Démarrer un nouveau quiz
+        async startQuiz() {
+            if (!this.canStartNew) return;
+            
+            this.loading = true;
+            try {
+                const response = await fetch(`{% url 'courses:start_quiz' course.slug current_lesson.slug %}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert('Erreur: ' + data.error);
+                    return;
+                }
+                
+                this.questions = data.questions;
+                this.currentAttemptId = data.attempt_id;
+                this.timeLimit = data.time_limit_seconds || 0;
+                this.timeRemaining = this.timeLimit;
+                this.currentAnswers = {};
+                this.questionFeedback = {};
+                this.currentQuestion = 0;
+                this.quizStarted = true;
+                this.startTime = Date.now();
+                
+                // Démarrer le timer si nécessaire
+                if (this.timeLimit > 0) {
+                    this.startTimer();
+                }
+                
+            } catch (error) {
+                console.error('Erreur lors du démarrage du quiz:', error);
+                alert('Erreur lors du démarrage du quiz');
+            } finally {
+                this.loading = false;
+            }
+        },
+        
+        // Gestion du timer
+        startTimer() {
+            this.timerInterval = setInterval(() => {
+                this.timeRemaining--;
+                
+                if (this.timeRemaining <= 0) {
+                    this.timeExpired();
+                }
+            }, 1000);
+        },
+        
+        stopTimer() {
+            if (this.timerInterval) {
+                clearInterval(this.timerInterval);
+                this.timerInterval = null;
+            }
+        },
+        
+        timeExpired() {
+            this.stopTimer();
+            alert('Temps écoulé ! Le quiz va être soumis automatiquement.');
+            this.finishQuiz('time_expired');
+        },
+        
+        formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${minutes}:${secs.toString().padStart(2, '0')}`;
+        },
+        
+        // Gestion des réponses
+        updateAnswer(questionId, answerId, questionType) {
+            if (!this.currentAnswers[questionId]) {
+                this.currentAnswers[questionId] = questionType === 'multiple_choice' ? [] : null;
+            }
+            
+            if (questionType === 'multiple_choice') {
+                const index = this.currentAnswers[questionId].indexOf(answerId);
+                if (index > -1) {
+                    this.currentAnswers[questionId].splice(index, 1);
+                } else {
+                    this.currentAnswers[questionId].push(answerId);
+                }
+            } else {
+                this.currentAnswers[questionId] = answerId;
+            }
+        },
+        
+        updateTextAnswer(questionId, text) {
+            this.currentAnswers[questionId] = text;
+        },
+        
+        hasAnsweredCurrentQuestion() {
+            const question = this.questions[this.currentQuestion];
+            if (!question) return false;
+            
+            const answer = this.currentAnswers[question.id];
+            
+            if (question.type === 'text') {
+                return answer && answer.trim().length > 0;
+            } else if (question.type === 'multiple_choice') {
+                return answer && answer.length > 0;
+            } else {
+                return answer !== null && answer !== undefined;
+            }
+        },
+        
+        // Soumettre la réponse actuelle
+        async submitCurrentAnswer() {
+            const question = this.questions[this.currentQuestion];
+            if (!question || !this.hasAnsweredCurrentQuestion()) return;
+            
+            const answer = this.currentAnswers[question.id];
+            const timeSpent = Math.floor((Date.now() - this.startTime) / 1000);
+            
+            try {
+                const response = await fetch(`/cours/quiz/attempt/${this.currentAttemptId}/question/${question.id}/answer/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        answer_ids: question.type === 'text' ? [] : (Array.isArray(answer) ? answer : [answer]),
+                        text_answer: question.type === 'text' ? answer : '',
+                        time_spent: timeSpent
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    this.questionFeedback[question.id] = data;
+                } else {
+                    alert('Erreur lors de la soumission de la réponse');
+                }
+                
+            } catch (error) {
+                console.error('Erreur lors de la soumission:', error);
+                alert('Erreur lors de la soumission de la réponse');
+            }
+        },
+        
+        // Navigation
+        previousQuestion() {
+            if (this.currentQuestion > 0) {
+                this.currentQuestion--;
+            }
+        },
+        
+        nextQuestion() {
+            if (this.currentQuestion < this.questions.length - 1) {
+                this.currentQuestion++;
+            }
+        },
+        
+        // Terminer le quiz
+        async finishQuiz(reason = 'completed') {
+            this.stopTimer();
+            
+            const totalTimeSpent = Math.floor((Date.now() - this.startTime) / 1000);
+            
+            try {
+                const response = await fetch(`/cours/quiz/attempt/${this.currentAttemptId}/finish/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        reason: reason,
+                        total_time_spent: totalTimeSpent
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    this.finalResults = data;
+                    this.showResults = true;
+                    this.quizStarted = false;
+                } else {
+                    alert('Erreur lors de la finalisation du quiz');
+                }
+                
+            } catch (error) {
+                console.error('Erreur lors de la finalisation:', error);
+                alert('Erreur lors de la finalisation du quiz');
+            }
+        },
+        
+        // Recommencer le quiz
+        resetQuiz() {
+            this.quizStarted = false;
+            this.showResults = false;
+            this.currentQuestion = 0;
+            this.currentAnswers = {};
+            this.questionFeedback = {};
+            this.finalResults = {};
+            this.questions = [];
+            this.currentAttemptId = null;
+            this.stopTimer();
+            this.loadQuizData(); // Recharger les données
+        }
+    };
+}
+</script>
+
+{% endblock %}

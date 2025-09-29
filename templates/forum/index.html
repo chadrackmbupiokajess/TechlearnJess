@@ -1,0 +1,354 @@
+{% extends 'base.html' %}
+
+{% block title %}Forum Communauté - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-16 gradient-bg text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold font-heading mb-6 text-shadow">
+                Forum 
+                <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                    Communauté
+                </span>
+            </h1>
+            <p class="text-xl opacity-90 leading-relaxed max-w-3xl mx-auto mb-8">
+                Rejoignez notre communauté d'apprenants passionnés. Posez vos questions, partagez vos connaissances et progressez ensemble.
+            </p>
+            
+            {% if user.is_authenticated %}
+                <a href="#" class="bg-white/20 hover:bg-white/30 text-white px-8 py-4 rounded-xl font-medium transition-all backdrop-blur-sm border border-white/20">
+                    <i class="fas fa-plus mr-2"></i>
+                    Créer un nouveau sujet
+                </a>
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="bg-white/20 hover:bg-white/30 text-white px-8 py-4 rounded-xl font-medium transition-all backdrop-blur-sm border border-white/20">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Se connecter pour participer
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques du forum -->
+<section class="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Total des sujets -->
+            <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-200 dark:border-blue-700">
+                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-comments text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-blue-900 dark:text-blue-100 mb-1">1,234</div>
+                <div class="text-sm text-blue-600 dark:text-blue-400">Sujets</div>
+            </div>
+            
+            <!-- Total des messages -->
+            <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl border border-green-200 dark:border-green-700">
+                <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-comment text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-green-900 dark:text-green-100 mb-1">5,678</div>
+                <div class="text-sm text-green-600 dark:text-green-400">Messages</div>
+            </div>
+            
+            <!-- Membres actifs -->
+            <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl border border-purple-200 dark:border-purple-700">
+                <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-users text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-purple-900 dark:text-purple-100 mb-1">890</div>
+                <div class="text-sm text-purple-600 dark:text-purple-400">Membres actifs</div>
+            </div>
+            
+            <!-- Sujets résolus -->
+            <div class="text-center p-4 bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-800/20 rounded-xl border border-yellow-200 dark:border-yellow-700">
+                <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-check-circle text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-yellow-900 dark:text-yellow-100 mb-1">456</div>
+                <div class="text-sm text-yellow-600 dark:text-yellow-400">Résolus</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contenu principal -->
+<section class="py-12 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Catégories du forum -->
+            <div class="lg:col-span-3">
+                <div class="mb-8">
+                    <h2 class="text-2xl font-bold font-heading text-gray-900 dark:text-white mb-6">
+                        <i class="fas fa-folder text-blue-500 mr-2"></i>
+                        Catégories du Forum
+                    </h2>
+                    
+                    {% if categories %}
+                        <div class="space-y-4">
+                            {% for category in categories %}
+                            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-xl transition-all duration-300">
+                                <div class="p-6">
+                                    <div class="flex items-center">
+                                        <!-- Icône de la catégorie -->
+                                        <div class="w-16 h-16 rounded-xl flex items-center justify-center mr-6" style="background-color: {{ category.couleur }}20; border: 2px solid {{ category.couleur }}40;">
+                                            <i class="fas fa-{{ category.icone|default:'comments' }} text-2xl" style="color: {{ category.couleur }};"></i>
+                                        </div>
+                                        
+                                        <!-- Informations de la catégorie -->
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <h3 class="text-xl font-semibold font-heading text-gray-900 dark:text-white">
+                                                    <a href="{% url 'forum:category_detail' category.slug %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                                        {{ category.nom }}
+                                                    </a>
+                                                </h3>
+                                                <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-comments mr-1"></i>
+                                                        <span>{{ category.nombre_sujets }} sujets</span>
+                                                    </div>
+                                                    <div class="flex items-center">
+                                                        <i class="fas fa-comment mr-1"></i>
+                                                        <span>{{ category.nombre_messages }} messages</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <p class="text-gray-600 dark:text-gray-300 mb-4">
+                                                {{ category.description }}
+                                            </p>
+                                            
+                                            <!-- Dernier sujet -->
+                                            <div class="flex items-center justify-between">
+                                                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                                    <i class="fas fa-clock mr-2"></i>
+                                                    <span>Dernière activité il y a 2 heures</span>
+                                                </div>
+                                                <a href="{% url 'forum:category_detail' category.slug %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-sm">
+                                                    Voir tous les sujets →
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-12 text-center border border-gray-200 dark:border-gray-700">
+                            <i class="fas fa-folder-open text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Aucune catégorie disponible</h3>
+                            <p class="text-gray-600 dark:text-gray-400">Les catégories du forum seront bientôt disponibles.</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Derniers sujets -->
+                <div>
+                    <h2 class="text-2xl font-bold font-heading text-gray-900 dark:text-white mb-6">
+                        <i class="fas fa-fire text-orange-500 mr-2"></i>
+                        Derniers Sujets
+                    </h2>
+                    
+                    {% if derniers_sujets %}
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                            {% for sujet in derniers_sujets %}
+                            <div class="p-6 {% if not forloop.last %}border-b border-gray-200 dark:border-gray-700{% endif %} hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                <div class="flex items-start">
+                                    <!-- Avatar de l'auteur -->
+                                    <img src="https://ui-avatars.com/api/?name={{ sujet.auteur.get_full_name|default:sujet.auteur.username }}&background=3B82F6&color=fff&size=48" alt="{{ sujet.auteur.get_full_name|default:sujet.auteur.username }}" class="w-12 h-12 rounded-full mr-4">
+                                    
+                                    <!-- Contenu du sujet -->
+                                    <div class="flex-1">
+                                        <div class="flex items-start justify-between">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                                                    <a href="{{ sujet.get_absolute_url }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                                        {% if sujet.est_epingle %}
+                                                            <i class="fas fa-thumbtack text-yellow-500 mr-2"></i>
+                                                        {% endif %}
+                                                        {% if sujet.est_resolu %}
+                                                            <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                                        {% endif %}
+                                                        {{ sujet.titre }}
+                                                    </a>
+                                                </h3>
+                                                
+                                                <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                                    <span>Par {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}</span>
+                                                    <span>•</span>
+                                                    <span>{{ sujet.cree_le|timesince }} ago</span>
+                                                    <span>•</span>
+                                                    <span class="bg-{{ sujet.categorie.couleur|default:'blue' }}-100 dark:bg-{{ sujet.categorie.couleur|default:'blue' }}-900/30 text-{{ sujet.categorie.couleur|default:'blue' }}-600 dark:text-{{ sujet.categorie.couleur|default:'blue' }}-400 px-2 py-1 rounded text-xs">
+                                                        {{ sujet.categorie.nom }}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            
+                                            <!-- Statistiques -->
+                                            <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                                <div class="text-center">
+                                                    <div class="font-medium text-gray-900 dark:text-white">{{ sujet.nombre_reponses }}</div>
+                                                    <div class="text-xs">réponses</div>
+                                                </div>
+                                                <div class="text-center">
+                                                    <div class="font-medium text-gray-900 dark:text-white">{{ sujet.vues }}</div>
+                                                    <div class="text-xs">vues</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="text-center mt-6">
+                            <a href="#" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+                                Voir tous les sujets →
+                            </a>
+                        </div>
+                    {% else %}
+                        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-12 text-center border border-gray-200 dark:border-gray-700">
+                            <i class="fas fa-comments text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Aucun sujet pour le moment</h3>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">Soyez le premier à créer un sujet de discussion !</p>
+                            {% if user.is_authenticated %}
+                                <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>
+                                    Créer un sujet
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <!-- Membres en ligne -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <i class="fas fa-circle text-green-500 mr-2"></i>
+                        Membres en ligne
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center">
+                            <img src="https://ui-avatars.com/api/?name=John+Doe&background=3B82F6&color=fff&size=32" alt="John Doe" class="w-8 h-8 rounded-full mr-3">
+                            <div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">John Doe</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">En ligne</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <img src="https://ui-avatars.com/api/?name=Jane+Smith&background=10B981&color=fff&size=32" alt="Jane Smith" class="w-8 h-8 rounded-full mr-3">
+                            <div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Jane Smith</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">En ligne</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center">
+                            <img src="https://ui-avatars.com/api/?name=Mike+Johnson&background=F59E0B&color=fff&size=32" alt="Mike Johnson" class="w-8 h-8 rounded-full mr-3">
+                            <div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">Mike Johnson</div>
+                                <div class="text-xs text-gray-500 dark:text-gray-400">En ligne</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                            <strong>12</strong> membres en ligne
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Règles du forum -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700 mb-8">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <i class="fas fa-gavel text-blue-500 mr-2"></i>
+                        Règles du Forum
+                    </h3>
+                    <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-300">
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mr-2 mt-1 flex-shrink-0"></i>
+                            Soyez respectueux envers tous les membres
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mr-2 mt-1 flex-shrink-0"></i>
+                            Utilisez des titres descriptifs pour vos sujets
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mr-2 mt-1 flex-shrink-0"></i>
+                            Recherchez avant de créer un nouveau sujet
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-check text-green-500 mr-2 mt-1 flex-shrink-0"></i>
+                            Pas de spam ou de contenu inapproprié
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Top contributeurs -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <i class="fas fa-trophy text-yellow-500 mr-2"></i>
+                        Top Contributeurs
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="https://ui-avatars.com/api/?name=Expert+User&background=F59E0B&color=fff&size=32" alt="Expert User" class="w-8 h-8 rounded-full mr-3">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Expert User</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Formateur</div>
+                                </div>
+                            </div>
+                            <div class="text-sm font-medium text-yellow-600 dark:text-yellow-400">
+                                <i class="fas fa-medal mr-1"></i>
+                                1st
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="https://ui-avatars.com/api/?name=Helper+Pro&background=10B981&color=fff&size=32" alt="Helper Pro" class="w-8 h-8 rounded-full mr-3">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Helper Pro</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Modérateur</div>
+                                </div>
+                            </div>
+                            <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
+                                <i class="fas fa-medal mr-1"></i>
+                                2nd
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="https://ui-avatars.com/api/?name=Active+Member&background=8B5CF6&color=fff&size=32" alt="Active Member" class="w-8 h-8 rounded-full mr-3">
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Active Member</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">Membre actif</div>
+                                </div>
+                            </div>
+                            <div class="text-sm font-medium text-orange-600 dark:text-orange-400">
+                                <i class="fas fa-medal mr-1"></i>
+                                3rd
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

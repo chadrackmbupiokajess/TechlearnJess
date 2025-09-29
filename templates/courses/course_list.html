@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+
+{% block title %}Tous les Cours - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-16 gradient-bg text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-bold font-heading mb-6 text-shadow">
+                Explorez nos 
+                <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                    Cours
+                </span>
+            </h1>
+            <p class="text-xl opacity-90 leading-relaxed max-w-3xl mx-auto">
+                Découvrez une large gamme de formations professionnelles pour développer vos compétences
+            </p>
+        </div>
+        
+        <!-- Barre de recherche -->
+        <div class="max-w-4xl mx-auto">
+            <form method="get" class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1 relative">
+                    <input 
+                        type="text" 
+                        name="search"
+                        value="{{ current_search }}"
+                        placeholder="Rechercher un cours..."
+                        class="w-full px-6 py-4 pl-12 text-gray-900 bg-white/90 backdrop-blur-sm rounded-xl border-0 focus:ring-2 focus:ring-white/50 focus:outline-none text-lg"
+                    >
+                    <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                </div>
+                <button type="submit" class="bg-white/20 hover:bg-white/30 text-white px-8 py-4 rounded-xl font-medium transition-all backdrop-blur-sm border border-white/20">
+                    <i class="fas fa-search mr-2"></i>
+                    Rechercher
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Filtres -->
+<section class="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <!-- Filtres par catégorie -->
+            <div class="flex flex-wrap gap-2">
+                <a href="?" class="px-4 py-2 rounded-full text-sm font-medium transition-all {% if not current_category %}bg-blue-600 text-white{% else %}bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600{% endif %}">
+                    Toutes les catégories
+                </a>
+                {% for category in categories %}
+                <a href="?category={{ category.slug }}" class="px-4 py-2 rounded-full text-sm font-medium transition-all {% if current_category == category.slug %}bg-blue-600 text-white{% else %}bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600{% endif %}">
+                    <i class="fas fa-{{ category.icon|default:'book' }} mr-1"></i>
+                    {{ category.name }}
+                </a>
+                {% endfor %}
+            </div>
+            
+            <!-- Filtres supplémentaires -->
+            <div class="flex flex-wrap gap-2">
+                <!-- Niveau -->
+                <select name="difficulty" onchange="this.form.submit()" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm">
+                    <option value="">Tous les niveaux</option>
+                    {% for value, label in difficulty_choices %}
+                    <option value="{{ value }}" {% if current_difficulty == value %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+                
+                <!-- Gratuit/Payant -->
+                <a href="?{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}free=true" class="px-4 py-2 rounded-lg text-sm font-medium transition-all {% if current_free == 'true' %}bg-green-600 text-white{% else %}bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600{% endif %}">
+                    <i class="fas fa-gift mr-1"></i>
+                    Gratuits
+                </a>
+                
+                <!-- Tri -->
+                <select name="sort" onchange="this.form.submit()" class="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm">
+                    <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Plus récents</option>
+                    <option value="popular" {% if current_sort == 'popular' %}selected{% endif %}>Plus populaires</option>
+                    <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Mieux notés</option>
+                    <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Prix croissant</option>
+                    <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Prix décroissant</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Liste des cours -->
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if page_obj %}
+            <!-- Résultats -->
+            <div class="mb-8">
+                <p class="text-gray-600 dark:text-gray-400">
+                    {{ page_obj.paginator.count }} cours trouvé{{ page_obj.paginator.count|pluralize }}
+                    {% if current_search %}pour "{{ current_search }}"{% endif %}
+                </p>
+            </div>
+            
+            <!-- Grille des cours -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12">
+                {% for course in page_obj %}
+                <div class="group bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover-scale border border-gray-200 dark:border-gray-700">
+                    <!-- Image du cours -->
+                    <div class="relative overflow-hidden h-48">
+                        {% if course.thumbnail %}
+                            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                        {% else %}
+                            <div class="w-full h-full gradient-primary flex items-center justify-center">
+                                <i class="fas fa-play text-4xl text-white"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Badges -->
+                        <div class="absolute top-4 left-4 flex flex-col gap-2">
+                            {% if course.is_free %}
+                                <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">Gratuit</span>
+                            {% else %}
+                                <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">${{ course.price }}</span>
+                            {% endif %}
+                            
+                            {% if course.is_featured %}
+                                <span class="bg-yellow-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                    <i class="fas fa-star mr-1"></i>Populaire
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="absolute top-4 right-4">
+                            <span class="bg-black/50 text-white px-2 py-1 rounded text-xs">{{ course.get_difficulty_display }}</span>
+                        </div>
+                        
+                        <!-- Overlay au hover -->
+                        <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <a href="{{ course.get_absolute_url }}" class="bg-white text-gray-900 px-6 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors">
+                                <i class="fas fa-eye mr-2"></i>Voir le cours
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Contenu -->
+                    <div class="p-6">
+                        <!-- Catégorie -->
+                        <div class="mb-3">
+                            <span class="bg-{{ course.category.color|default:'blue' }}-100 dark:bg-{{ course.category.color|default:'blue' }}-900/30 text-{{ course.category.color|default:'blue' }}-600 dark:text-{{ course.category.color|default:'blue' }}-400 px-3 py-1 rounded-full text-sm font-medium">
+                                {{ course.category.name }}
+                            </span>
+                        </div>
+                        
+                        <!-- Titre -->
+                        <h3 class="text-lg font-semibold font-heading mb-3 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                            {{ course.title }}
+                        </h3>
+                        
+                        <!-- Description -->
+                        <p class="text-gray-600 dark:text-gray-300 mb-4 text-sm line-clamp-3">
+                            {{ course.short_description }}
+                        </p>
+                        
+                        <!-- Métadonnées -->
+                        <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-1"></i>
+                                {{ course.duration_hours }}h
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-users mr-1"></i>
+                                {{ course.total_enrollments }}
+                            </div>
+                            <div class="flex items-center text-yellow-500">
+                                <i class="fas fa-star mr-1"></i>
+                                {{ course.average_rating|floatformat:1 }}
+                            </div>
+                        </div>
+                        
+                        <!-- Footer -->
+                        <div class="flex items-center justify-between">
+                            <!-- Instructeur -->
+                            <div class="flex items-center">
+                                <img src="https://ui-avatars.com/api/?name={{ course.instructor.get_full_name|default:course.instructor.username }}&background=3B82F6&color=fff&size=32" alt="{{ course.instructor.get_full_name|default:course.instructor.username }}" class="w-8 h-8 rounded-full mr-2">
+                                <span class="text-sm text-gray-600 dark:text-gray-300">{{ course.instructor.get_full_name|default:course.instructor.username }}</span>
+                            </div>
+                            
+                            <!-- Bouton -->
+                            <a href="{{ course.get_absolute_url }}" class="gradient-primary text-white px-4 py-2 rounded-lg text-sm font-medium hover:shadow-lg transition-all group">
+                                Voir
+                                <i class="fas fa-arrow-right ml-1 group-hover:translate-x-1 transition-transform"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <div class="flex justify-center">
+                <nav class="flex items-center space-x-2">
+                    {% if page_obj.has_previous %}
+                        <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.difficulty %}&difficulty={{ request.GET.difficulty }}{% endif %}{% if request.GET.free %}&free={{ request.GET.free }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.difficulty %}&difficulty={{ request.GET.difficulty }}{% endif %}{% if request.GET.free %}&free={{ request.GET.free }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.difficulty %}&difficulty={{ request.GET.difficulty }}{% endif %}{% if request.GET.free %}&free={{ request.GET.free }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </nav>
+            </div>
+            {% endif %}
+        {% else %}
+            <!-- Aucun cours trouvé -->
+            <div class="text-center py-16">
+                <div class="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-search text-4xl text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Aucun cours trouvé</h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-8">
+                    {% if current_search %}
+                        Aucun cours ne correspond à votre recherche "{{ current_search }}".
+                    {% else %}
+                        Aucun cours disponible dans cette catégorie pour le moment.
+                    {% endif %}
+                </p>
+                <a href="{% url 'courses:list' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Voir tous les cours
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Call to Action -->
+<section class="py-16 gradient-bg text-white relative overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-32 h-32 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-24 h-24 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold font-heading mb-6 text-shadow">
+            Vous ne trouvez pas ce que vous cherchez ?
+        </h2>
+        <p class="text-xl mb-8 opacity-90 leading-relaxed">
+            Contactez-nous pour suggérer de nouveaux cours ou obtenir une formation personnalisée
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'core:about' %}" class="bg-white/20 hover:bg-white/30 text-white px-8 py-4 rounded-xl font-medium transition-all backdrop-blur-sm border border-white/20">
+                <i class="fas fa-envelope mr-2"></i>
+                Nous contacter
+            </a>
+            <a href="{% url 'forum:index' %}" class="border-2 border-white text-white px-8 py-4 rounded-xl font-medium hover:bg-white hover:text-blue-600 transition-all">
+                <i class="fas fa-comments mr-2"></i>
+                Rejoindre le forum
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

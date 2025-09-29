@@ -1,0 +1,332 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Chat Communautaire - TechLearnJess{% endblock %}
+
+{% block extra_css %}
+<style>
+    .chat-container {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .message-bubble {
+        animation: slideInMessage 0.3s ease-out;
+    }
+    
+    @keyframes slideInMessage {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .typing-indicator {
+        animation: pulse 1.5s infinite;
+    }
+    
+    .online-indicator {
+        animation: pulse 2s infinite;
+        background: #10b981;
+    }
+    
+    .chat-input:focus {
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                <i class="fas fa-comments text-indigo-600 dark:text-indigo-400 mr-3"></i>
+                Chat Communautaire
+            </h1>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Échangez en temps réel avec la communauté TechLearnJess
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Sidebar - Utilisateurs en ligne -->
+            <div class="lg:col-span-1">
+                <div class="chat-container rounded-2xl p-6 h-96 overflow-y-auto">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <i class="fas fa-users text-green-500 mr-2"></i>
+                        En ligne (24)
+                    </h3>
+                    
+                    <div class="space-y-3">
+                        <!-- Utilisateur en ligne -->
+                        <div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/20 transition-colors cursor-pointer">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                                     alt="Avatar" class="w-8 h-8 rounded-full">
+                                <div class="absolute -bottom-1 -right-1 w-3 h-3 online-indicator rounded-full border-2 border-white"></div>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">Jean Dupont</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Développeur</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/20 transition-colors cursor-pointer">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face" 
+                                     alt="Avatar" class="w-8 h-8 rounded-full">
+                                <div class="absolute -bottom-1 -right-1 w-3 h-3 online-indicator rounded-full border-2 border-white"></div>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">Marie Martin</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Designer</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-3 p-2 rounded-lg hover:bg-white/20 transition-colors cursor-pointer">
+                            <div class="relative">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
+                                     alt="Avatar" class="w-8 h-8 rounded-full">
+                                <div class="absolute -bottom-1 -right-1 w-3 h-3 online-indicator rounded-full border-2 border-white"></div>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">Pierre Durand</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Étudiant</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Zone de chat principale -->
+            <div class="lg:col-span-3">
+                <div class="chat-container rounded-2xl p-6 h-96 flex flex-col">
+                    <!-- Messages -->
+                    <div class="flex-1 overflow-y-auto space-y-4 mb-4" id="chat-messages">
+                        <!-- Message reçu -->
+                        <div class="message-bubble flex items-start space-x-3">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                                 alt="Avatar" class="w-8 h-8 rounded-full">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">Jean Dupont</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">14:30</span>
+                                </div>
+                                <div class="bg-white dark:bg-gray-700 rounded-2xl rounded-tl-md p-3 shadow-sm">
+                                    <p class="text-gray-800 dark:text-gray-200">
+                                        Salut tout le monde ! Quelqu'un peut m'aider avec le cours de JavaScript ?
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message envoyé -->
+                        <div class="message-bubble flex items-start space-x-3 justify-end">
+                            <div class="flex-1 text-right">
+                                <div class="flex items-center justify-end space-x-2 mb-1">
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">14:32</span>
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">Vous</span>
+                                </div>
+                                <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl rounded-tr-md p-3 shadow-sm inline-block">
+                                    <p class="text-white">
+                                        Bien sûr ! Quel chapitre exactement ? Je peux t'aider avec les fonctions.
+                                    </p>
+                                </div>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
+                                 alt="Votre avatar" class="w-8 h-8 rounded-full">
+                        </div>
+
+                        <!-- Message avec fichier -->
+                        <div class="message-bubble flex items-start space-x-3">
+                            <img src="https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face" 
+                                 alt="Avatar" class="w-8 h-8 rounded-full">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-2 mb-1">
+                                    <span class="text-sm font-medium text-gray-900 dark:text-white">Marie Martin</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">14:35</span>
+                                </div>
+                                <div class="bg-white dark:bg-gray-700 rounded-2xl rounded-tl-md p-3 shadow-sm">
+                                    <p class="text-gray-800 dark:text-gray-200 mb-2">
+                                        Voici un exemple de code qui pourrait t'aider :
+                                    </p>
+                                    <div class="bg-gray-100 dark:bg-gray-800 rounded-lg p-3 border-l-4 border-indigo-500">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                                <i class="fas fa-file-code mr-2"></i>exemple.js
+                                            </span>
+                                            <button class="text-indigo-600 hover:text-indigo-800 text-sm">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                        <code class="text-sm text-gray-600 dark:text-gray-400">
+                                            function saluer(nom) { return `Bonjour ${nom}!`; }
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Indicateur de frappe -->
+                        <div class="typing-indicator flex items-center space-x-3">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                                 alt="Avatar" class="w-8 h-8 rounded-full">
+                            <div class="bg-white dark:bg-gray-700 rounded-2xl rounded-tl-md p-3 shadow-sm">
+                                <div class="flex space-x-1">
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.1s"></div>
+                                    <div class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Zone de saisie -->
+                    <div class="border-t border-gray-200 dark:border-gray-600 pt-4">
+                        <div class="flex items-center space-x-3">
+                            <button class="p-2 text-gray-500 hover:text-indigo-600 transition-colors">
+                                <i class="fas fa-paperclip text-lg"></i>
+                            </button>
+                            <button class="p-2 text-gray-500 hover:text-indigo-600 transition-colors">
+                                <i class="fas fa-image text-lg"></i>
+                            </button>
+                            <div class="flex-1 relative">
+                                <input type="text" 
+                                       class="chat-input w-full px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                       placeholder="Tapez votre message..."
+                                       id="message-input">
+                                <button class="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 text-gray-500 hover:text-indigo-600 transition-colors">
+                                    <i class="fas fa-smile text-lg"></i>
+                                </button>
+                            </div>
+                            <button class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-3 rounded-full hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Salles de chat -->
+        <div class="mt-8">
+            <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                <i class="fas fa-door-open text-indigo-600 dark:text-indigo-400 mr-3"></i>
+                Salles de Discussion
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Salle générale -->
+                <div class="chat-container rounded-2xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                            <i class="fas fa-comments mr-2"></i>
+                            Discussion Générale
+                        </h3>
+                        <span class="bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full text-xs font-medium">
+                            45 en ligne
+                        </span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Discussions ouvertes sur tous les sujets liés à l'apprentissage
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-clock mr-2"></i>
+                        Dernier message il y a 2 min
+                    </div>
+                </div>
+
+                <!-- Salle aide -->
+                <div class="chat-container rounded-2xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                            <i class="fas fa-question-circle mr-2"></i>
+                            Aide & Support
+                        </h3>
+                        <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded-full text-xs font-medium">
+                            12 en ligne
+                        </span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Obtenez de l'aide sur les cours et les exercices
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-clock mr-2"></i>
+                        Dernier message il y a 5 min
+                    </div>
+                </div>
+
+                <!-- Salle projets -->
+                <div class="chat-container rounded-2xl p-6 hover:shadow-xl transition-all duration-300 cursor-pointer group">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                            <i class="fas fa-project-diagram mr-2"></i>
+                            Projets & Collaboration
+                        </h3>
+                        <span class="bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200 px-2 py-1 rounded-full text-xs font-medium">
+                            8 en ligne
+                        </span>
+                    </div>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Partagez vos projets et collaborez avec d'autres
+                    </p>
+                    <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-clock mr-2"></i>
+                        Dernier message il y a 1h
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Simulation WebSocket pour le chat en temps réel
+document.addEventListener('DOMContentLoaded', function() {
+    const messageInput = document.getElementById('message-input');
+    const chatMessages = document.getElementById('chat-messages');
+    
+    // Envoi de message
+    messageInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && this.value.trim()) {
+            addMessage(this.value.trim(), true);
+            this.value = '';
+        }
+    });
+    
+    function addMessage(text, isOwn = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message-bubble flex items-start space-x-3 ${isOwn ? 'justify-end' : ''}`;
+        
+        const now = new Date();
+        const time = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+        
+        if (isOwn) {
+            messageDiv.innerHTML = `
+                <div class="flex-1 text-right">
+                    <div class="flex items-center justify-end space-x-2 mb-1">
+                        <span class="text-xs text-gray-500 dark:text-gray-400">${time}</span>
+                        <span class="text-sm font-medium text-gray-900 dark:text-white">Vous</span>
+                    </div>
+                    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 rounded-2xl rounded-tr-md p-3 shadow-sm inline-block">
+                        <p class="text-white">${text}</p>
+                    </div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
+                     alt="Votre avatar" class="w-8 h-8 rounded-full">
+            `;
+        }
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+});
+</script>
+{% endblock %}

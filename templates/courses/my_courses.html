@@ -1,0 +1,328 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Cours - TechLearnJess{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-16 gradient-bg text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold font-heading mb-6 text-shadow">
+                Mes 
+                <span class="bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                    Cours
+                </span>
+            </h1>
+            <p class="text-xl opacity-90 leading-relaxed max-w-3xl mx-auto">
+                Suivez votre progression et continuez votre apprentissage
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Statistiques rapides -->
+<section class="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <!-- Cours en cours -->
+            <div class="text-center p-4 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 rounded-xl border border-blue-200 dark:border-blue-700">
+                <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-play text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-blue-900 dark:text-blue-100 mb-1">
+                    {{ in_progress_count|default:0 }}
+                </div>
+                <div class="text-sm text-blue-600 dark:text-blue-400">En cours</div>
+            </div>
+            
+            <!-- Cours terminés -->
+            <div class="text-center p-4 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/20 rounded-xl border border-green-200 dark:border-green-700">
+                <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-check-circle text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-green-900 dark:text-green-100 mb-1">
+                    {{ completed_count|default:0 }}
+                </div>
+                <div class="text-sm text-green-600 dark:text-green-400">Terminés</div>
+            </div>
+            
+            <!-- Total des cours -->
+            <div class="text-center p-4 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 rounded-xl border border-purple-200 dark:border-purple-700">
+                <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-book text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-purple-900 dark:text-purple-100 mb-1">{{ enrollments|length }}</div>
+                <div class="text-sm text-purple-600 dark:text-purple-400">Total</div>
+            </div>
+            
+            <!-- Temps d'apprentissage -->
+            <div class="text-center p-4 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/20 rounded-xl border border-orange-200 dark:border-orange-700">
+                <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mx-auto mb-3">
+                    <i class="fas fa-clock text-white"></i>
+                </div>
+                <div class="text-2xl font-bold text-orange-900 dark:text-orange-100 mb-1">
+                    {% widthratio enrollments|length 1 10 %}h
+                </div>
+                <div class="text-sm text-orange-600 dark:text-orange-400">Temps estimé</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filtres -->
+<section class="py-6 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-wrap items-center justify-between gap-4">
+            <!-- Filtres par statut -->
+            <div class="flex flex-wrap gap-2">
+                <a href="?" class="px-4 py-2 rounded-full text-sm font-medium transition-all {% if current_status == 'all' or not current_status %}bg-blue-600 text-white{% else %}bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
+                    <i class="fas fa-list mr-1"></i>
+                    Tous les cours
+                </a>
+                <a href="?status=in_progress" class="px-4 py-2 rounded-full text-sm font-medium transition-all {% if current_status == 'in_progress' %}bg-blue-600 text-white{% else %}bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
+                    <i class="fas fa-play mr-1"></i>
+                    En cours
+                </a>
+                <a href="?status=completed" class="px-4 py-2 rounded-full text-sm font-medium transition-all {% if current_status == 'completed' %}bg-blue-600 text-white{% else %}bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700{% endif %}">
+                    <i class="fas fa-check-circle mr-1"></i>
+                    Terminés
+                </a>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex items-center space-x-3">
+                <a href="{% url 'courses:list' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                    <i class="fas fa-plus mr-2"></i>
+                    Découvrir plus de cours
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Liste des cours -->
+<section class="py-12 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {% if enrollments %}
+            <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+                {% for enrollment in enrollments %}
+                <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700 group">
+                    <!-- Image du cours -->
+                    <div class="relative h-48 overflow-hidden">
+                        {% if enrollment.course.thumbnail %}
+                            <img src="{{ enrollment.course.thumbnail.url }}" alt="{{ enrollment.course.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                        {% else %}
+                            <div class="w-full h-full gradient-primary flex items-center justify-center">
+                                <i class="fas fa-play text-4xl text-white"></i>
+                            </div>
+                        {% endif %}
+                        
+                        <!-- Badge de statut -->
+                        <div class="absolute top-4 left-4">
+                            {% if enrollment.is_completed %}
+                                <span class="bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                    <i class="fas fa-check mr-1"></i>Terminé
+                                </span>
+                            {% else %}
+                                <span class="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
+                                    <i class="fas fa-play mr-1"></i>En cours
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Progression -->
+                        <div class="absolute bottom-0 left-0 right-0 bg-black/50 p-4">
+                            <div class="flex justify-between items-center text-white text-sm mb-2">
+                                <span>Progression</span>
+                                <span class="font-medium">{{ enrollment.progress_percentage }}%</span>
+                            </div>
+                            <div class="w-full bg-white/20 rounded-full h-2">
+                                <div class="bg-white h-2 rounded-full transition-all duration-300" style="width: {{ enrollment.progress_percentage }}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Contenu -->
+                    <div class="p-6">
+                        <!-- Catégorie -->
+                        <div class="mb-3">
+                            <span class="bg-{{ enrollment.course.category.color|default:'blue' }}-100 dark:bg-{{ enrollment.course.category.color|default:'blue' }}-900/30 text-{{ enrollment.course.category.color|default:'blue' }}-600 dark:text-{{ enrollment.course.category.color|default:'blue' }}-400 px-3 py-1 rounded-full text-sm font-medium">
+                                {{ enrollment.course.category.name }}
+                            </span>
+                        </div>
+                        
+                        <!-- Titre -->
+                        <h3 class="text-xl font-semibold font-heading mb-3 text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                            {{ enrollment.course.title }}
+                        </h3>
+                        
+                        <!-- Métadonnées -->
+                        <div class="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                            <div class="flex items-center">
+                                <i class="fas fa-clock mr-1"></i>
+                                {{ enrollment.course.duration_hours }}h
+                            </div>
+                            <div class="flex items-center">
+                                <i class="fas fa-calendar mr-1"></i>
+                                Inscrit le {{ enrollment.enrolled_at|date:"d/m/Y" }}
+                            </div>
+                        </div>
+                        
+                        <!-- Instructeur -->
+                        <div class="flex items-center mb-4">
+                            <img src="https://ui-avatars.com/api/?name={{ enrollment.course.instructor.get_full_name|default:enrollment.course.instructor.username }}&background=3B82F6&color=fff&size=32" alt="{{ enrollment.course.instructor.get_full_name|default:enrollment.course.instructor.username }}" class="w-8 h-8 rounded-full mr-3">
+                            <span class="text-sm text-gray-600 dark:text-gray-300">{{ enrollment.course.instructor.get_full_name|default:enrollment.course.instructor.username }}</span>
+                        </div>
+                        
+                        <!-- Actions -->
+                        <div class="flex items-center justify-between">
+                            {% if enrollment.is_completed %}
+                                <div class="flex space-x-2">
+                                    <a href="{% url 'courses:learn' enrollment.course.slug %}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        <i class="fas fa-eye mr-1"></i>
+                                        Revoir
+                                    </a>
+                                    <a href="{% url 'certificates:my_certificates' %}" class="bg-yellow-600 hover:bg-yellow-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        <i class="fas fa-certificate mr-1"></i>
+                                        Certificat
+                                    </a>
+                                </div>
+                            {% else %}
+                                <a href="{% url 'courses:learn' enrollment.course.slug %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                    <i class="fas fa-play mr-1"></i>
+                                    {% if enrollment.progress_percentage > 0 %}Continuer{% else %}Commencer{% endif %}
+                                </a>
+                            {% endif %}
+                            
+                            <a href="{{ enrollment.course.get_absolute_url }}" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+                                <i class="fas fa-info-circle mr-1"></i>
+                                Détails
+                            </a>
+                        </div>
+                        
+                        <!-- Dernière activité -->
+                        {% if enrollment.progress_percentage > 0 %}
+                            <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">
+                                    <i class="fas fa-clock mr-1"></i>
+                                    Dernière activité : {{ enrollment.updated_at|timesince }} ago
+                                </p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Aucun cours -->
+            <div class="text-center py-16">
+                <div class="w-24 h-24 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-book-open text-4xl text-gray-400 dark:text-gray-500"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    {% if current_status == 'completed' %}
+                        Aucun cours terminé
+                    {% elif current_status == 'in_progress' %}
+                        Aucun cours en cours
+                    {% else %}
+                        Aucun cours inscrit
+                    {% endif %}
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+                    {% if current_status == 'completed' %}
+                        Vous n'avez pas encore terminé de cours. Continuez votre apprentissage !
+                    {% elif current_status == 'in_progress' %}
+                        Vous n'avez pas de cours en cours. Commencez un nouveau cours dès maintenant !
+                    {% else %}
+                        Commencez votre parcours d'apprentissage en vous inscrivant à votre premier cours.
+                    {% endif %}
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <a href="{% url 'courses:list' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                        <i class="fas fa-search mr-2"></i>
+                        Explorer les cours
+                    </a>
+                    {% if current_status != 'all' %}
+                        <a href="?" class="bg-gray-600 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-medium transition-colors">
+                            <i class="fas fa-list mr-2"></i>
+                            Voir tous mes cours
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Recommandations -->
+{% if enrollments %}
+<section class="py-16 bg-white dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl font-bold font-heading text-gray-900 dark:text-white mb-4">
+                Cours 
+                <span class="gradient-primary bg-clip-text text-transparent">Recommandés</span>
+            </h2>
+            <p class="text-xl text-gray-600 dark:text-gray-300">
+                Continuez votre apprentissage avec ces cours sélectionnés pour vous
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Ici vous pouvez ajouter des cours recommandés basés sur l'historique de l'utilisateur -->
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-2xl p-8 text-center border border-blue-200 dark:border-blue-700">
+                <div class="w-16 h-16 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-lightbulb text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Cours recommandés
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">
+                    Découvrez des cours adaptés à votre profil et à vos intérêts d'apprentissage.
+                </p>
+                <a href="{% url 'courses:list' %}" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Voir les recommandations
+                </a>
+            </div>
+            
+            <div class="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-2xl p-8 text-center border border-green-200 dark:border-green-700">
+                <div class="w-16 h-16 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-trophy text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Défis d'apprentissage
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">
+                    Participez à des défis pour améliorer vos compétences et gagner des badges.
+                </p>
+                <a href="#" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Voir les défis
+                </a>
+            </div>
+            
+            <div class="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-8 text-center border border-purple-200 dark:border-purple-700">
+                <div class="w-16 h-16 bg-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-users text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Communauté
+                </h3>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">
+                    Rejoignez notre communauté d'apprenants et partagez vos expériences.
+                </p>
+                <a href="{% url 'forum:index' %}" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                    Rejoindre le forum
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}
