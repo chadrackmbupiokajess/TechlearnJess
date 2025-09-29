@@ -29,9 +29,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', default=True, cast=bool)
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'chadrackmbu.pythonanywhere.com', 'techlearnjess.onrender.com', 'techlearnjess.pythonanywhere.com']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'chadrackmbu.pythonanywhere.com', 'techlearnjess.pythonanywhere.com']
 
 
 # Application definition
@@ -99,16 +99,16 @@ ASGI_APPLICATION = 'techlearnjess.asgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-"""DATABASES = {
+DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
-}"""
-
-DATABASES = {
-    'default': dj_database_url.parse(config('DATABASE_URL'))
 }
+
+# DATABASES = {
+#     'default': dj_database_url.parse(config('DATABASE_URL'))
+# }
 
 
 # Password validation
