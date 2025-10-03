@@ -16,13 +16,18 @@
     <meta name="geo.placename" content="Matadi, Kongo Central, RDC">
     <meta name="geo.position" content="-5.8186;13.4536">
     <meta name="ICBM" content="-5.8186, 13.4536">
+
+    <!-- PWA Manifest & Theme -->
+    {% load static %}
+    <link rel="manifest" href="{% static 'manifest.json' %}">
+    <meta name="theme-color" content="#000000">
     
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
     <meta property="og:title" content="{% block og_title %}TechLearnJess - Apprendre ici, réussir partout{% endblock %}">
     <meta property="og:description" content="{% block og_description %}TechLearnJess - Plateforme de formation technologique fondée par Chadrack Mbu Jess. Cours en ligne, certifications, sessions live. Apprendre ici, réussir partout en RDC et Afrique.{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{% load static %}{% static 'images/techlearnjess-og.jpg' %}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/techlearnjess-og.jpg' %}{% endblock %}">
     <meta property="og:site_name" content="TechLearnJess">
     <meta property="og:locale" content="fr_FR">
     
@@ -31,7 +36,7 @@
     <meta property="twitter:url" content="{% block twitter_url %}{{ request.build_absolute_uri }}{% endblock %}">
     <meta property="twitter:title" content="{% block twitter_title %}TechLearnJess - Apprendre ici, réussir partout{% endblock %}">
     <meta property="twitter:description" content="{% block twitter_description %}TechLearnJess - Plateforme de formation technologique fondée par Chadrack Mbu Jess. Cours en ligne, certifications, sessions live. Apprendre ici, réussir partout en RDC et Afrique.{% endblock %}">
-    <meta property="twitter:image" content="{% block twitter_image %}{% load static %}{% static 'images/techlearnjess-og.jpg' %}{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{% static 'images/techlearnjess-og.jpg' %}{% endblock %}">
     <meta property="twitter:creator" content="@chadrackmbujess">
     
     <!-- Schema.org structured data -->
@@ -42,7 +47,7 @@
         "name": "TechLearnJess",
         "alternateName": ["TechLearnJess", "Tech LearnJess", "TechLearn Jess", "Tech Learn Jess", "techlearnjess"],
         "url": "{{ request.build_absolute_uri }}",
-        "logo": "{% load static %}{% static 'images/logo.png' %}",
+        "logo": "{% static 'images/logo.png' %}",
         "description": "Plateforme de formation technologique en ligne fondée par Chadrack Mbu Jess, offrant des cours, certifications et sessions live en République Démocratique du Congo.",
         "founder": {
             "@type": "Person",
@@ -79,10 +84,10 @@
     <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{% load static %}{% static 'favicon.ico' %}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{% load static %}{% static 'images/apple-touch-icon.png' %}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{% load static %}{% static 'images/favicon-32x32.png' %}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{% load static %}{% static 'images/favicon-16x16.png' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -458,6 +463,21 @@
                 observer.observe(el);
             });
         });
+    </script>
+
+    <script>
+        // Enregistrement du Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("{% static 'serviceworker.js' %}")
+                    .then(registration => {
+                        console.log('Service Worker enregistré avec succès:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Échec de l'enregistrement du Service Worker:', error);
+                    });
+            });
+        }
     </script>
     
     {% block extra_js %}{% endblock %}
