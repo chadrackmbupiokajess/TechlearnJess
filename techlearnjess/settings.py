@@ -46,8 +46,6 @@ INSTALLED_APPS = [
     'channels',
     'crispy_forms',
     'crispy_tailwind',
-    'cloudinary_storage',
-    'cloudinary',
     
     # Local apps
     'core',
@@ -184,6 +182,7 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Media files (uploads)
 if DEBUG:
     # En développement (local), utiliser Cloudinary
+    INSTALLED_APPS += ['cloudinary_storage', 'cloudinary']
     import cloudinary
     import cloudinary.uploader
     import cloudinary.api
