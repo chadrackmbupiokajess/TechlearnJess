@@ -106,11 +106,6 @@ DATABASES = {
     }
 }
 
-# DATABASES = {
-#     'default': dj_database_url.parse(config('DATABASE_URL'))
-# }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -154,16 +149,6 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Configuration pour le stockage des médias
-MEDIA_DIRS = {
-    'images': MEDIA_ROOT / 'images',
-    'videos': MEDIA_ROOT / 'videos', 
-    'documents': MEDIA_ROOT / 'documents',
-    'avatars': MEDIA_ROOT / 'avatars',
-    'course_materials': MEDIA_ROOT / 'course_materials',
-    'certificates': MEDIA_ROOT / 'certificates',
-}
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
@@ -202,19 +187,17 @@ X_FRAME_OPTIONS = 'DENY'
 # WhiteNoise settings
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# Configuration Cloudinary pour le stockage des médias
-cloudinary.config(
-    cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
-    api_key=config('CLOUDINARY_API_KEY', default=''),
-    api_secret=config('CLOUDINARY_API_SECRET', default=''),
-    secure=True
-)
-
-# Configuration conditionnelle du stockage des médias
-USE_CLOUDINARY = config('USE_CLOUDINARY', default=False, cast=bool)
-
-if USE_CLOUDINARY:
-    # Utiliser Cloudinary en production
+# Cloudinary Configuration
+# On utilise Cloudinary seulement si DEBUG est activé (en local)
+# Sur PythonAnywhere (où DEBUG=False), on utilisera le stockage local.
+if DEBUG:
+    # Configuration pour le développement local avec Cloudinary
+    cloudinary.config(
+        cloud_name=config('CLOUDINARY_CLOUD_NAME', default=''),
+        api_key=config('CLOUDINARY_API_KEY', default=''),
+        api_secret=config('CLOUDINARY_API_SECRET', default=''),
+        secure=True
+    )
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
     CLOUDINARY_STORAGE = {
         'CLOUD_NAME': config('CLOUDINARY_CLOUD_NAME'),
@@ -222,9 +205,7 @@ if USE_CLOUDINARY:
         'API_SECRET': config('CLOUDINARY_API_SECRET'),
     }
 else:
-    # Utiliser le stockage local en développement
+    # Configuration pour la production (PythonAnywhere) sans Cloudinary
+    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     MEDIA_URL = '/media/'
     MEDIA_ROOT = BASE_DIR / 'media'
-
-# Sites framework
-SITE_ID = 1
