@@ -1,11 +1,9 @@
-const CACHE_NAME = 'techlearnjess-cache-v1';
+const CACHE_NAME = 'techlearnjess-cache-v2'; // J'ai changé le nom du cache pour forcer la mise à jour
 const urlsToCache = [
-  '/',
-  '/static/css/style.css', // Assurez-vous que ce chemin est correct
-  '/static/js/main.js'      // Assurez-vous que ce chemin est correct
+  '/' // On ne cache que la page d'accueil pour l'instant
 ];
 
-// Installation du Service Worker et mise en cache des ressources de base
+// Installation du Service Worker
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -16,37 +14,13 @@ self.addEventListener('install', event => {
   );
 });
 
-// Stratégie de cache : Cache-First
+// Stratégie de cache : Network First (Réseau d'abord)
 self.addEventListener('fetch', event => {
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Cache hit - return response
-        if (response) {
-          return response;
-        }
-
-        // Pas de cache, on fait une requête réseau
-        return fetch(event.request).then(
-          response => {
-            // Vérifie si on a une réponse valide
-            if(!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // On clone la réponse pour la mettre en cache
-            const responseToCache = response.clone();
-
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          }
-        );
-      })
-    );
+    fetch(event.request).catch(() => {
+      return caches.match(event.request);
+    })
+  );
 });
 
 // Nettoyage des anciens caches
@@ -57,6 +31,7 @@ self.addEventListener('activate', event => {
       return Promise.all(
         cacheNames.map(cacheName => {
           if (cacheWhitelist.indexOf(cacheName) === -1) {
+            console.log('Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
         })
