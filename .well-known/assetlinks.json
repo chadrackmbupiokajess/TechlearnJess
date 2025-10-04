@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.pythonanywhere.techlearnjess.twa",
+      "sha256_cert_fingerprints": [
+        "C9:97:85:C4:BD:4D:A3:3D:2A:8F:58:5F:96:FD:84:2C:72:89:25:52:16:BC:B8:FB:5D:20:A8:89:63:E2:4B:71"
+      ]
+    }
+  }
+]
