@@ -433,7 +433,7 @@
 
     <!-- Scripts -->
     <script>
-        // Gestion du mode sombre
+        // --- Gestion du mode sombre ---
         if (localStorage.getItem('darkMode') === 'true') {
             document.documentElement.classList.add('dark');
         }
@@ -449,35 +449,33 @@
             }));
         });
 
-        // Enregistrement du Service Worker et gestion de l'installation PWA
+        // --- Gestion de l'installation PWA ---
         let deferredPrompt;
         const installButton = document.getElementById('install-button');
 
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Empêche Chrome 67 et versions antérieures d'afficher la bannière automatiquement
             e.preventDefault();
-            // Stocke l'événement pour qu'il puisse être déclenché plus tard.
             deferredPrompt = e;
-            // Affiche notre propre bouton d'installation
             if (installButton) {
                 installButton.style.display = 'flex';
             }
         });
 
         if (installButton) {
-            installButton.addEventListener('click', async () => {
-                // Cache le bouton
-                installButton.style.display = 'none';
-                // Montre la fenêtre d'installation
+            installButton.addEventListener('click', () => {
+                if (!deferredPrompt) {
+                    return;
+                }
                 deferredPrompt.prompt();
-                // Attend que l'utilisateur réponde
-                const { outcome } = await deferredPrompt.userChoice;
-                console.log(`User response to the install prompt: ${outcome}`);
-                // On ne peut utiliser l'événement qu'une seule fois
-                deferredPrompt = null;
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    console.log(`User response to the install prompt: ${choiceResult.outcome}`);
+                    deferredPrompt = null;
+                    installButton.style.display = 'none';
+                });
             });
         }
 
+        // --- Enregistrement du Service Worker ---
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register("{% static 'serviceworker.js' %}")
