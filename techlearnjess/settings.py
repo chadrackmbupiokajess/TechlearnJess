@@ -178,13 +178,17 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # ------------------------------
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-X_FRAME_OPTIONS = 'DENY'
+# X_FRAME_OPTIONS = 'DENY' # Remplacé par la directive CSP 'frame-ancestors'
 
 # ------------------------------
 # CONTENT SECURITY POLICY (CSP)
 # ------------------------------
 CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
+        'frame-ancestors': [
+            "'self'",
+            "http://127.0.0.1:8000"
+        ],
         'default-src': [
             "'self'",
         ],
