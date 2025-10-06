@@ -182,8 +182,10 @@ X_FRAME_OPTIONS = 'DENY'
 
 # Autorise l'affichage dans un iframe par le site lui-même ('self')
 # et par votre portfolio en développement local.
-CSP_FRAME_ANCESTORS = ('self', 'http://127.0.0.1:8000')
-
+# Configuration CSP au nouveau format
+CONTENT_SECURITY_POLICY = {
+    'frame-ancestors': ('self', 'http://127.0.0.1:8000')
+}
 # ------------------------------
 # END
 # ------------------------------
