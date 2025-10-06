@@ -184,8 +184,14 @@ X_FRAME_OPTIONS = 'DENY'
 # et par votre portfolio en développement local.
 # Configuration CSP au nouveau format
 CONTENT_SECURITY_POLICY = {
-    'frame-ancestors': ('self', 'http://127.0.0.1:8000')
+    'default-src': ("'self'",),
+    'script-src': ("'self'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://cdnjs.cloudflare.com"),
+    'style-src': ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"),
+    'font-src': ("'self'", "https://fonts.gstatic.com"),
+    'img-src': ("'self'", "data:", "https://ui-avatars.com"),
+    'frame-ancestors': ("'self'", "http://127.0.0.1:8000"),
 }
+
 # ------------------------------
 # END
 # ------------------------------
