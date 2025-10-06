@@ -195,6 +195,7 @@ CONTENT_SECURITY_POLICY = {
         'script-src': [
             "'self'",
             "'unsafe-inline'",
+            "'unsafe-eval'",  # Requis pour Alpine.js
             "https://cdn.tailwindcss.com",
             "https://unpkg.com",
             "https://cdnjs.cloudflare.com",
