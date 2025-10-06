@@ -180,16 +180,38 @@ SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
 
-# Autorise l'affichage dans un iframe par le site lui-même ('self')
-# et par votre portfolio en développement local.
-# Configuration CSP au nouveau format
+# ------------------------------
+# CONTENT SECURITY POLICY (CSP)
+# ------------------------------
 CONTENT_SECURITY_POLICY = {
-    'default-src': ("'self'",),
-    'script-src': ("'self'", "https://cdn.tailwindcss.com", "https://unpkg.com", "https://cdnjs.cloudflare.com"),
-    'style-src': ("'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"),
-    'font-src': ("'self'", "https://fonts.gstatic.com"),
-    'img-src': ("'self'", "data:", "https://ui-avatars.com"),
-    'frame-ancestors': ("'self'", "http://127.0.0.1:8000"),
+    'DIRECTIVES': {
+        'default-src': [
+            "'self'",
+        ],
+        'script-src': [
+            "'self'",
+            "'unsafe-inline'",
+            "https://cdn.tailwindcss.com",
+            "https://unpkg.com",
+            "https://cdnjs.cloudflare.com",
+        ],
+        'style-src': [
+            "'self'",
+            "'unsafe-inline'",
+            "https://cdnjs.cloudflare.com",
+            "https://fonts.googleapis.com",
+        ],
+        'font-src': [
+            "'self'",
+            "https://cdnjs.cloudflare.com",
+            "https://fonts.gstatic.com",
+        ],
+        'img-src': [
+            "'self'",
+            "data:",
+            "https://ui-avatars.com",
+        ],
+    }
 }
 
 # ------------------------------
