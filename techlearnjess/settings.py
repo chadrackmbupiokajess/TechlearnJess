@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'notifications',
     'payments',
     'live_sessions',
+    'csp',
 ]
 
 # ------------------------------
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
 # ------------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'csp.middleware.CSPMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -177,6 +179,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+
+# Autorise l'affichage dans un iframe par le site lui-même ('self')
+# et par votre portfolio en développement local.
+CSP_FRAME_ANCESTORS = ('self', 'http://127.0.0.1:8000')
 
 # ------------------------------
 # END
