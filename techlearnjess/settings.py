@@ -187,7 +187,7 @@ CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
         'frame-ancestors': [
             "'self'",
-            "http://127.0.0.1:8000"
+            "https://tousprojetmbujess.pythonanywhere.com/"
         ],
         'default-src': [
             "'self'",
