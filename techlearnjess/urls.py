@@ -19,6 +19,9 @@ urlpatterns = [
     
     # Google Search Console verification
     path('googleff7e45855a024362.html', TemplateView.as_view(template_name='googleff7e45855a024362.html', content_type='text/html')),
+    
+    # AdSense ads.txt
+    path('ads.txt', TemplateView.as_view(template_name='ads.txt', content_type='text/plain')),
 ]
 
 # Servir les fichiers médias en développement

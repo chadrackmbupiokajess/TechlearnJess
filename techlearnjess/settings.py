@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'notifications',
     'payments',
     'live_sessions',
-    'csp',
+    #'csp',
 ]
 
 # ------------------------------
@@ -56,7 +56,7 @@ INSTALLED_APPS = [
 # ------------------------------
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'csp.middleware.CSPMiddleware',
+    #'csp.middleware.CSPMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -183,7 +183,7 @@ SECURE_CONTENT_TYPE_NOSNIFF = True
 # ------------------------------
 # CONTENT SECURITY POLICY (CSP)
 # ------------------------------
-CONTENT_SECURITY_POLICY = {
+"""CONTENT_SECURITY_POLICY = {
     'DIRECTIVES': {
         'frame-ancestors': [
             "'self'",
@@ -217,7 +217,7 @@ CONTENT_SECURITY_POLICY = {
             "https://ui-avatars.com",
         ],
     }
-}
+}"""
 
 # ------------------------------
 # END
