@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Politique de confidentialité - {{ company_name }}{% endblock %}
+{% block title %}Politique de confidentialité - {{ settings.company_name }}{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
@@ -12,7 +12,7 @@
                 Politique de confidentialité
             </h1>
             <p class="text-lg text-gray-600">
-                Version {{ privacy_policy_version }} - Mise à jour le {{ privacy_policy_date }}
+                Version {{ settings.privacy_policy_version }} - Mise à jour le {{ settings.privacy_policy_date|date:"d F Y" }}
             </p>
         </div>
 
@@ -25,10 +25,10 @@
                     Le responsable du traitement des données personnelles est :
                 </p>
                 <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                    <p><strong>{{ company_name }}</strong></p>
-                    <p>{{ company_address }}</p>
-                    <p>Email : <a href="mailto:{{ company_email }}" class="text-blue-600 hover:text-blue-800">{{ company_email }}</a></p>
-                    <p>Téléphone : {{ company_phone }}</p>
+                    <p><strong>{{ settings.company_name }}</strong></p>
+                    <p>{{ settings.address }}</p>
+                    <p>Email : <a href="mailto:{{ settings.contact_email }}" class="text-blue-600 hover:text-blue-800">{{ settings.contact_email }}</a></p>
+                    <p>Téléphone : {{ settings.contact_phone }}</p>
                 </div>
 
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Données collectées</h2>
@@ -75,7 +75,7 @@
                 </ul>
                 <p class="mb-6">
                     Pour exercer ces droits, contactez-nous à : 
-                    <a href="mailto:{{ data_protection_email }}" class="text-blue-600 hover:text-blue-800">{{ data_protection_email }}</a>
+                    <a href="mailto:{{ settings.data_protection_email }}" class="text-blue-600 hover:text-blue-800">{{ settings.data_protection_email }}</a>
                 </p>
 
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Sécurité</h2>
@@ -96,9 +96,9 @@
                     Pour toute question concernant cette politique de confidentialité, contactez-nous :
                 </p>
                 <div class="bg-blue-50 p-4 rounded-lg">
-                    <p><strong>{{ data_controller }}</strong></p>
-                    <p>Email : <a href="mailto:{{ data_protection_email }}" class="text-blue-600 hover:text-blue-800">{{ data_protection_email }}</a></p>
-                    <p>Téléphone : {{ company_phone }}</p>
+                    <p><strong>{{ settings.data_controller }}</strong></p>
+                    <p>Email : <a href="mailto:{{ settings.data_protection_email }}" class="text-blue-600 hover:text-blue-800">{{ settings.data_protection_email }}</a></p>
+                    <p>Téléphone : {{ settings.contact_phone }}</p>
                 </div>
             </div>
         </div>

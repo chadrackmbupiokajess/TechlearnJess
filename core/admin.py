@@ -4,18 +4,37 @@ from .models import SiteSettings, Testimonial, FAQ
 
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ['site_name', 'site_slogan', 'maintenance_mode', 'updated_at']
+    list_display = ['site_name', 'maintenance_mode', 'updated_at']
     fieldsets = (
-        ('Informations générales', {
+        ('Informations Générales', {
             'fields': ('site_name', 'site_slogan', 'site_description', 'logo', 'favicon')
         }),
-        ('Contact', {
+        ('Informations de Contact', {
             'fields': ('contact_email', 'contact_phone', 'address')
         }),
-        ('Réseaux sociaux', {
+        ('Réseaux Sociaux', {
             'fields': ('facebook_url', 'twitter_url', 'linkedin_url', 'youtube_url')
         }),
-        ('Maintenance', {
+        ('Informations Légales', {
+            'classes': ('collapse',),
+            'fields': (
+                'company_name', 'legal_representative', 'legal_title', 
+                'registration_number', 'tax_number', 'governing_law'
+            )
+        }),
+        ('Informations sur l\'Hébergeur', {
+            'classes': ('collapse',),
+            'fields': ('host_name', 'host_address', 'host_website')
+        }),
+        ('Versions des Documents', {
+            'classes': ('collapse',),
+            'fields': ('terms_version', 'terms_date', 'privacy_policy_version', 'privacy_policy_date')
+        }),
+        ('Protection des Données', {
+            'classes': ('collapse',),
+            'fields': ('data_controller', 'data_protection_email')
+        }),
+        ('Mode Maintenance', {
             'fields': ('maintenance_mode',)
         }),
     )

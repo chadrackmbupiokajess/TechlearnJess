@@ -1,22 +1,53 @@
 from django.db import models
 from django.contrib.auth.models import User
-
+from django.utils import timezone
 
 class SiteSettings(models.Model):
-    """Paramètres généraux du site"""
-    site_name = models.CharField(max_length=100, default="TechLearnJess")
-    site_slogan = models.CharField(max_length=200, default="Apprendre ici, réussir partout.")
-    site_description = models.TextField(blank=True)
-    logo = models.ImageField(upload_to='site/', blank=True, null=True)
-    favicon = models.ImageField(upload_to='site/', blank=True, null=True)
-    contact_email = models.EmailField(blank=True)
-    contact_phone = models.CharField(max_length=20, blank=True)
-    address = models.TextField(blank=True)
-    facebook_url = models.URLField(blank=True)
-    twitter_url = models.URLField(blank=True)
-    linkedin_url = models.URLField(blank=True)
-    youtube_url = models.URLField(blank=True)
-    maintenance_mode = models.BooleanField(default=False)
+    """Paramètres généraux et légaux du site"""
+    # --- Informations générales ---
+    site_name = models.CharField("Nom du site", max_length=100, default="Jessna TechLearn")
+    site_slogan = models.CharField("Slogan du site", max_length=200, default="Apprendre ici, réussir partout.")
+    site_description = models.TextField("Description du site", blank=True)
+    logo = models.ImageField("Logo", upload_to='site/', blank=True, null=True)
+    favicon = models.ImageField("Favicon", upload_to='site/', blank=True, null=True)
+
+    # --- Informations de contact ---
+    contact_email = models.EmailField("Email de contact", blank=True, default="jessnatechlearn@gmail.com")
+    contact_phone = models.CharField("Téléphone de contact", max_length=20, blank=True, default="+243 891 433 419")
+    address = models.TextField("Adresse", blank=True, default="Matadi, Kongo Central, RDC")
+
+    # --- Réseaux sociaux ---
+    facebook_url = models.URLField("URL Facebook", blank=True)
+    twitter_url = models.URLField("URL Twitter", blank=True)
+    linkedin_url = models.URLField("URL LinkedIn", blank=True)
+    youtube_url = models.URLField("URL YouTube", blank=True)
+
+    # --- Informations légales ---
+    company_name = models.CharField("Dénomination sociale", max_length=150, default="Jessna TechLearn")
+    legal_representative = models.CharField("Représentant légal", max_length=100, default="Chadrack Mbu Jess")
+    legal_title = models.CharField("Fonction du représentant", max_length=100, default="Fondateur & Directeur Général")
+    registration_number = models.CharField("Numéro d'enregistrement", max_length=100, blank=True, default="En cours")
+    tax_number = models.CharField("Numéro fiscal", max_length=100, blank=True, default="En cours")
+    governing_law = models.CharField("Droit applicable", max_length=100, default="République Démocratique du Congo")
+
+    # --- Hébergeur ---
+    host_name = models.CharField("Nom de l'hébergeur", max_length=100, default="PythonAnywhere")
+    host_address = models.CharField("Adresse de l'hébergeur", max_length=255, default="525 Brannan Street, Suite 300, San Francisco, CA 94107, USA")
+    host_website = models.URLField("Site web de l'hébergeur", default="https://pythonanywhere.com")
+
+    # --- Versions des documents ---
+    terms_version = models.CharField("Version des CGU", max_length=20, default="1.0.2")
+    terms_date = models.DateField("Date des CGU", default=timezone.now)
+    privacy_policy_version = models.CharField("Version de la politique de confidentialité", max_length=20, default="1.0.2")
+    privacy_policy_date = models.DateField("Date de la politique de confidentialité", default=timezone.now)
+    
+    # --- Protection des données ---
+    data_controller = models.CharField("Contrôleur des données", max_length=100, default="Chadrack Mbu Jess")
+    data_protection_email = models.EmailField("Email protection des données", default="jessnatechlearn@gmail.com")
+
+    # --- Maintenance ---
+    maintenance_mode = models.BooleanField("Mode maintenance", default=False)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

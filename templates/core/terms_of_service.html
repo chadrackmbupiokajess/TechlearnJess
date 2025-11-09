@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Conditions d'utilisation - {{ company_name }}{% endblock %}
+{% block title %}Conditions d'utilisation - {{ settings.company_name }}{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 py-12">
@@ -12,7 +12,7 @@
                 Conditions d'utilisation
             </h1>
             <p class="text-lg text-gray-600">
-                Version {{ terms_version }} - Mise à jour le {{ terms_date }}
+                Version {{ settings.terms_version }} - Mise à jour le {{ settings.terms_date|date:"d F Y" }}
             </p>
         </div>
 
@@ -23,27 +23,27 @@
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Objet</h2>
                 <p class="mb-6">
                     Les présentes conditions générales d'utilisation (CGU) régissent l'utilisation 
-                    de la plateforme d'apprentissage en ligne {{ company_name }}, accessible à l'adresse 
-                    <a href="{{ company_website }}" class="text-blue-600 hover:text-blue-800">{{ company_website }}</a>.
+                    de la plateforme d'apprentissage en ligne {{ settings.company_name }}, accessible à l'adresse 
+                    <a href="{{ settings.company_website }}" class="text-blue-600 hover:text-blue-800">{{ settings.company_website }}</a>.
                 </p>
 
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Éditeur</h2>
                 <div class="bg-gray-50 p-4 rounded-lg mb-6">
-                    <p><strong>{{ company_name }}</strong></p>
-                    <p>{{ company_address }}</p>
-                    <p>Email : <a href="mailto:{{ company_email }}" class="text-blue-600 hover:text-blue-800">{{ company_email }}</a></p>
-                    <p>Téléphone : {{ company_phone }}</p>
+                    <p><strong>{{ settings.company_name }}</strong></p>
+                    <p>{{ settings.address }}</p>
+                    <p>Email : <a href="mailto:{{ settings.contact_email }}" class="text-blue-600 hover:text-blue-800">{{ settings.contact_email }}</a></p>
+                    <p>Téléphone : {{ settings.contact_phone }}</p>
                 </div>
 
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. Acceptation des conditions</h2>
                 <p class="mb-6">
-                    L'utilisation de la plateforme {{ company_name }} implique l'acceptation pleine et entière 
+                    L'utilisation de la plateforme {{ settings.company_name }} implique l'acceptation pleine et entière 
                     des présentes conditions d'utilisation. Si vous n'acceptez pas ces conditions, 
                     vous ne devez pas utiliser nos services.
                 </p>
 
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Description des services</h2>
-                <p class="mb-4">{{ company_name }} propose :</p>
+                <p class="mb-4">{{ settings.company_name }} propose :</p>
                 <ul class="list-disc pl-6 mb-6">
                     <li>Des cours en ligne dans divers domaines technologiques</li>
                     <li>Des sessions de formation en direct</li>
@@ -76,7 +76,7 @@
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Propriété intellectuelle</h2>
                 <p class="mb-6">
                     Tous les contenus présents sur la plateforme (cours, vidéos, textes, images, logos) 
-                    sont protégés par le droit d'auteur et appartiennent à {{ company_name }} ou à ses partenaires. 
+                    sont protégés par le droit d'auteur et appartiennent à {{ settings.company_name }} ou à ses partenaires. 
                     Toute reproduction, distribution ou utilisation commerciale est interdite sans autorisation écrite.
                 </p>
 
@@ -100,7 +100,7 @@
 
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. Limitation de responsabilité</h2>
                 <p class="mb-6">
-                    {{ company_name }} ne peut être tenu responsable des dommages directs ou indirects 
+                    {{ settings.company_name }} ne peut être tenu responsable des dommages directs ou indirects 
                     résultant de l'utilisation ou de l'impossibilité d'utiliser la plateforme, 
                     sauf en cas de faute lourde ou intentionnelle.
                 </p>
@@ -113,16 +113,16 @@
 
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">12. Droit applicable</h2>
                 <p class="mb-6">
-                    Les présentes conditions sont régies par le {{ governing_law }}. 
+                    Les présentes conditions sont régies par le {{ settings.governing_law }}. 
                     Tout litige sera soumis aux tribunaux compétents de Matadi, Kongo-Central.
                 </p>
 
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">13. Contact</h2>
                 <div class="bg-green-50 p-4 rounded-lg">
                     <p>Pour toute question concernant ces conditions :</p>
-                    <p><strong>{{ company_name }}</strong></p>
-                    <p>Email : <a href="mailto:{{ company_email }}" class="text-blue-600 hover:text-blue-800">{{ company_email }}</a></p>
-                    <p>Téléphone : {{ company_phone }}</p>
+                    <p><strong>{{ settings.company_name }}</strong></p>
+                    <p>Email : <a href="mailto:{{ settings.contact_email }}" class="text-blue-600 hover:text-blue-800">{{ settings.contact_email }}</a></p>
+                    <p>Téléphone : {{ settings.contact_phone }}</p>
                 </div>
             </div>
         </div>

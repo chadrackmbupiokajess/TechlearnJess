@@ -6,7 +6,6 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.template import loader
 from datetime import timedelta
-from django.conf import settings as django_settings
 
 from .models import SiteSettings, Testimonial, FAQ
 from courses.models import Course, Enrollment
@@ -157,53 +156,22 @@ def faq_list(request):
 
 def privacy_policy(request):
     """Page Politique de confidentialité"""
-    context = {
-        'company_name': getattr(django_settings, 'COMPANY_NAME', ''),
-        'company_address': getattr(django_settings, 'COMPANY_ADDRESS', ''),
-        'company_email': getattr(django_settings, 'COMPANY_EMAIL', ''),
-        'company_phone': getattr(django_settings, 'COMPANY_PHONE', ''),
-        'data_protection_email': getattr(django_settings, 'DATA_PROTECTION_EMAIL', ''),
-        'privacy_policy_version': getattr(django_settings, 'PRIVACY_POLICY_VERSION', ''),
-        'privacy_policy_date': getattr(django_settings, 'PRIVACY_POLICY_DATE', ''),
-        'data_controller': getattr(django_settings, 'DATA_CONTROLLER', ''),
-    }
-    
+    settings = SiteSettings.get_settings()
+    context = {'settings': settings}
     return render(request, 'core/privacy_policy.html', context)
 
 
 def terms_of_service(request):
     """Page Conditions d'utilisation"""
-    context = {
-        'company_name': getattr(django_settings, 'COMPANY_NAME', ''),
-        'company_address': getattr(django_settings, 'COMPANY_ADDRESS', ''),
-        'company_email': getattr(django_settings, 'COMPANY_EMAIL', ''),
-        'company_phone': getattr(django_settings, 'COMPANY_PHONE', ''),
-        'company_website': getattr(django_settings, 'COMPANY_WEBSITE', ''),
-        'terms_version': getattr(django_settings, 'TERMS_VERSION', ''),
-        'terms_date': getattr(django_settings, 'TERMS_DATE', ''),
-        'governing_law': getattr(django_settings, 'GOVERNING_LAW', ''),
-    }
-    
+    settings = SiteSettings.get_settings()
+    context = {'settings': settings}
     return render(request, 'core/terms_of_service.html', context)
 
 
 def legal_notice(request):
     """Page Mentions légales"""
-    context = {
-        'company_name': getattr(django_settings, 'COMPANY_NAME', ''),
-        'company_address': getattr(django_settings, 'COMPANY_ADDRESS', ''),
-        'company_email': getattr(django_settings, 'COMPANY_EMAIL', ''),
-        'company_phone': getattr(django_settings, 'COMPANY_PHONE', ''),
-        'company_website': getattr(django_settings, 'COMPANY_WEBSITE', ''),
-        'legal_representative': getattr(django_settings, 'LEGAL_REPRESENTATIVE', ''),
-        'legal_title': getattr(django_settings, 'LEGAL_TITLE', ''),
-        'registration_number': getattr(django_settings, 'REGISTRATION_NUMBER', ''),
-        'tax_number': getattr(django_settings, 'TAX_NUMBER', ''),
-        'host_name': getattr(django_settings, 'HOST_NAME', ''),
-        'host_address': getattr(django_settings, 'HOST_ADDRESS', ''),
-        'host_website': getattr(django_settings, 'HOST_WEBSITE', ''),
-    }
-    
+    settings = SiteSettings.get_settings()
+    context = {'settings': settings}
     return render(request, 'core/legal_notice.html', context)
 
 
