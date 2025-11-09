@@ -53,9 +53,9 @@
 
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Hébergement</h2>
                 <div class="bg-purple-50 p-6 rounded-lg mb-6">
-                    <p><strong>Hébergeur :</strong> Render</p>
-                    <p><strong>Adresse :</strong> 525 Brannan Street, Suite 300, San Francisco, CA 94107, USA</p>
-                    <p><strong>Site web :</strong> <a href="https://render.com" class="text-blue-600 hover:text-blue-800" target="_blank">https://render.com</a></p>
+                    <p><strong>Hébergeur :</strong> {{ host_name }}</p>
+                    <p><strong>Adresse :</strong> {{ host_address }}</p>
+                    <p><strong>Site web :</strong> <a href="{{ host_website }}" class="text-blue-600 hover:text-blue-800" target="_blank">{{ host_website }}</a></p>
                 </div>
 
                 <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Propriété intellectuelle</h2>

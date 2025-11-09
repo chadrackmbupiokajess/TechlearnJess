@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}TechLearnJess - Apprendre ici, réussir partout{% endblock %}</title>
+    <title>{% block title %}Jessna TechLearn - Apprendre ici, réussir partout{% endblock %}</title>
     
     <!-- SEO Meta Tags -->
-    <meta name="description" content="{% block description %}TechLearnJess - Plateforme de formation technologique fondée par Chadrack Mbu Jess. Cours en ligne, certifications, sessions live. Apprendre ici, réussir partout en RDC et Afrique.{% endblock %}">
-    <meta name="keywords" content="{% block keywords %}TechLearnJess, Tech LearnJess, TechLearn Jess, Tech Learn Jess, techlearnjess, Chadrack Mbu Jess, Chadrackmbujess, Chadrack mbujess, Chadrackmbu jess, Chadrack, Chadrack mbu, mbu jess, mbu, mbu pioka, pioka, formation en ligne, cours technologie, RDC, Congo, Matadi, développement web, programmation, certifications{% endblock %}">
+    <meta name="description" content="{% block description %}Jessna TechLearn - Plateforme de formation technologique fondée par Chadrack Mbu Jess. Cours en ligne, certifications, sessions live. Apprendre ici, réussir partout en RDC et Afrique.{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}Jessna TechLearn, JessnaTechLearn, Jessna Tech Learn, Jessna, TechLearn, Chadrack Mbu Jess, Chadrackmbujess, Chadrack mbujess, Chadrackmbu jess, Chadrack, Chadrack mbu, mbu jess, mbu, mbu pioka, pioka, formation en ligne, cours technologie, RDC, Congo, Matadi, développement web, programmation, certifications{% endblock %}">
     <meta name="author" content="Chadrack Mbu Jess">
     <meta name="robots" content="index, follow">
     <meta name="language" content="fr-FR">
@@ -25,17 +25,17 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
-    <meta property="og:title" content="{% block og_title %}TechLearnJess - Apprendre ici, réussir partout{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}TechLearnJess - Plateforme de formation technologique fondée par Chadrack Mbu Jess. Cours en ligne, certifications, sessions live. Apprendre ici, réussir partout en RDC et Afrique.{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Jessna TechLearn - Apprendre ici, réussir partout{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Jessna TechLearn - Plateforme de formation technologique fondée par Chadrack Mbu Jess. Cours en ligne, certifications, sessions live. Apprendre ici, réussir partout en RDC et Afrique.{% endblock %}">
     <meta property="og:image" content="{% block og_image %}{% static 'images/techlearnjess-og.jpg' %}{% endblock %}">
-    <meta property="og:site_name" content="TechLearnJess">
+    <meta property="og:site_name" content="Jessna TechLearn">
     <meta property="og:locale" content="fr_FR">
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{% block twitter_url %}{{ request.build_absolute_uri }}{% endblock %}">
-    <meta property="twitter:title" content="{% block twitter_title %}TechLearnJess - Apprendre ici, réussir partout{% endblock %}">
-    <meta property="twitter:description" content="{% block twitter_description %}TechLearnJess - Plateforme de formation technologique fondée par Chadrack Mbu Jess. Cours en ligne, certifications, sessions live. Apprendre ici, réussir partout en RDC et Afrique.{% endblock %}">
+    <meta property="twitter:title" content="{% block twitter_title %}Jessna TechLearn - Apprendre ici, réussir partout{% endblock %}">
+    <meta property="twitter:description" content="{% block twitter_description %}Jessna TechLearn - Plateforme de formation technologique fondée par Chadrack Mbu Jess. Cours en ligne, certifications, sessions live. Apprendre ici, réussir partout en RDC et Afrique.{% endblock %}">
     <meta property="twitter:image" content="{% block twitter_image %}{% static 'images/techlearnjess-og.jpg' %}{% endblock %}">
     <meta property="twitter:creator" content="@chadrackmbujess">
     
@@ -44,8 +44,8 @@
     {
         "@context": "https://schema.org",
         "@type": "EducationalOrganization",
-        "name": "TechLearnJess",
-        "alternateName": ["TechLearnJess", "Tech LearnJess", "TechLearn Jess", "Tech Learn Jess", "techlearnjess"],
+        "name": "Jessna TechLearn",
+        "alternateName": ["Jessna TechLearn", "JessnaTechLearn", "Jessna Tech Learn", "Jessna", "TechLearn"],
         "url": "{{ request.build_absolute_uri }}",
         "logo": "{% static 'images/logo.png' %}",
         "description": "Plateforme de formation technologique en ligne fondée par Chadrack Mbu Jess, offrant des cours, certifications et sessions live en République Démocratique du Congo.",
@@ -145,7 +145,7 @@
                     <!-- Logo -->
                     <div class="flex-shrink-0 flex items-center">
                         <a href="{% url 'core:home' %}" class="text-2xl font-bold font-heading gradient-primary bg-clip-text text-transparent hover:scale-105 transition-transform">
-                            <i class="fas fa-graduation-cap mr-2 text-blue-600"></i>TechLearnJess
+                            <i class="fas fa-graduation-cap mr-2 text-blue-600"></i>Jessna TechLearn
                         </a>
                     </div>
                     
@@ -350,7 +350,7 @@
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center mb-6">
                         <i class="fas fa-graduation-cap text-3xl text-blue-400 mr-3"></i>
-                        <span class="text-3xl font-bold font-heading">TechLearnJess</span>
+                        <span class="text-3xl font-bold font-heading">Jessna TechLearn</span>
                     </div>
                     <p class="text-gray-400 mb-6 text-lg leading-relaxed">
                         <strong class="text-blue-400">"Apprendre ici, réussir partout."</strong><br>
@@ -417,7 +417,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <div class="text-center md:text-left mb-4 md:mb-0">
                         <p class="text-gray-400">
-                            &copy; 2025 <span class="text-blue-400 font-semibold">TechLearnJess</span>. Tous droits réservés.
+                            &copy; 2025 <span class="text-blue-400 font-semibold">Jessna TechLearn</span>. Tous droits réservés.
                         </p>
                         <p class="text-sm text-gray-500 mt-1">
                             Créé avec ❤️ par <span class="text-blue-400">Chadrack Mbu Jess</span>

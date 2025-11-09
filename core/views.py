@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.template import loader
 from datetime import timedelta
+from django.conf import settings as django_settings
 
 from .models import SiteSettings, Testimonial, FAQ
 from courses.models import Course, Enrollment
@@ -156,17 +157,15 @@ def faq_list(request):
 
 def privacy_policy(request):
     """Page Politique de confidentialité"""
-    from decouple import config
-    
     context = {
-        'company_name': config('COMPANY_NAME'),
-        'company_address': config('COMPANY_ADDRESS'),
-        'company_email': config('COMPANY_EMAIL'),
-        'company_phone': config('COMPANY_PHONE'),
-        'data_protection_email': config('DATA_PROTECTION_EMAIL'),
-        'privacy_policy_version': config('PRIVACY_POLICY_VERSION'),
-        'privacy_policy_date': config('PRIVACY_POLICY_DATE'),
-        'data_controller': config('DATA_CONTROLLER'),
+        'company_name': getattr(django_settings, 'COMPANY_NAME', ''),
+        'company_address': getattr(django_settings, 'COMPANY_ADDRESS', ''),
+        'company_email': getattr(django_settings, 'COMPANY_EMAIL', ''),
+        'company_phone': getattr(django_settings, 'COMPANY_PHONE', ''),
+        'data_protection_email': getattr(django_settings, 'DATA_PROTECTION_EMAIL', ''),
+        'privacy_policy_version': getattr(django_settings, 'PRIVACY_POLICY_VERSION', ''),
+        'privacy_policy_date': getattr(django_settings, 'PRIVACY_POLICY_DATE', ''),
+        'data_controller': getattr(django_settings, 'DATA_CONTROLLER', ''),
     }
     
     return render(request, 'core/privacy_policy.html', context)
@@ -174,17 +173,15 @@ def privacy_policy(request):
 
 def terms_of_service(request):
     """Page Conditions d'utilisation"""
-    from decouple import config
-    
     context = {
-        'company_name': config('COMPANY_NAME'),
-        'company_address': config('COMPANY_ADDRESS'),
-        'company_email': config('COMPANY_EMAIL'),
-        'company_phone': config('COMPANY_PHONE'),
-        'company_website': config('COMPANY_WEBSITE'),
-        'terms_version': config('TERMS_VERSION'),
-        'terms_date': config('TERMS_DATE'),
-        'governing_law': config('GOVERNING_LAW'),
+        'company_name': getattr(django_settings, 'COMPANY_NAME', ''),
+        'company_address': getattr(django_settings, 'COMPANY_ADDRESS', ''),
+        'company_email': getattr(django_settings, 'COMPANY_EMAIL', ''),
+        'company_phone': getattr(django_settings, 'COMPANY_PHONE', ''),
+        'company_website': getattr(django_settings, 'COMPANY_WEBSITE', ''),
+        'terms_version': getattr(django_settings, 'TERMS_VERSION', ''),
+        'terms_date': getattr(django_settings, 'TERMS_DATE', ''),
+        'governing_law': getattr(django_settings, 'GOVERNING_LAW', ''),
     }
     
     return render(request, 'core/terms_of_service.html', context)
@@ -192,18 +189,19 @@ def terms_of_service(request):
 
 def legal_notice(request):
     """Page Mentions légales"""
-    from decouple import config
-    
     context = {
-        'company_name': config('COMPANY_NAME'),
-        'company_address': config('COMPANY_ADDRESS'),
-        'company_email': config('COMPANY_EMAIL'),
-        'company_phone': config('COMPANY_PHONE'),
-        'company_website': config('COMPANY_WEBSITE'),
-        'legal_representative': config('LEGAL_REPRESENTATIVE'),
-        'legal_title': config('LEGAL_TITLE'),
-        'registration_number': config('REGISTRATION_NUMBER'),
-        'tax_number': config('TAX_NUMBER'),
+        'company_name': getattr(django_settings, 'COMPANY_NAME', ''),
+        'company_address': getattr(django_settings, 'COMPANY_ADDRESS', ''),
+        'company_email': getattr(django_settings, 'COMPANY_EMAIL', ''),
+        'company_phone': getattr(django_settings, 'COMPANY_PHONE', ''),
+        'company_website': getattr(django_settings, 'COMPANY_WEBSITE', ''),
+        'legal_representative': getattr(django_settings, 'LEGAL_REPRESENTATIVE', ''),
+        'legal_title': getattr(django_settings, 'LEGAL_TITLE', ''),
+        'registration_number': getattr(django_settings, 'REGISTRATION_NUMBER', ''),
+        'tax_number': getattr(django_settings, 'TAX_NUMBER', ''),
+        'host_name': getattr(django_settings, 'HOST_NAME', ''),
+        'host_address': getattr(django_settings, 'HOST_ADDRESS', ''),
+        'host_website': getattr(django_settings, 'HOST_WEBSITE', ''),
     }
     
     return render(request, 'core/legal_notice.html', context)

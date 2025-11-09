@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 from decouple import config
+from datetime import date
 
 # ------------------------------
 # BASE DIR
@@ -142,6 +143,33 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SITES FRAMEWORK
 # ------------------------------
 SITE_ID = 1
+
+# ------------------------------
+# COMPANY INFO & LEGAL
+# ------------------------------
+COMPANY_NAME = 'Jessna TechLearn'
+COMPANY_EMAIL = 'jessnatechlearn@gmail.com'
+COMPANY_PHONE = '+243 891 433 419'
+COMPANY_ADDRESS = 'Matadi, Kongo Central, RDC'
+COMPANY_WEBSITE = 'https://techlearnjess.pythonanywhere.com'
+
+LEGAL_REPRESENTATIVE = 'Chadrack Mbu Jess'
+LEGAL_TITLE = 'Fondateur & Directeur Général'
+REGISTRATION_NUMBER = 'En cours'
+TAX_NUMBER = 'En cours'
+
+HOST_NAME = 'PythonAnywhere'
+HOST_ADDRESS = '525 Brannan Street, Suite 300, San Francisco, CA 94107, USA'
+HOST_WEBSITE = 'https://pythonanywhere.com'
+
+TERMS_VERSION = '1.0.2'
+TERMS_DATE = date(2025, 11, 9)
+PRIVACY_POLICY_VERSION = '1.0.2'
+PRIVACY_POLICY_DATE = date(2025, 11, 9)
+DATA_CONTROLLER = 'Chadrack Mbu Jess'
+DATA_PROTECTION_EMAIL = 'jessnatechlearn@gmail.com'
+GOVERNING_LAW = 'République Démocratique du Congo'
+
 
 # ------------------------------
 # CRISPY FORMS
