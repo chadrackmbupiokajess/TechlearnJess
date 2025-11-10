@@ -15,6 +15,10 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         ('Réseaux Sociaux', {
             'fields': ('facebook_url', 'twitter_url', 'linkedin_url', 'youtube_url')
         }),
+        ('Contenu des Pages Légales', {
+            'classes': ('collapse',),
+            'fields': ('terms_of_service_content', 'privacy_policy_content', 'legal_notice_content')
+        }),
         ('Informations Légales', {
             'classes': ('collapse',),
             'fields': (
@@ -38,6 +42,11 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'fields': ('maintenance_mode',)
         }),
     )
+
+    class Media:
+        css = {
+            'all': ('css/admin_fixes.css',)
+        }
 
     def has_add_permission(self, request):
         # Empêcher la création de plusieurs instances

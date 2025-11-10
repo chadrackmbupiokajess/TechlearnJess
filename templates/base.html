@@ -124,6 +124,31 @@
             background: #0f172a;
             color: #f8fafc;
         }
+
+        /* Styles pour CKEditor */
+        .prose ul { list-style-type: disc; margin-left: 1.5rem; }
+        .prose ol { list-style-type: decimal; margin-left: 1.5rem; }
+
+        .info-box, .success-box, .warning-box, .error-box, .purple-box, .pink-box, .gray-box, .cyan-box {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .info-box > *:first-child, .success-box > *:first-child, .warning-box > *:first-child, .error-box > *:first-child, .purple-box > *:first-child, .pink-box > *:first-child, .gray-box > *:first-child, .cyan-box > *:first-child {
+            margin-top: 0;
+        }
+        .info-box > *:last-child, .success-box > *:last-child, .warning-box > *:last-child, .error-box > *:last-child, .purple-box > *:last-child, .pink-box > *:last-child, .gray-box > *:last-child, .cyan-box > *:last-child {
+            margin-bottom: 0;
+        }
+        
+        .info-box { background-color: #EBF8FF; }
+        .success-box { background-color: #F0FFF4; }
+        .warning-box { background-color: #FFFBEB; }
+        .error-box { background-color: #FFF5F5; }
+        .purple-box { background-color: #FAF5FF; }
+        .pink-box { background-color: #FFF5F7; }
+        .gray-box { background-color: #F7FAFC; }
+        .cyan-box { background-color: #ECFEFF; }
     </style>
     
     {% block extra_css %}{% endblock %}

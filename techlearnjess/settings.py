@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     'channels',
     'crispy_forms',
     'crispy_tailwind',
+    'ckeditor',
+    'ckeditor_uploader',
 
     # Local apps
     'core',
@@ -176,6 +178,36 @@ GOVERNING_LAW = 'République Démocratique du Congo'
 # ------------------------------
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = "tailwind"
+
+# ------------------------------
+# CKEDITOR
+# ------------------------------
+CKEDITOR_UPLOAD_PATH = "uploads/"
+CKEDITOR_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 500,
+        'width': '100%',
+        'enterMode': 2, # 1=p, 2=br, 3=div
+        'shiftEnterMode': 1, # 1=p, 2=br, 3=div
+        'extraPlugins': ','.join(['floatingspace', 'stylescombo']),
+        'stylesSet': [
+            {
+                'name': 'Titre de Section',
+                'element': 'h2',
+                'attributes': {'class': 'text-2xl font-semibold text-gray-900 mb-4'}
+            },
+            { 'name': 'Boîte Bleue', 'element': 'div', 'attributes': {'class': 'info-box'} },
+            { 'name': 'Boîte Verte', 'element': 'div', 'attributes': {'class': 'success-box'} },
+            { 'name': 'Boîte Jaune', 'element': 'div', 'attributes': {'class': 'warning-box'} },
+            { 'name': 'Boîte Rouge', 'element': 'div', 'attributes': {'class': 'error-box'} },
+            { 'name': 'Boîte Violette', 'element': 'div', 'attributes': {'class': 'purple-box'} },
+            { 'name': 'Boîte Rose', 'element': 'div', 'attributes': {'class': 'pink-box'} },
+            { 'name': 'Boîte Grise', 'element': 'div', 'attributes': {'class': 'gray-box'} },
+            { 'name': 'Boîte Cyan', 'element': 'div', 'attributes': {'class': 'cyan-box'} },
+        ]
+    },
+}
 
 # ------------------------------
 # CHANNELS

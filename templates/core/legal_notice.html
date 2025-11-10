@@ -19,93 +19,11 @@
         <!-- Contenu -->
         <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12">
             <div class="prose prose-lg max-w-none">
-                
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">1. Identification de l'éditeur</h2>
-                <div class="bg-gray-50 p-6 rounded-lg mb-6">
-                    <p><strong>Dénomination sociale :</strong> {{ settings.company_name }}</p>
-                    <p><strong>Adresse du siège social :</strong> {{ settings.address }}</p>
-                    <p><strong>Téléphone :</strong> {{ settings.contact_phone }}</p>
-                    <p><strong>Email :</strong> <a href="mailto:{{ settings.contact_email }}" class="text-blue-600 hover:text-blue-800">{{ settings.contact_email }}</a></p>
-                    <p><strong>Site web :</strong> <a href="{{ settings.company_website }}" class="text-blue-600 hover:text-blue-800">{{ settings.company_website }}</a></p>
-                </div>
-
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">2. Représentant légal</h2>
-                <div class="bg-blue-50 p-6 rounded-lg mb-6">
-                    <p><strong>{{ settings.legal_representative }}</strong></p>
-                    <p><strong>Fonction :</strong> {{ settings.legal_title }}</p>
-                    <p>En qualité de représentant légal de {{ settings.company_name }}</p>
-                </div>
-
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">3. Informations d'enregistrement</h2>
-                <div class="bg-green-50 p-6 rounded-lg mb-6">
-                    <p><strong>Numéro d'enregistrement :</strong> {{ settings.registration_number }}</p>
-                    <p><strong>Numéro fiscal :</strong> {{ settings.tax_number }}</p>
-                    <p><strong>Juridiction :</strong> {{ settings.governing_law }}</p>
-                </div>
-
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">4. Activité</h2>
-                <p class="mb-6">
-                    {{ settings.company_name }} est une plateforme d'apprentissage en ligne spécialisée dans 
-                    la formation technologique. Nous proposons des cours, formations et certifications 
-                    dans les domaines de l'informatique, du développement web, de la programmation 
-                    et des nouvelles technologies.
-                </p>
-
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">5. Hébergement</h2>
-                <div class="bg-purple-50 p-6 rounded-lg mb-6">
-                    <p><strong>Hébergeur :</strong> {{ settings.host_name }}</p>
-                    <p><strong>Adresse :</strong> {{ settings.host_address }}</p>
-                    <p><strong>Site web :</strong> <a href="{{ settings.host_website }}" class="text-blue-600 hover:text-blue-800" target="_blank">{{ settings.host_website }}</a></p>
-                </div>
-
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">6. Propriété intellectuelle</h2>
-                <p class="mb-6">
-                    L'ensemble des éléments composant le site {{ settings.company_name }} (textes, images, vidéos, 
-                    sons, logos, structure, logiciels, etc.) sont protégés par le droit d'auteur, 
-                    le droit des marques et/ou le droit des producteurs de bases de données.
-                </p>
-                <p class="mb-6">
-                    Ces éléments sont la propriété exclusive de {{ settings.company_name }} ou de ses partenaires. 
-                    Toute reproduction, représentation, adaptation, traduction et/ou transformation, 
-                    partielle ou intégrale, par quelque procédé que ce soit, est strictement interdite 
-                    sans l'autorisation écrite préalable de {{ settings.company_name }}.
-                </p>
-
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">7. Données personnelles</h2>
-                <p class="mb-6">
-                    Les informations recueillies sur ce site sont nécessaires à la gestion de votre compte 
-                    et à la fourniture de nos services. Elles font l'objet d'un traitement informatique 
-                    conforme à notre <a href="{% url 'core:privacy_policy' %}" class="text-blue-600 hover:text-blue-800">politique de confidentialité</a>.
-                </p>
-
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">8. Cookies</h2>
-                <p class="mb-6">
-                    Ce site utilise des cookies techniques nécessaires à son bon fonctionnement. 
-                    Ces cookies permettent notamment de maintenir votre session de connexion et 
-                    de mémoriser vos préférences d'utilisation.
-                </p>
-
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">9. Droit applicable et juridiction</h2>
-                <p class="mb-6">
-                    Les présentes mentions légales sont régies par le droit de la République Démocratique du Congo. 
-                    En cas de litige, les tribunaux de Matadi, Kongo-Central seront seuls compétents.
-                </p>
-
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">10. Signalement de contenu</h2>
-                <p class="mb-6">
-                    Si vous constatez la présence sur notre site d'un contenu illicite ou portant atteinte 
-                    à vos droits, vous pouvez nous le signaler à l'adresse : 
-                    <a href="mailto:{{ settings.contact_email }}" class="text-blue-600 hover:text-blue-800">{{ settings.contact_email }}</a>
-                </p>
-
-                <h2 class="text-2xl font-semibold text-gray-900 mb-4">11. Contact</h2>
-                <div class="bg-yellow-50 p-6 rounded-lg">
-                    <p class="mb-2">Pour toute question concernant ces mentions légales :</p>
-                    <p><strong>{{ settings.company_name }}</strong></p>
-                    <p>{{ settings.address }}</p>
-                    <p>Email : <a href="mailto:{{ settings.contact_email }}" class="text-blue-600 hover:text-blue-800">{{ settings.contact_email }}</a></p>
-                    <p>Téléphone : {{ settings.contact_phone }}</p>
-                </div>
+                {% if settings.legal_notice_content %}
+                    {{ settings.legal_notice_content|safe }}
+                {% else %}
+                    <p>Le contenu des mentions légales est en cours de rédaction.</p>
+                {% endif %}
             </div>
         </div>
 

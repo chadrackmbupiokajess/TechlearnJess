@@ -5,8 +5,13 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import TemplateView
 
+admin.site.site_header = "Administration Jessna TechLearn"
+admin.site.site_title = "Portail d'administration Jessna TechLearn"
+admin.site.index_title = "Bienvenue sur le portail d'administration"
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     path('', include('core.urls')),
     path('comptes/', include('accounts.urls')),
     path('cours/', include('courses.urls')),

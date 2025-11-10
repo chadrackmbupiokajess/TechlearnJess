@@ -1,0 +1,23 @@
+/* Fix pour le défilement de CKEditor dans l'admin Django */
+
+/* Cible les lignes contenant les éditeurs de texte riche */
+.form-row.field-terms_of_service_content,
+.form-row.field-privacy_policy_content,
+.form-row.field-legal_notice_content {
+    height: 70vh; /* Donne une hauteur fixe (70% de la hauteur de l'écran) */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fait en sorte que l'éditeur lui-même remplisse cet espace */
+.form-row .django-ckeditor-widget {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Fait en sorte que la zone de texte de l'éditeur soit celle qui défile */
+.form-row .django-ckeditor-widget .cke_contents {
+    flex-grow: 1;
+    height: auto !important; /* Annule la hauteur par défaut de CKEditor pour permettre l'étirement */
+}
