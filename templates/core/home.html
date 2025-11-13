@@ -1,8 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Jessna TechLearn - Formation en ligne par Chadrack Mbu Jess | Apprendre ici, réussir partout{% endblock %}
-
-{% block description %}Plateforme de formation technologique fondée par Chadrack Mbu Jess (Chadrackmbujess). Cours en ligne, certifications, sessions live en RDC. Développement web, programmation, technologies du futur.{% endblock %}
+{% block title %}{{ settings.site_name }} - {{ settings.site_slogan }}{% endblock %}
 
 {% block keywords %}Jessna TechLearn, Jessna Tech Learn, JessnaTechLearn, Tech Learn Jess, jessnatechlearn, Chadrack Mbu Jess, Chadrackmbujess, Chadrack mbujess, Chadrackmbu jess, Chadrack, Chadrack mbu, mbu jess, mbu, mbu pioka, pioka, formation en ligne RDC, cours technologie Congo, développement web Matadi, programmation RDC, certifications en ligne, gesiana, siana{% endblock %}
 
@@ -31,8 +29,7 @@
             </h1>
             
             <p class="text-xl md:text-2xl mb-12 max-w-4xl mx-auto opacity-90 leading-relaxed">
-                Développez vos compétences avec nos formations professionnelles de pointe. 
-                Cours interactifs, certifications reconnues et accompagnement personnalisé pour votre réussite.
+                {{ settings.site_description|default:settings.site_slogan }}
             </p>
             
             <div class="flex flex-col sm:flex-row gap-6 justify-center mb-16">
@@ -80,7 +77,7 @@
         <div class="text-center mb-20 animate-on-scroll">
             <h2 class="text-4xl md:text-5xl font-bold font-heading text-gray-900 dark:text-white mb-6">
                 Pourquoi choisir 
-                <span class="gradient-primary bg-clip-text text-transparent">Jessna TechLearn</span> ?
+                <span class="gradient-primary bg-clip-text text-transparent">{{ settings.site_name }}</span> ?
             </h2>
             <p class="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
                 Une plateforme complète conçue pour votre réussite professionnelle avec des outils modernes et innovants

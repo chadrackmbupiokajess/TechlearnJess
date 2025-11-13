@@ -7,7 +7,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
     list_display = ['site_name', 'maintenance_mode', 'updated_at']
     fieldsets = (
         ('Informations Générales', {
-            'fields': ('site_name', 'site_slogan', 'site_description', 'logo', 'favicon')
+            'fields': ('site_name', 'site_slogan', 'site_description', 'logo', 'favicon', 'founder_photo')
         }),
         ('Informations de Contact', {
             'fields': ('contact_email', 'contact_phone', 'address')

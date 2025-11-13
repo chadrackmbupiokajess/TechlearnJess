@@ -91,6 +91,7 @@ class SiteSettings(models.Model):
     site_description = models.TextField("Description du site", blank=True)
     logo = models.ImageField("Logo", upload_to='site/', blank=True, null=True)
     favicon = models.ImageField("Favicon", upload_to='site/', blank=True, null=True)
+    founder_photo = models.ImageField("Photo du fondateur", upload_to='site/', blank=True, null=True)
 
     # --- Informations de contact ---
     contact_email = models.EmailField("Email de contact", blank=True, default="jessnatechlearn@gmail.com")
