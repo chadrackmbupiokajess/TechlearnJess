@@ -177,13 +177,7 @@ def legal_notice(request):
 
 def sitemap_xml(request):
     """Génération du sitemap XML pour le SEO"""
-    from django.contrib.sites.models import Site
-    
-    try:
-        current_site = Site.objects.get_current()
-        domain = f"https://{current_site.domain}"
-    except:
-        domain = "https://techlearnjess.onrender.com"
+    domain = "https://techlearnjess.pythonanywhere.com"
     
     # Récupérer tous les cours publiés
     courses = Course.objects.filter(is_published=True)
@@ -218,7 +212,7 @@ def robots_txt(request):
         "Allow: /",
         "",
         "# Sitemap",
-        "Sitemap: https://techlearnjess.onrender.com/sitemap.xml",
+        "Sitemap: https://techlearnjess.pythonanywhere.com/sitemap.xml",
         "",
         "# Pages importantes pour le SEO",
         "Allow: /",
