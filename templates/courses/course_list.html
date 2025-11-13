@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Tous les Cours - TechLearnJess{% endblock %}
+{% block title %}Tous les Cours - Jessna TechLearn{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
@@ -111,7 +111,7 @@
                     <!-- Image du cours -->
                     <div class="relative overflow-hidden h-48">
                         {% if course.thumbnail %}
-                            <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
+                            <img src="{{ course.thumbnail.url }}" alt="Miniature du cours {{ course.title }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300">
                         {% else %}
                             <div class="w-full h-full gradient-primary flex items-center justify-center">
                                 <i class="fas fa-play text-4xl text-white"></i>

@@ -196,9 +196,11 @@ def sitemap_xml(request):
     except ImportError:
         pass
     
+    settings = SiteSettings.get_settings()
+    
     context = {
         'domain': domain,
-        'current_date': timezone.now(),
+        'last_modified': settings.updated_at,
         'courses': courses,
         'forum_topics': forum_topics,
     }

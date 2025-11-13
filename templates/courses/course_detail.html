@@ -1,6 +1,13 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ course.title }} - TechLearnJess{% endblock %}
+{% block title %}{{ course.title }} - {{ course.category.name }} | Jessna TechLearn{% endblock %}
+{% block description %}{{ course.short_description|truncatewords:25 }}{% endblock %}
+{% block og_title %}{{ course.title }} - Jessna TechLearn{% endblock %}
+{% block og_description %}{{ course.short_description|truncatewords:25 }}{% endblock %}
+{% if course.thumbnail %}
+{% block og_image %}{{ course.thumbnail.url }}{% endblock %}
+{% block twitter_image %}{{ course.thumbnail.url }}{% endblock %}
+{% endif %}
 
 {% block content %}
 <!-- Hero Section du cours -->
