@@ -35,6 +35,10 @@ class CourseAdmin(admin.ModelAdmin):
         ('Contenu', {
             'fields': ('description', 'short_description', 'video_intro', 'prerequisites', 'learning_objectives')
         }),
+        ('SEO', {
+            'classes': ('collapse',),
+            'fields': ('meta_description',)
+        }),
         ('Métadonnées', {
             'fields': ('difficulty', 'duration_hours', 'language')
         }),

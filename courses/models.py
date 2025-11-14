@@ -48,6 +48,7 @@ class Course(models.Model):
     slug = models.SlugField(unique=True, verbose_name="Slug")
     description = models.TextField(verbose_name="Description")
     short_description = models.CharField(max_length=300, verbose_name="Description courte")
+    meta_description = models.CharField(max_length=160, blank=True, verbose_name="Méta-description (SEO)")
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name="Catégorie")
     instructor = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Formateur")
     

@@ -1,13 +1,42 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ course.title }} - {{ course.category.name }} | Jessna TechLearn{% endblock %}
-{% block description %}{{ course.short_description|truncatewords:25 }}{% endblock %}
+{% block description %}{{ course.meta_description|default:course.short_description|truncatewords:25 }}{% endblock %}
 {% block og_title %}{{ course.title }} - Jessna TechLearn{% endblock %}
 {% block og_description %}{{ course.short_description|truncatewords:25 }}{% endblock %}
 {% if course.thumbnail %}
 {% block og_image %}{{ course.thumbnail.url }}{% endblock %}
 {% block twitter_image %}{{ course.thumbnail.url }}{% endblock %}
 {% endif %}
+
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": "{{ course.title }}",
+  "description": "{{ course.short_description }}",
+  "provider": {
+    "@type": "Organization",
+    "name": "Jessna TechLearn",
+    "sameAs": "{{ request.scheme }}://{{ request.get_host }}"
+  },
+  {% if course.reviews.all %}
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ course.average_rating|floatformat:1 }}",
+    "reviewCount": "{{ course.total_reviews }}"
+  },
+  {% endif %}
+  "offers": {
+    "@type": "Offer",
+    "price": "{% if course.is_free %}0{% else %}{{ course.price }}{% endif %}",
+    "priceCurrency": "USD",
+    "category": "{{ course.get_difficulty_display }}"
+  }
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <!-- Hero Section du cours -->
