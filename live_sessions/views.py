@@ -47,6 +47,7 @@ def session_list(request):
 
 def session_detail(request, session_id):
     """Détail d'une session live"""
+    test = 0
     settings = SiteSettings.get_settings()
     session = get_object_or_404(LiveSession, session_id=session_id)
     
