@@ -12,7 +12,6 @@ from .models import LiveSession, SessionParticipant, SessionQuestion
 
 def session_list(request):
     """Liste des sessions live"""
-    raise ValueError("Ceci est une erreur de test")
     settings = SiteSettings.get_settings()
     now = timezone.now()
     
