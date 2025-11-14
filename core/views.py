@@ -14,22 +14,24 @@ from notifications.models import Notification
 User = get_user_model()
 
 
+def handler500(request):
+    """Gestionnaire d'erreur 500 personnalisé."""
+    return render(request, '500.html', status=500)
+
+
 def home(request):
     """Page d'accueil"""
     settings = SiteSettings.get_settings()
     
-    # Derniers cours disponibles
     latest_courses = Course.objects.filter(
         is_published=True
     ).order_by('-created_at')[:6]
     
-    # Témoignages mis en avant
     featured_testimonials = Testimonial.objects.filter(
         is_featured=True, 
         is_active=True
     )[:3]
     
-    # Statistiques générales
     stats = {
         'total_courses': Course.objects.filter(is_published=True).count(),
         'total_students': User.objects.filter(is_active=True).count(),
@@ -50,10 +52,8 @@ def about(request):
     """Page à propos"""
     settings = SiteSettings.get_settings()
     
-    # Témoignages actifs
     testimonials = Testimonial.objects.filter(is_active=True)[:6]
     
-    # FAQ générale
     faqs = FAQ.objects.filter(
         category='general',
         is_active=True
@@ -71,27 +71,24 @@ def about(request):
 @login_required
 def dashboard(request):
     """Tableau de bord utilisateur"""
+    settings = SiteSettings.get_settings()
     user = request.user
     
-    # Cours en cours
     current_enrollments = Enrollment.objects.filter(
         user=user,
         is_completed=False
     ).select_related('course')[:5]
     
-    # Cours terminés
     completed_enrollments = Enrollment.objects.filter(
         user=user,
         is_completed=True
     ).select_related('course')[:3]
     
-    # Notifications récentes non lues
     recent_notifications = Notification.objects.filter(
         user=user,
         is_read=False
     ).order_by('-created_at')[:5]
     
-    # Sessions live à venir (if app exists)
     upcoming_sessions = []
     try:
         from live_sessions.models import LiveSession
@@ -102,15 +99,13 @@ def dashboard(request):
     except ImportError:
         pass
     
-    # Statistiques personnelles
     user_stats = {
         'total_enrollments': Enrollment.objects.filter(user=user).count(),
         'completed_courses': Enrollment.objects.filter(user=user, is_completed=True).count(),
-        'certificates_earned': 0,  # To be implemented with certificates app
-        'forum_posts': 0,  # To be implemented with forum app
+        'certificates_earned': 0,
+        'forum_posts': 0,
     }
     
-    # Calculate completion rate
     if user_stats['total_enrollments'] > 0:
         user_stats['completion_rate'] = round(
             (user_stats['completed_courses'] / user_stats['total_enrollments']) * 100, 1
@@ -119,6 +114,7 @@ def dashboard(request):
         user_stats['completion_rate'] = 0
     
     context = {
+        'settings': settings,
         'current_enrollments': current_enrollments,
         'completed_enrollments': completed_enrollments,
         'recent_notifications': recent_notifications,
@@ -130,7 +126,8 @@ def dashboard(request):
 
 
 def faq_list(request):
-    """List of FAQs"""
+    """Liste des FAQ"""
+    settings = SiteSettings.get_settings()
     category = request.GET.get('category', 'all')
     
     faqs = FAQ.objects.filter(is_active=True)
@@ -138,7 +135,6 @@ def faq_list(request):
     if category != 'all':
         faqs = faqs.filter(category=category)
     
-    # Group by category
     faq_categories = {}
     for faq in faqs:
         if faq.category not in faq_categories:
@@ -146,6 +142,7 @@ def faq_list(request):
         faq_categories[faq.category].append(faq)
     
     context = {
+        'settings': settings,
         'faq_categories': faq_categories,
         'current_category': category,
         'categories': FAQ._meta.get_field('category').choices,
@@ -155,49 +152,47 @@ def faq_list(request):
 
 
 def privacy_policy(request):
-    """Privacy Policy Page"""
+    """Page Politique de confidentialité"""
     settings = SiteSettings.get_settings()
-    context = {'settings': settings}
-    return render(request, 'core/privacy_policy.html', context)
+    return render(request, 'core/privacy_policy.html', {'settings': settings})
 
 
 def terms_of_service(request):
-    """Terms of Service Page"""
+    """Page Conditions d'utilisation"""
     settings = SiteSettings.get_settings()
-    context = {'settings': settings}
-    return render(request, 'core/terms_of_service.html', context)
+    return render(request, 'core/terms_of_service.html', {'settings': settings})
 
 
 def legal_notice(request):
-    """Legal Notice Page"""
+    """Page Mentions légales"""
     settings = SiteSettings.get_settings()
-    context = {'settings': settings}
-    return render(request, 'core/legal_notice.html', context)
+    return render(request, 'core/legal_notice.html', {'settings': settings})
 
 
 def gallery(request):
-    """Image gallery page"""
+    """Page galerie d'images"""
+    settings = SiteSettings.get_settings()
     images = GalleryImage.objects.all()
-    context = {'images': images}
+    context = {
+        'settings': settings,
+        'images': images
+    }
     return render(request, 'core/gallery.html', context)
 
 
 def sitemap_xml(request):
-    """XML sitemap generation for SEO"""
+    """Génération du sitemap XML pour le SEO"""
     domain = "https://techlearnjess.pythonanywhere.com"
     
-    # Get all published courses
     courses = Course.objects.filter(is_published=True)
     
-    # Get forum topics (if available)
     forum_topics = []
     try:
         from forum.models import Topic
-        forum_topics = Topic.objects.filter(is_active=True)[:50]  # Limit to 50
+        forum_topics = Topic.objects.filter(is_active=True)[:50]
     except ImportError:
         pass
     
-    # Get gallery images
     gallery_images = GalleryImage.objects.all()
     
     settings = SiteSettings.get_settings()
@@ -217,7 +212,7 @@ def sitemap_xml(request):
 
 
 def robots_txt(request):
-    """robots.txt file generation"""
+    """Génération du fichier robots.txt"""
     lines = [
         "User-agent: *",
         "Allow: /",
@@ -225,26 +220,26 @@ def robots_txt(request):
         "# Sitemap",
         "Sitemap: https://techlearnjess.pythonanywhere.com/sitemap.xml",
         "",
-        "# Important pages for SEO",
+        "# Pages importantes pour le SEO",
         "Allow: /",
         "Allow: /about/",
         "Allow: /courses/",
         "Allow: /forum/",
         "Allow: /live-sessions/",
         "Allow: /faq/",
-        "Allow: /galerie/", # Allow Google to crawl the gallery page
+        "Allow: /galerie/",
         "",
-        "# Block administrative pages",
+        "# Bloquer les pages administratives",
         "Disallow: /admin/",
         "Disallow: /accounts/logout/",
         "Disallow: /api/",
         "",
-        "# Block temporary files",
+        "# Bloquer les fichiers temporaires",
         "Disallow: /*.tmp$",
         "Disallow: /*.log$",
         "",
-        "# Information about the founder Chadrack Mbu Jess",
-        "# Site created by Chadrack Mbu Jess (Chadrackmbujess)",
+        "# Informations sur le fondateur Chadrack Mbu Jess",
+        "# Site créé par Chadrack Mbu Jess (Chadrackmbujess)",
         "# Contact: chadrackmbujess@gmail.com",
         "# Portfolio: https://chadrackmbu.pythonanywhere.com/",
     ]

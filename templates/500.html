@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Erreur de Serveur - Jessna TechLearn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen bg-gradient-to-br from-red-50 via-white to-orange-50 flex items-center justify-center py-12">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <!-- Icône d'erreur -->
+            <div class="mb-8">
+                <div class="inline-flex items-center justify-center w-24 h-24 bg-red-100 rounded-full">
+                    <i class="fas fa-server text-5xl text-red-600"></i>
+                </div>
+            </div>
+
+            <!-- Message principal -->
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">
+                Oups ! Une erreur est survenue
+            </h1>
+            <p class="text-xl text-gray-600 mb-8">
+                Nous avons rencontré un problème technique inattendu. Notre équipe a été automatiquement notifiée et travaille déjà à sa résolution. Veuillez nous excuser pour ce désagrément.
+            </p>
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/" 
+                   class="inline-flex items-center px-8 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 transition-colors">
+                    <i class="fas fa-home mr-2"></i>
+                    Retour à l'accueil
+                </a>
+                <a href="mailto:jessnatechlearn@gmail.com" 
+                   class="inline-flex items-center px-8 py-3 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition-colors">
+                    <i class="fas fa-envelope mr-2"></i>
+                    Contacter le support
+                </a>
+            </div>
+
+            <!-- Contact direct -->
+            <div class="mt-12 text-gray-500">
+                <p>Si le problème persiste, vous pouvez nous contacter directement :</p>
+                <p class="mt-2">
+                    <i class="fas fa-phone-alt mr-2"></i>+243 891 433 419
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

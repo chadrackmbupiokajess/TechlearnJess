@@ -5,14 +5,14 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
 from django.core.paginator import Paginator
-from core.models import SiteSettings # Import SiteSettings
+from core.models import SiteSettings
 
 from .models import LiveSession, SessionParticipant, SessionQuestion
 
 
 def session_list(request):
     """Liste des sessions live"""
-    settings = SiteSettings.get_settings() # Get site settings
+    settings = SiteSettings.get_settings()
     now = timezone.now()
     
     # Sessions à venir
@@ -36,7 +36,7 @@ def session_list(request):
     ).exclude(recording_url='').order_by('-end_time')[:10]
     
     context = {
-        'settings': settings, # Pass settings to context
+        'settings': settings,
         'upcoming_sessions': upcoming_sessions,
         'live_sessions': live_sessions,
         'past_sessions': past_sessions,
@@ -47,7 +47,7 @@ def session_list(request):
 
 def session_detail(request, session_id):
     """Détail d'une session live"""
-    settings = SiteSettings.get_settings() # Get site settings
+    settings = SiteSettings.get_settings()
     session = get_object_or_404(LiveSession, session_id=session_id)
     
     # Vérifier si l'utilisateur peut voir cette session
@@ -68,7 +68,7 @@ def session_detail(request, session_id):
     questions = session.questions.filter(is_public=True).order_by('-asked_at')[:10]
     
     context = {
-        'settings': settings, # Pass settings to context
+        'settings': settings,
         'session': session,
         'is_enrolled': is_enrolled,
         'can_join': can_join,
@@ -155,7 +155,7 @@ def ask_question(request, session_id):
 @login_required
 def my_sessions(request):
     """Mes sessions live"""
-    settings = SiteSettings.get_settings() # Get site settings
+    settings = SiteSettings.get_settings()
     now = timezone.now()
     
     # Sessions à venir auxquelles je participe
@@ -176,7 +176,7 @@ def my_sessions(request):
     past_page = paginator.get_page(page_number)
     
     context = {
-        'settings': settings, # Pass settings to context
+        'settings': settings,
         'upcoming_sessions': upcoming,
         'past_sessions': past_page,
     }
@@ -186,7 +186,7 @@ def my_sessions(request):
 
 def session_recording(request, session_id):
     """Voir l'enregistrement d'une session"""
-    settings = SiteSettings.get_settings() # Get site settings
+    settings = SiteSettings.get_settings()
     session = get_object_or_404(LiveSession, session_id=session_id, status='ended')
     
     if not session.recording_url:
@@ -199,7 +199,7 @@ def session_recording(request, session_id):
         return redirect('accounts:login')
     
     context = {
-        'settings': settings, # Pass settings to context
+        'settings': settings,
         'session': session,
     }
     
