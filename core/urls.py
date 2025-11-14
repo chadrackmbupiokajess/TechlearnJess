@@ -8,6 +8,7 @@ urlpatterns = [
     path('a-propos/', views.about, name='about'),
     path('tableau-de-bord/', views.dashboard, name='dashboard'),
     path('faq/', views.faq_list, name='faq'),
+    path('galerie/', views.gallery, name='gallery'),
     
     # Pages légales
     path('politique-confidentialite/', views.privacy_policy, name='privacy_policy'),

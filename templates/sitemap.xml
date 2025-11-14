@@ -1,5 +1,6 @@
 {% load static %}<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
@@ -51,6 +52,14 @@
         <changefreq>monthly</changefreq>
         <priority>0.6</priority>
     </url>
+    
+    <!-- Galerie -->
+    <url>
+        <loc>{{ domain }}{% url 'core:gallery' %}</loc>
+        <lastmod>{{ last_modified|date:"Y-m-d" }}</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.7</priority>
+    </url>
 
     <!-- Connexion -->
     <url>
@@ -71,7 +80,7 @@
     <!-- Cours individuels -->
     {% for course in courses %}
     <url>
-        <loc>{{ domain }}{% url 'courses:detail' course.slug %}</loc>
+        <loc>{{ domain }}{{ course.get_absolute_url }}</loc>
         <lastmod>{{ course.updated_at|date:"Y-m-d" }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.8</priority>
@@ -81,10 +90,24 @@
     <!-- Articles de forum -->
     {% for topic in forum_topics %}
     <url>
-        <loc>{{ domain }}{% url 'forum:topic_detail' topic.slug %}</loc>
+        <loc>{{ domain }}{{ topic.get_absolute_url }}</loc>
         <lastmod>{{ topic.updated_at|date:"Y-m-d" }}</lastmod>
         <changefreq>weekly</changefreq>
         <priority>0.6</priority>
+    </url>
+    {% endfor %}
+    
+    <!-- Images de la galerie -->
+    {% for image in gallery_images %}
+    <url>
+        <loc>{{ domain }}{{ image.image.url }}</loc>
+        <lastmod>{{ image.uploaded_at|date:"Y-m-d" }}</lastmod>
+        <changefreq>yearly</changefreq>
+        <image:image>
+            <image:loc>{{ domain }}{{ image.image.url }}</image:loc>
+            <image:title>{{ image.title }}</image:title>
+            <image:caption>{{ image.description }}</image:caption>
+        </image:image>
     </url>
     {% endfor %}
 

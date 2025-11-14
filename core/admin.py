@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import SiteSettings, Testimonial, FAQ
+from .models import SiteSettings, Testimonial, FAQ, GalleryImage
 
 
 @admin.register(SiteSettings)
@@ -55,6 +55,12 @@ class SiteSettingsAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         # Empêcher la suppression
         return False
+
+
+@admin.register(GalleryImage)
+class GalleryImageAdmin(admin.ModelAdmin):
+    list_display = ('title', 'uploaded_at')
+    search_fields = ('title', 'description')
 
 
 @admin.register(Testimonial)

@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from django.template import loader
 from datetime import timedelta
 
-from .models import SiteSettings, Testimonial, FAQ
+from .models import SiteSettings, Testimonial, FAQ, GalleryImage
 from courses.models import Course, Enrollment
 from notifications.models import Notification
 
@@ -91,7 +91,7 @@ def dashboard(request):
         is_read=False
     ).order_by('-created_at')[:5]
     
-    # Sessions live à venir (si l'app existe)
+    # Sessions live à venir (if app exists)
     upcoming_sessions = []
     try:
         from live_sessions.models import LiveSession
@@ -106,11 +106,11 @@ def dashboard(request):
     user_stats = {
         'total_enrollments': Enrollment.objects.filter(user=user).count(),
         'completed_courses': Enrollment.objects.filter(user=user, is_completed=True).count(),
-        'certificates_earned': 0,  # À implémenter avec l'app certificates
-        'forum_posts': 0,  # À implémenter avec l'app forum
+        'certificates_earned': 0,  # To be implemented with certificates app
+        'forum_posts': 0,  # To be implemented with forum app
     }
     
-    # Calcul du taux de complétion
+    # Calculate completion rate
     if user_stats['total_enrollments'] > 0:
         user_stats['completion_rate'] = round(
             (user_stats['completed_courses'] / user_stats['total_enrollments']) * 100, 1
@@ -130,7 +130,7 @@ def dashboard(request):
 
 
 def faq_list(request):
-    """Liste des FAQ"""
+    """List of FAQs"""
     category = request.GET.get('category', 'all')
     
     faqs = FAQ.objects.filter(is_active=True)
@@ -138,7 +138,7 @@ def faq_list(request):
     if category != 'all':
         faqs = faqs.filter(category=category)
     
-    # Grouper par catégorie
+    # Group by category
     faq_categories = {}
     for faq in faqs:
         if faq.category not in faq_categories:
@@ -155,40 +155,50 @@ def faq_list(request):
 
 
 def privacy_policy(request):
-    """Page Politique de confidentialité"""
+    """Privacy Policy Page"""
     settings = SiteSettings.get_settings()
     context = {'settings': settings}
     return render(request, 'core/privacy_policy.html', context)
 
 
 def terms_of_service(request):
-    """Page Conditions d'utilisation"""
+    """Terms of Service Page"""
     settings = SiteSettings.get_settings()
     context = {'settings': settings}
     return render(request, 'core/terms_of_service.html', context)
 
 
 def legal_notice(request):
-    """Page Mentions légales"""
+    """Legal Notice Page"""
     settings = SiteSettings.get_settings()
     context = {'settings': settings}
     return render(request, 'core/legal_notice.html', context)
 
 
+def gallery(request):
+    """Image gallery page"""
+    images = GalleryImage.objects.all()
+    context = {'images': images}
+    return render(request, 'core/gallery.html', context)
+
+
 def sitemap_xml(request):
-    """Génération du sitemap XML pour le SEO"""
+    """XML sitemap generation for SEO"""
     domain = "https://techlearnjess.pythonanywhere.com"
     
-    # Récupérer tous les cours publiés
+    # Get all published courses
     courses = Course.objects.filter(is_published=True)
     
-    # Récupérer les topics du forum (si disponible)
+    # Get forum topics (if available)
     forum_topics = []
     try:
         from forum.models import Topic
-        forum_topics = Topic.objects.filter(is_active=True)[:50]  # Limiter à 50
+        forum_topics = Topic.objects.filter(is_active=True)[:50]  # Limit to 50
     except ImportError:
         pass
+    
+    # Get gallery images
+    gallery_images = GalleryImage.objects.all()
     
     settings = SiteSettings.get_settings()
     
@@ -197,6 +207,7 @@ def sitemap_xml(request):
         'last_modified': settings.updated_at,
         'courses': courses,
         'forum_topics': forum_topics,
+        'gallery_images': gallery_images,
     }
     
     template = loader.get_template('sitemap.xml')
@@ -206,7 +217,7 @@ def sitemap_xml(request):
 
 
 def robots_txt(request):
-    """Génération du fichier robots.txt"""
+    """robots.txt file generation"""
     lines = [
         "User-agent: *",
         "Allow: /",
@@ -214,25 +225,26 @@ def robots_txt(request):
         "# Sitemap",
         "Sitemap: https://techlearnjess.pythonanywhere.com/sitemap.xml",
         "",
-        "# Pages importantes pour le SEO",
+        "# Important pages for SEO",
         "Allow: /",
         "Allow: /about/",
         "Allow: /courses/",
         "Allow: /forum/",
         "Allow: /live-sessions/",
         "Allow: /faq/",
+        "Allow: /galerie/", # Allow Google to crawl the gallery page
         "",
-        "# Bloquer les pages administratives",
+        "# Block administrative pages",
         "Disallow: /admin/",
         "Disallow: /accounts/logout/",
         "Disallow: /api/",
         "",
-        "# Bloquer les fichiers temporaires",
+        "# Block temporary files",
         "Disallow: /*.tmp$",
         "Disallow: /*.log$",
         "",
-        "# Informations sur le fondateur Chadrack Mbu Jess",
-        "# Site créé par Chadrack Mbu Jess (Chadrackmbujess)",
+        "# Information about the founder Chadrack Mbu Jess",
+        "# Site created by Chadrack Mbu Jess (Chadrackmbujess)",
         "# Contact: chadrackmbujess@gmail.com",
         "# Portfolio: https://chadrackmbu.pythonanywhere.com/",
     ]

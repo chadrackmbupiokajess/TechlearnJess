@@ -3,17 +3,20 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
+from core.models import SiteSettings # Import SiteSettings
 from .models import ForumCategory, ForumTopic, ForumPost
 
 
 def forum_index(request):
     """Page d'accueil du forum"""
+    settings = SiteSettings.get_settings() # Get site settings
     categories = ForumCategory.objects.filter(est_actif=True)
     
     # Derniers sujets
     derniers_sujets = ForumTopic.objects.select_related('categorie', 'auteur').order_by('-derniere_activite')[:5]
     
     context = {
+        'settings': settings, # Pass settings to context
         'categories': categories,
         'derniers_sujets': derniers_sujets,
     }
@@ -23,6 +26,7 @@ def forum_index(request):
 
 def category_detail(request, slug):
     """Détail d'une catégorie"""
+    settings = SiteSettings.get_settings() # Get site settings
     categorie = get_object_or_404(ForumCategory, slug=slug, est_actif=True)
     sujets = ForumTopic.objects.filter(categorie=categorie).select_related('auteur')
     
@@ -39,6 +43,7 @@ def category_detail(request, slug):
     page_obj = paginator.get_page(page_number)
     
     context = {
+        'settings': settings, # Pass settings to context
         'categorie': categorie,
         'page_obj': page_obj,
         'search': search,
@@ -49,6 +54,7 @@ def category_detail(request, slug):
 
 def topic_detail(request, category_slug, slug):
     """Détail d'un sujet"""
+    settings = SiteSettings.get_settings() # Get site settings
     categorie = get_object_or_404(ForumCategory, slug=category_slug, est_actif=True)
     sujet = get_object_or_404(ForumTopic, categorie=categorie, slug=slug)
     
@@ -64,6 +70,7 @@ def topic_detail(request, category_slug, slug):
     page_obj = paginator.get_page(page_number)
     
     context = {
+        'settings': settings, # Pass settings to context
         'categorie': categorie,
         'sujet': sujet,
         'page_obj': page_obj,
@@ -75,6 +82,7 @@ def topic_detail(request, category_slug, slug):
 @login_required
 def create_topic(request, category_slug):
     """Créer un nouveau sujet"""
+    settings = SiteSettings.get_settings() # Get site settings
     categorie = get_object_or_404(ForumCategory, slug=category_slug, est_actif=True)
     
     if request.method == 'POST':
@@ -94,6 +102,7 @@ def create_topic(request, category_slug):
             messages.error(request, 'Veuillez remplir tous les champs.')
     
     context = {
+        'settings': settings, # Pass settings to context
         'categorie': categorie,
     }
     
@@ -103,6 +112,7 @@ def create_topic(request, category_slug):
 @login_required
 def create_post(request, category_slug, topic_slug):
     """Créer une réponse"""
+    settings = SiteSettings.get_settings() # Get site settings
     categorie = get_object_or_404(ForumCategory, slug=category_slug, est_actif=True)
     sujet = get_object_or_404(ForumTopic, categorie=categorie, slug=topic_slug)
     
@@ -123,5 +133,11 @@ def create_post(request, category_slug, topic_slug):
             return redirect('forum:topic_detail', category_slug=category_slug, slug=topic_slug)
         else:
             messages.error(request, 'Veuillez saisir un contenu.')
+    
+    context = {
+        'settings': settings, # Pass settings to context
+        'categorie': categorie,
+        'sujet': sujet,
+    }
     
     return redirect('forum:topic_detail', category_slug=category_slug, slug=topic_slug)

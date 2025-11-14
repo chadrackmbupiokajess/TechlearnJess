@@ -152,6 +152,22 @@ class SiteSettings(models.Model):
         return settings
 
 
+class GalleryImage(models.Model):
+    """Modèle pour la galerie d'images"""
+    title = models.CharField("Titre", max_length=200, help_text="Titre de l'image, utilisé pour le référencement (attribut alt).")
+    description = models.TextField("Description", blank=True, help_text="Description facultative de l'image.")
+    image = models.ImageField("Image", upload_to='gallery/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Image de la galerie"
+        verbose_name_plural = "Images de la galerie"
+        ordering = ['-uploaded_at']
+
+    def __str__(self):
+        return self.title
+
+
 class Testimonial(models.Model):
     """Témoignages d'utilisateurs"""
     name = models.CharField(max_length=100, verbose_name="Nom")

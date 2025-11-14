@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.utils import timezone
+from core.models import SiteSettings
 
 from .models import Course, Category, Enrollment, Lesson, LessonProgress, Review, Quiz, Question, Answer, QuizAttempt, StudentAnswer
 from .forms import ReviewForm
@@ -13,6 +14,7 @@ from .forms import ReviewForm
 
 def course_list(request):
     """Liste des cours"""
+    settings = SiteSettings.get_settings()
     courses = Course.objects.filter(is_published=True).select_related('category', 'instructor')
     categories = Category.objects.filter(is_active=True)
     
@@ -59,6 +61,7 @@ def course_list(request):
     page_obj = paginator.get_page(page_number)
     
     context = {
+        'settings': settings,
         'page_obj': page_obj,
         'categories': categories,
         'current_category': category_slug,
@@ -74,6 +77,7 @@ def course_list(request):
 
 def course_detail(request, slug):
     """Détail d'un cours"""
+    settings = SiteSettings.get_settings()
     course = get_object_or_404(Course, slug=slug, is_published=True)
     lessons = course.lessons.filter(is_published=True).order_by('order')
     reviews = course.reviews.filter(is_approved=True).order_by('-created_at')[:5]
@@ -95,6 +99,7 @@ def course_detail(request, slug):
     ).exclude(id=course.id)[:4]
     
     context = {
+        'settings': settings,
         'course': course,
         'lessons': lessons,
         'reviews': reviews,
@@ -134,6 +139,7 @@ def enroll_course(request, slug):
 @login_required
 def learn_course(request, slug, lesson_slug=None):
     """Interface d'apprentissage"""
+    settings = SiteSettings.get_settings()
     course = get_object_or_404(Course, slug=slug, is_published=True)
     
     # Vérifier l'inscription
@@ -176,6 +182,7 @@ def learn_course(request, slug, lesson_slug=None):
     progress_dict = {p.lesson_id: p for p in all_progress}
     
     context = {
+        'settings': settings,
         'course': course,
         'enrollment': enrollment,
         'lessons': lessons,
@@ -224,6 +231,7 @@ def complete_lesson(request, slug, lesson_slug):
 @login_required
 def my_courses(request):
     """Mes cours"""
+    settings = SiteSettings.get_settings()
     enrollments = Enrollment.objects.filter(user=request.user).select_related('course')
     
     # Calculer les statistiques
@@ -239,6 +247,7 @@ def my_courses(request):
         enrollments = enrollments.filter(is_completed=False)
     
     context = {
+        'settings': settings,
         'enrollments': enrollments,
         'current_status': status,
         'total_enrollments': total_enrollments,
@@ -280,6 +289,7 @@ def add_review(request, slug):
 
 def category_courses(request, slug):
     """Cours par catégorie"""
+    settings = SiteSettings.get_settings()
     category = get_object_or_404(Category, slug=slug, is_active=True)
     courses = Course.objects.filter(category=category, is_published=True)
     
@@ -289,6 +299,7 @@ def category_courses(request, slug):
     page_obj = paginator.get_page(page_number)
     
     context = {
+        'settings': settings,
         'category': category,
         'page_obj': page_obj,
     }

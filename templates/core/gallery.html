@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Galerie d'images - Jessna TechLearn{% endblock %}
+{% block description %}Découvrez notre galerie d'images : photos de nos étudiants, de nos événements et de nos locaux. Une immersion visuelle dans l'univers Jessna TechLearn.{% endblock %}
+
+{% block content %}
+<section class="py-16 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-8 text-center">Notre Galerie d'Images</h1>
+        
+        {% if images %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {% for image in images %}
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden group">
+                        <img src="{{ image.image.url }}" alt="{{ image.title }}" class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300">
+                        <div class="p-4">
+                            <h2 class="text-lg font-semibold text-gray-900 dark:text-white">{{ image.title }}</h2>
+                            {% if image.description %}
+                                <p class="text-gray-600 dark:text-gray-400 text-sm mt-2">{{ image.description }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-12">
+                <i class="fas fa-camera text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
+                <p class="text-xl text-gray-500 dark:text-gray-400">Aucune image dans la galerie pour le moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
