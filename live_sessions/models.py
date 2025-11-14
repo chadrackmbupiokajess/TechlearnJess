@@ -79,6 +79,13 @@ class LiveSession(models.Model):
     def available_spots(self):
         return max(0, self.max_participants - self.participants_count)
 
+    @property
+    def effective_meeting_url(self):
+        """Retourne l'URL de la réunion ou en génère une si elle est vide."""
+        if self.meeting_url:
+            return self.meeting_url
+        return f"https://meet.jit.si/JessnaTechlearn-{self.session_id}"
+
     def can_join(self, user):
         """Vérifier si un utilisateur peut rejoindre la session"""
         if not self.is_upcoming and not self.is_live_now:

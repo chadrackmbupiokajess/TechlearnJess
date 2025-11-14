@@ -11,4 +11,5 @@ urlpatterns = [
     path('<uuid:session_id>/quitter/', views.leave_session, name='leave'),
     path('<uuid:session_id>/question/', views.ask_question, name='ask_question'),
     path('<uuid:session_id>/enregistrement/', views.session_recording, name='recording'),
+    path('<uuid:session_id>/start/', views.start_session_view, name='start_session'),
 ]

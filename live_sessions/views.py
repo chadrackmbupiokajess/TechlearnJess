@@ -105,7 +105,7 @@ def join_session(request, session_id):
     return JsonResponse({
         'success': True,
         'message': 'Vous avez rejoint la session avec succès!',
-        'meeting_url': session.meeting_url
+        'meeting_url': session.effective_meeting_url
     })
 
 
@@ -205,3 +205,22 @@ def session_recording(request, session_id):
     }
     
     return render(request, 'live_sessions/recording.html', context)
+
+@login_required
+@require_http_methods(["POST"])
+def start_session_view(request, session_id):
+    """Démarrer une session live"""
+    session = get_object_or_404(LiveSession, session_id=session_id)
+
+    # Seul l'instructeur ou un superutilisateur peut démarrer la session
+    if request.user != session.instructor and not request.user.is_superuser:
+        messages.error(request, "Vous n'êtes pas autorisé à démarrer cette session.")
+        return redirect('live_sessions:detail', session_id=session.session_id)
+
+    if session.status == 'scheduled':
+        session.start_session()
+        messages.success(request, "La session a été démarrée avec succès.")
+    else:
+        messages.warning(request, "Cette session ne peut pas être démarrée.")
+
+    return redirect('live_sessions:detail', session_id=session.session_id)

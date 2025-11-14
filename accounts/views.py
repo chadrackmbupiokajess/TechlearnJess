@@ -11,6 +11,7 @@ from django.contrib.auth import update_session_auth_hash
 
 from .models import UserProfile, LoginHistory
 from .forms import UserRegistrationForm, UserProfileForm, UserUpdateForm
+from core.models import SiteSettings
 
 
 def register(request):
@@ -28,7 +29,8 @@ def register(request):
     else:
         form = UserRegistrationForm()
     
-    return render(request, 'accounts/register.html', {'form': form})
+    settings = SiteSettings.get_settings()
+    return render(request, 'accounts/register.html', {'form': form, 'settings': settings})
 
 
 def user_login(request):
@@ -72,7 +74,8 @@ def user_login(request):
             
             messages.error(request, 'Nom d\'utilisateur ou mot de passe incorrect.')
     
-    return render(request, 'accounts/login.html')
+    settings = SiteSettings.get_settings()
+    return render(request, 'accounts/login.html', {'settings': settings})
 
 
 def user_logout(request):
@@ -113,12 +116,14 @@ def profile(request, username=None):
         except ImportError:
             pass
     
+    settings = SiteSettings.get_settings()
     context = {
         'profile_user': user,
         'profile': profile,
         'is_own_profile': is_own_profile,
         'stats': stats,
         'recent_courses': recent_courses,
+        'settings': settings,
     }
     
     return render(request, 'accounts/profile.html', context)
@@ -142,9 +147,11 @@ def edit_profile(request):
         user_form = UserUpdateForm(instance=request.user)
         profile_form = UserProfileForm(instance=profile)
     
+    settings = SiteSettings.get_settings()
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
+        'settings': settings,
     }
     
     return render(request, 'accounts/edit_profile.html', context)
@@ -163,14 +170,16 @@ def change_password(request):
     else:
         form = PasswordChangeForm(request.user)
     
-    return render(request, 'accounts/change_password.html', {'form': form})
+    settings = SiteSettings.get_settings()
+    return render(request, 'accounts/change_password.html', {'form': form, 'settings': settings})
 
 
 @login_required
 def login_history(request):
     """Historique des connexions"""
     history = LoginHistory.objects.filter(user=request.user)[:20]
-    return render(request, 'accounts/login_history.html', {'history': history})
+    settings = SiteSettings.get_settings()
+    return render(request, 'accounts/login_history.html', {'history': history, 'settings': settings})
 
 
 @login_required

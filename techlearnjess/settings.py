@@ -18,7 +18,8 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'chadrackmbu.pythonanywhere.com',
-    'techlearnjess.pythonanywhere.com'
+    'techlearnjess.pythonanywhere.com',
+    '192.168.1.193'
 ]
 
 # ------------------------------
