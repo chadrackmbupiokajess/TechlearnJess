@@ -151,3 +151,4 @@ Thumbs.db
 
  # Fichier de clé privée JaaS
  jaas_private_key.pk
+*.pk.backup
