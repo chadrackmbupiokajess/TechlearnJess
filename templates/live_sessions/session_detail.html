@@ -5,7 +5,7 @@
 {% block content %}
 <!-- Jitsi Meet Iframe Container -->
 <div id="jitsi-container" class="hidden w-full h-screen relative bg-gray-900">
-    <!-- Le conteneur de l'iframe et les superpositions seront ici -->
+    <!-- L'iframe Jitsi sera généré ici par le script -->
 </div>
 
 
@@ -416,7 +416,6 @@ async function enrollSession(sessionId) {
 
 // Démarrer et rejoindre la visio Jitsi
 async function joinSession(sessionId, userName, sessionTitle, isModerator) {
-    // 1. Appeler le backend pour obtenir le JWT
     try {
         const response = await fetch(`/sessions-live/${sessionId}/rejoindre/`, {
             method: 'POST',
@@ -433,24 +432,18 @@ async function joinSession(sessionId, userName, sessionTitle, isModerator) {
             return;
         }
 
-        // 2. Cacher le contenu principal et afficher le conteneur Jitsi
         document.getElementById('main-content').classList.add('hidden');
         const jitsiContainer = document.getElementById('jitsi-container');
         jitsiContainer.classList.remove('hidden');
-        
-        // Vider le conteneur au cas où il y aurait une ancienne instance
         jitsiContainer.innerHTML = '';
 
-        // 3. Extraire les informations de l'URL
         const url = new URL(data.meeting_url);
         const domain = url.hostname;
         const roomName = url.pathname.substring(1);
         const jwt = url.searchParams.get('jwt');
 
-        // 4. Définir les boutons de la barre d'outils en fonction du rôle et de la taille de l'écran
-        const isMobile = window.innerWidth <= 768;
         let toolbarButtons = [
-            'microphone', 'camera', 'closedcaptions', 'desktop', 
+            'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
             'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
             'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
             'videoquality', 'filmstrip', 'feedback', 'stats', 'shortcuts',
@@ -458,17 +451,10 @@ async function joinSession(sessionId, userName, sessionTitle, isModerator) {
             'e2ee'
         ];
 
-        // Ajouter le bouton 'inviter' uniquement pour les modérateurs
         if (isModerator) {
             toolbarButtons.push('invite');
         }
 
-        // Gérer le bouton plein écran
-        if (isMobile) {
-            toolbarButtons.push('fullscreen'); // Ajouter le bouton plein écran natif sur mobile
-        }
-
-        // 5. Initialiser l'API Jitsi
         const options = {
             roomName: roomName,
             jwt: jwt,
@@ -478,7 +464,7 @@ async function joinSession(sessionId, userName, sessionTitle, isModerator) {
             interfaceConfigOverwrite: {
                 SHOW_JITSI_WATERMARK: false,
                 SHOW_WATERMARK_FOR_GUESTS: false,
-                DEFAULT_BACKGROUND: '#111827', // bg-gray-900
+                DEFAULT_BACKGROUND: '#111827',
                 TOOLBAR_BUTTONS: toolbarButtons,
             },
             configOverwrite: {
@@ -493,43 +479,10 @@ async function joinSession(sessionId, userName, sessionTitle, isModerator) {
 
         jitsiApi = new JitsiMeetExternalAPI(domain, options);
 
-        // 6. Ajouter les contrôles personnalisés SEULEMENT sur les écrans larges
-        if (!isMobile) {
-            // Créer une barre de contrôle personnalisée
-            const controlsBar = document.createElement('div');
-            controlsBar.className = 'absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-50';
-            
-            // Ajouter le titre de la session
-            const titleElement = document.createElement('h2');
-            titleElement.innerHTML = `<i class="fas fa-video mr-2 text-red-400"></i> ${sessionTitle}`;
-            titleElement.className = 'text-white text-lg font-semibold bg-black/50 px-4 py-2 rounded-lg';
-            
-            // Créer un conteneur pour les boutons de droite
-            const rightButtons = document.createElement('div');
-            rightButtons.className = 'flex items-center space-x-4';
+        jitsiApi.addEventListener('videoConferenceJoined', () => {
+            jitsiApi.executeCommand('setSubject', sessionTitle);
+        });
 
-            // Ajouter notre propre bouton plein écran
-            const fullscreenButton = document.createElement('button');
-            fullscreenButton.id = 'fullscreen-btn';
-            fullscreenButton.innerHTML = '<i class="fas fa-expand"></i>';
-            fullscreenButton.className = 'bg-gray-700 text-white w-10 h-10 rounded-lg hover:bg-gray-600 transition-colors font-semibold flex items-center justify-center';
-            fullscreenButton.title = 'Plein Écran';
-            fullscreenButton.onclick = toggleFullScreen;
-
-            // Assembler la barre de contrôle
-            rightButtons.appendChild(fullscreenButton);
-            controlsBar.appendChild(titleElement);
-            controlsBar.appendChild(rightButtons);
-            jitsiContainer.appendChild(controlsBar);
-
-            // Ajouter les écouteurs d'événements pour le plein écran
-            document.addEventListener('fullscreenchange', handleFullscreenChange);
-            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
-        }
-
-        // Gérer la fin de la réunion
         jitsiApi.addEventListener('videoConferenceLeft', () => {
             leaveJitsiSession();
         });
@@ -541,49 +494,14 @@ async function joinSession(sessionId, userName, sessionTitle, isModerator) {
     }
 }
 
-// Fonction pour gérer notre propre mode plein écran
-function toggleFullScreen() {
-    const elem = document.getElementById('jitsi-container');
-    if (!document.fullscreenElement) {
-        elem.requestFullscreen().catch(err => {
-            alert(`Erreur lors du passage en plein écran: ${err.message} (${err.name})`);
-        });
-    } else {
-        document.exitFullscreen();
-    }
-}
-
-// Gérer le changement d'icône lors du passage en plein écran
-function handleFullscreenChange() {
-    const button = document.getElementById('fullscreen-btn');
-    if (!button) return;
-
-    if (document.fullscreenElement) {
-        button.innerHTML = '<i class="fas fa-compress"></i>';
-        button.title = 'Quitter le plein écran';
-    } else {
-        button.innerHTML = '<i class="fas fa-expand"></i>';
-        button.title = 'Plein Écran';
-    }
-}
-
-// Quitter la session Jitsi et restaurer la page
 function leaveJitsiSession() {
     if (document.fullscreenElement) {
         document.exitFullscreen();
     }
-
     if (jitsiApi) {
         jitsiApi.dispose();
         jitsiApi = null;
     }
-
-    // Retirer les écouteurs d'événements pour éviter les fuites de mémoire
-    document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
-    document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
-    document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
-
     document.getElementById('jitsi-container').classList.add('hidden');
     document.getElementById('jitsi-container').innerHTML = '';
     document.getElementById('main-content').classList.remove('hidden');
@@ -594,8 +512,6 @@ function leaveJitsiSession() {
     });
 }
 
-
-// Poser une question
 async function askQuestion(event, sessionId) {
     event.preventDefault();
     const form = event.target;
@@ -620,14 +536,12 @@ async function askQuestion(event, sessionId) {
     }
 }
 
-// Copier le lien
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(function() {
         alert('Lien copié dans le presse-papiers !');
     });
 }
 
-// Gérer le bouton "S'inscrire"
 const originalJoinButton = document.querySelector('button[onclick*="S\'inscrire"]');
 if (originalJoinButton) {
     originalJoinButton.setAttribute('onclick', `enrollSession('{{ session.session_id }}')`);
