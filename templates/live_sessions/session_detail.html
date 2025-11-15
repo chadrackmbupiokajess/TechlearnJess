@@ -459,7 +459,7 @@ async function joinSession(sessionId, userName, sessionTitle) {
                 SHOW_WATERMARK_FOR_GUESTS: false,
                 DEFAULT_BACKGROUND: '#111827', // bg-gray-900
                 TOOLBAR_BUTTONS: [
-                    'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
+                    'microphone', 'camera', 'closedcaptions', 'desktop', 
                     'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
                     'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
                     'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
@@ -479,20 +479,40 @@ async function joinSession(sessionId, userName, sessionTitle) {
 
         jitsiApi = new JitsiMeetExternalAPI(domain, options);
 
+        // Créer une barre de contrôle personnalisée
+        const controlsBar = document.createElement('div');
+        controlsBar.className = 'absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-50';
+        
         // Ajouter le titre de la session
         const titleElement = document.createElement('h2');
         titleElement.innerHTML = `<i class="fas fa-video mr-2 text-red-400"></i> ${sessionTitle}`;
-        titleElement.className = 'absolute top-4 left-4 text-white text-lg font-semibold z-50 bg-black/50 px-4 py-2 rounded-lg';
-        jitsiContainer.appendChild(titleElement);
+        titleElement.className = 'text-white text-lg font-semibold bg-black/50 px-4 py-2 rounded-lg';
+        
+        // Créer un conteneur pour les boutons de droite
+        const rightButtons = document.createElement('div');
+        rightButtons.className = 'flex items-center space-x-4';
 
-        // Ajouter un bouton pour quitter
-        const leaveButton = document.createElement('button');
-        leaveButton.innerHTML = '<i class="fas fa-times mr-2"></i> Quitter';
-        leaveButton.className = 'absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg z-50 hover:bg-red-700 transition-colors font-semibold';
-        leaveButton.onclick = leaveJitsiSession;
-        jitsiContainer.appendChild(leaveButton);
+        // Ajouter notre propre bouton plein écran
+        const fullscreenButton = document.createElement('button');
+        fullscreenButton.id = 'fullscreen-btn';
+        fullscreenButton.innerHTML = '<i class="fas fa-expand"></i>';
+        fullscreenButton.className = 'bg-gray-700 text-white w-10 h-10 rounded-lg hover:bg-gray-600 transition-colors font-semibold flex items-center justify-center';
+        fullscreenButton.title = 'Plein Écran';
+        fullscreenButton.onclick = toggleFullScreen;
 
-        // Gérer la fin de la réunion (si l'utilisateur clique sur le bouton "raccrocher" de Jitsi)
+        // Assembler la barre de contrôle
+        rightButtons.appendChild(fullscreenButton);
+        controlsBar.appendChild(titleElement);
+        controlsBar.appendChild(rightButtons);
+        jitsiContainer.appendChild(controlsBar);
+
+        // Ajouter les écouteurs d'événements pour le plein écran
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+        // Gérer la fin de la réunion
         jitsiApi.addEventListener('videoConferenceLeft', () => {
             leaveJitsiSession();
         });
@@ -500,22 +520,57 @@ async function joinSession(sessionId, userName, sessionTitle) {
     } catch (error) {
         console.error('Erreur lors du lancement de la session Jitsi:', error);
         alert('Impossible de démarrer la session vidéo.');
-        // Restaurer la vue en cas d'erreur
         leaveJitsiSession();
+    }
+}
+
+// Fonction pour gérer notre propre mode plein écran
+function toggleFullScreen() {
+    const elem = document.getElementById('jitsi-container');
+    if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => {
+            alert(`Erreur lors du passage en plein écran: ${err.message} (${err.name})`);
+        });
+    } else {
+        document.exitFullscreen();
+    }
+}
+
+// Gérer le changement d'icône lors du passage en plein écran
+function handleFullscreenChange() {
+    const button = document.getElementById('fullscreen-btn');
+    if (!button) return;
+
+    if (document.fullscreenElement) {
+        button.innerHTML = '<i class="fas fa-compress"></i>';
+        button.title = 'Quitter le plein écran';
+    } else {
+        button.innerHTML = '<i class="fas fa-expand"></i>';
+        button.title = 'Plein Écran';
     }
 }
 
 // Quitter la session Jitsi et restaurer la page
 function leaveJitsiSession() {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    }
+
     if (jitsiApi) {
         jitsiApi.dispose();
         jitsiApi = null;
     }
+
+    // Retirer les écouteurs d'événements pour éviter les fuites de mémoire
+    document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+
     document.getElementById('jitsi-container').classList.add('hidden');
-    document.getElementById('jitsi-container').innerHTML = ''; // Nettoyer
+    document.getElementById('jitsi-container').innerHTML = '';
     document.getElementById('main-content').classList.remove('hidden');
     
-    // Optionnel: appeler le backend pour marquer l'utilisateur comme parti
     fetch(`/sessions-live/{{ session.session_id }}/quitter/`, {
         method: 'POST',
         headers: { 'X-CSRFToken': '{{ csrf_token }}' }
@@ -526,25 +581,18 @@ function leaveJitsiSession() {
 // Poser une question
 async function askQuestion(event, sessionId) {
     event.preventDefault();
-
     const form = event.target;
     const formData = new FormData(form);
-
     try {
         const response = await fetch(`/sessions-live/${sessionId}/question/`, {
             method: 'POST',
-            headers: {
-                'X-CSRFToken': '{{ csrf_token }}',
-            },
+            headers: { 'X-CSRFToken': '{{ csrf_token }}' },
             body: formData
         });
-
         const data = await response.json();
-
         if (data.success) {
             alert(data.message);
             form.reset();
-            // Recharger uniquement la section des questions serait mieux, mais pour l'instant on recharge tout
             location.reload(); 
         } else {
             alert('Erreur: ' + data.error);
@@ -562,8 +610,7 @@ function copyToClipboard(text) {
     });
 }
 
-// Renommer la fonction `joinSession` originale en `enrollSession` pour le bouton "S'inscrire"
-// La nouvelle fonction `joinSession` gère maintenant la logique de l'iframe Jitsi.
+// Gérer le bouton "S'inscrire"
 const originalJoinButton = document.querySelector('button[onclick*="S\'inscrire"]');
 if (originalJoinButton) {
     originalJoinButton.setAttribute('onclick', `enrollSession('{{ session.session_id }}')`);
