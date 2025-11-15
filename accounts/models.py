@@ -58,6 +58,11 @@ class UserProfile(models.Model):
                 img.thumbnail(output_size)
                 img.save(self.avatar.path)
 
+    def get_avatar_url(self):
+        if self.avatar:
+            return self.avatar.url
+        return f"https://ui-avatars.com/api/?name={self.user.get_full_name() or self.user.username}&background=random"
+
     @property
     def full_name(self):
         return self.user.get_full_name() or self.user.username

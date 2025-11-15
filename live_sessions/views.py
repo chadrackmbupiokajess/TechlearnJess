@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -8,6 +9,7 @@ from django.core.paginator import Paginator
 from core.models import SiteSettings
 
 from .models import LiveSession, SessionParticipant, SessionQuestion
+from .jitsi import generate_jitsi_jwt
 
 
 def session_list(request):
@@ -101,11 +103,25 @@ def join_session(request, session_id):
     if not created:
         participant.is_present = True
         participant.save()
+
+    # Générer le jeton JWT pour JaaS
+    is_moderator = (request.user == session.instructor or request.user.is_superuser)
+    # Le nom de la salle pour JaaS est de la forme "AppID/NomDeLaSalle"
+    room_name = f"{settings.JAAS_APP_ID}/{session.session_id}"
     
+    try:
+        token = generate_jitsi_jwt(request.user, room_name, is_moderator)
+    except Exception as e:
+        # Loggez l'erreur pour le débogage
+        print(f"Erreur lors de la génération du jeton JaaS : {e}")
+        return JsonResponse({'error': 'Impossible de générer le jeton pour la session live.'}, status=500)
+
+    meeting_url = f"https://{settings.JAAS_DOMAIN}/{room_name}?jwt={token}"
+
     return JsonResponse({
         'success': True,
         'message': 'Vous avez rejoint la session avec succès!',
-        'meeting_url': session.effective_meeting_url
+        'meeting_url': meeting_url
     })
 
 

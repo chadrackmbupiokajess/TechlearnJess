@@ -234,6 +234,15 @@ LOGOUT_REDIRECT_URL = 'core:home'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # ------------------------------
+# JITSI (JaaS 8x8)
+# ------------------------------
+JAAS_APP_ID = config('JAAS_APP_ID', default='vpaas-magic-cookie-d45a7fec84d4476396cc3ddc915840cf')
+JAAS_API_KEY = config('JAAS_API_KEY', default='vpaas-magic-cookie-d45a7fec84d4476396cc3ddc915840cf/a31886-SAMPLE_APP')
+JAAS_DOMAIN = config('JAAS_DOMAIN', default='8x8.vc')
+JAAS_PRIVATE_KEY_PATH = config('JAAS_PRIVATE_KEY_PATH', default=os.path.join(BASE_DIR, 'jaas_private_key.pk'))
+
+
+# ------------------------------
 # SECURITY
 # ------------------------------
 SECURE_BROWSER_XSS_FILTER = True
