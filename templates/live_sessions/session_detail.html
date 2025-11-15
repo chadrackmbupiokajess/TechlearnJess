@@ -144,7 +144,7 @@
                         <!-- Actions selon le statut -->
                         {% if session.status == 'live' %}
                             {% if can_join %}
-                                <button onclick="joinSession('{{ session.session_id }}', '{{ user.get_full_name|default:user.username }}', '{{ session.title|escapejs }}')"
+                                <button onclick="joinSession('{{ session.session_id }}', '{{ user.get_full_name|default:user.username }}', '{{ session.title|escapejs }}', {% if user == session.instructor or user.is_superuser %}true{% else %}false{% endif %})"
                                         class="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors mb-4 animate-pulse">
                                     <i class="fas fa-video mr-2"></i>
                                     Rejoindre Maintenant
@@ -415,7 +415,7 @@ async function enrollSession(sessionId) {
 }
 
 // Démarrer et rejoindre la visio Jitsi
-async function joinSession(sessionId, userName, sessionTitle) {
+async function joinSession(sessionId, userName, sessionTitle, isModerator) {
     // 1. Appeler le backend pour obtenir le JWT
     try {
         const response = await fetch(`/sessions-live/${sessionId}/rejoindre/`, {
@@ -447,17 +447,23 @@ async function joinSession(sessionId, userName, sessionTitle) {
         const roomName = url.pathname.substring(1);
         const jwt = url.searchParams.get('jwt');
 
-        // 4. Définir les boutons de la barre d'outils en fonction de la taille de l'écran
+        // 4. Définir les boutons de la barre d'outils en fonction du rôle et de la taille de l'écran
         const isMobile = window.innerWidth <= 768;
         let toolbarButtons = [
             'microphone', 'camera', 'closedcaptions', 'desktop', 
             'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
             'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
-            'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
+            'videoquality', 'filmstrip', 'feedback', 'stats', 'shortcuts',
             'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone',
             'e2ee'
         ];
 
+        // Ajouter le bouton 'inviter' uniquement pour les modérateurs
+        if (isModerator) {
+            toolbarButtons.push('invite');
+        }
+
+        // Gérer le bouton plein écran
         if (isMobile) {
             toolbarButtons.push('fullscreen'); // Ajouter le bouton plein écran natif sur mobile
         }
