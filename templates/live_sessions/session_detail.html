@@ -4,8 +4,8 @@
 
 {% block content %}
 <!-- Jitsi Meet Iframe Container -->
-<div id="jitsi-container" class="hidden w-full h-screen relative">
-    <!-- Le conteneur de l'iframe sera ici -->
+<div id="jitsi-container" class="hidden w-full h-screen relative bg-gray-900">
+    <!-- Le conteneur de l'iframe et les superpositions seront ici -->
 </div>
 
 
@@ -144,7 +144,7 @@
                         <!-- Actions selon le statut -->
                         {% if session.status == 'live' %}
                             {% if can_join %}
-                                <button onclick="joinSession('{{ session.session_id }}', '{{ user.get_full_name|default:user.username }}')"
+                                <button onclick="joinSession('{{ session.session_id }}', '{{ user.get_full_name|default:user.username }}', '{{ session.title|escapejs }}')"
                                         class="w-full bg-red-600 hover:bg-red-700 text-white py-4 rounded-xl font-semibold text-lg transition-colors mb-4 animate-pulse">
                                     <i class="fas fa-video mr-2"></i>
                                     Rejoindre Maintenant
@@ -415,7 +415,7 @@ async function enrollSession(sessionId) {
 }
 
 // Démarrer et rejoindre la visio Jitsi
-async function joinSession(sessionId, userName) {
+async function joinSession(sessionId, userName, sessionTitle) {
     // 1. Appeler le backend pour obtenir le JWT
     try {
         const response = await fetch(`/sessions-live/${sessionId}/rejoindre/`, {
@@ -457,7 +457,15 @@ async function joinSession(sessionId, userName) {
             interfaceConfigOverwrite: {
                 SHOW_JITSI_WATERMARK: false,
                 SHOW_WATERMARK_FOR_GUESTS: false,
-                DEFAULT_BACKGROUND: '#1a202c' // dark gray
+                DEFAULT_BACKGROUND: '#111827', // bg-gray-900
+                TOOLBAR_BUTTONS: [
+                    'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
+                    'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
+                    'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
+                    'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
+                    'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone',
+                    'e2ee'
+                ],
             },
             configOverwrite: {
                 prejoinPageEnabled: false,
@@ -471,14 +479,20 @@ async function joinSession(sessionId, userName) {
 
         jitsiApi = new JitsiMeetExternalAPI(domain, options);
 
+        // Ajouter le titre de la session
+        const titleElement = document.createElement('h2');
+        titleElement.innerHTML = `<i class="fas fa-video mr-2 text-red-400"></i> ${sessionTitle}`;
+        titleElement.className = 'absolute top-4 left-4 text-white text-lg font-semibold z-50 bg-black/50 px-4 py-2 rounded-lg';
+        jitsiContainer.appendChild(titleElement);
+
         // Ajouter un bouton pour quitter
         const leaveButton = document.createElement('button');
-        leaveButton.innerHTML = '<i class="fas fa-times"></i> Quitter la session';
-        leaveButton.className = 'absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg z-50 hover:bg-red-700 transition-colors';
+        leaveButton.innerHTML = '<i class="fas fa-times mr-2"></i> Quitter';
+        leaveButton.className = 'absolute top-4 right-4 bg-red-600 text-white px-4 py-2 rounded-lg z-50 hover:bg-red-700 transition-colors font-semibold';
         leaveButton.onclick = leaveJitsiSession;
         jitsiContainer.appendChild(leaveButton);
 
-        // Gérer la fin de la réunion
+        // Gérer la fin de la réunion (si l'utilisateur clique sur le bouton "raccrocher" de Jitsi)
         jitsiApi.addEventListener('videoConferenceLeft', () => {
             leaveJitsiSession();
         });
