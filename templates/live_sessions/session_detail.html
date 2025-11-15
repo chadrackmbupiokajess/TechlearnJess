@@ -447,7 +447,22 @@ async function joinSession(sessionId, userName, sessionTitle) {
         const roomName = url.pathname.substring(1);
         const jwt = url.searchParams.get('jwt');
 
-        // 4. Initialiser l'API Jitsi
+        // 4. Définir les boutons de la barre d'outils en fonction de la taille de l'écran
+        const isMobile = window.innerWidth <= 768;
+        let toolbarButtons = [
+            'microphone', 'camera', 'closedcaptions', 'desktop', 
+            'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
+            'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
+            'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
+            'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone',
+            'e2ee'
+        ];
+
+        if (isMobile) {
+            toolbarButtons.push('fullscreen'); // Ajouter le bouton plein écran natif sur mobile
+        }
+
+        // 5. Initialiser l'API Jitsi
         const options = {
             roomName: roomName,
             jwt: jwt,
@@ -458,14 +473,7 @@ async function joinSession(sessionId, userName, sessionTitle) {
                 SHOW_JITSI_WATERMARK: false,
                 SHOW_WATERMARK_FOR_GUESTS: false,
                 DEFAULT_BACKGROUND: '#111827', // bg-gray-900
-                TOOLBAR_BUTTONS: [
-                    'microphone', 'camera', 'closedcaptions', 'desktop', 
-                    'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
-                    'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
-                    'videoquality', 'filmstrip', 'invite', 'feedback', 'stats', 'shortcuts',
-                    'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone',
-                    'e2ee'
-                ],
+                TOOLBAR_BUTTONS: toolbarButtons,
             },
             configOverwrite: {
                 prejoinPageEnabled: false,
@@ -479,8 +487,8 @@ async function joinSession(sessionId, userName, sessionTitle) {
 
         jitsiApi = new JitsiMeetExternalAPI(domain, options);
 
-        // 5. Ajouter les contrôles personnalisés SEULEMENT sur les écrans larges
-        if (window.innerWidth > 768) {
+        // 6. Ajouter les contrôles personnalisés SEULEMENT sur les écrans larges
+        if (!isMobile) {
             // Créer une barre de contrôle personnalisée
             const controlsBar = document.createElement('div');
             controlsBar.className = 'absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-50';
