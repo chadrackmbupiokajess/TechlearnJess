@@ -17,7 +17,6 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
-    'chadrackmbu.pythonanywhere.com',
     'techlearnjess.pythonanywhere.com',
     '192.168.1.193'
 ]
@@ -41,6 +40,7 @@ INSTALLED_APPS = [
     'crispy_tailwind',
     'ckeditor',
     'ckeditor_uploader',
+    'corsheaders',
 
     # Local apps
     'core',
@@ -61,6 +61,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -68,6 +69,18 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# ------------------------------
+# CORS
+# ------------------------------
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3003",
+    "http://127.0.0.1:3003",
+    "http://192.168.1.193:3003",
+    "https://techlearnjess.pythonanywhere.com",
+]
+# Si vous voulez être plus permissif en développement, vous pouvez utiliser :
+# CORS_ALLOW_ALL_ORIGINS = True
 
 # ------------------------------
 # URLS
