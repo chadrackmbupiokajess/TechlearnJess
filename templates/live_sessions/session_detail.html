@@ -471,6 +471,8 @@ async function joinSession(sessionId, userName, sessionTitle, isModerator) {
                 prejoinPageEnabled: false,
                 startWithAudioMuted: true,
                 startWithVideoMuted: true,
+                // Définir le sujet directement ici
+                subject: sessionTitle,
             },
             userInfo: {
                 displayName: userName
@@ -478,10 +480,6 @@ async function joinSession(sessionId, userName, sessionTitle, isModerator) {
         };
 
         jitsiApi = new JitsiMeetExternalAPI(domain, options);
-
-        jitsiApi.addEventListener('videoConferenceJoined', () => {
-            jitsiApi.executeCommand('setSubject', sessionTitle);
-        });
 
         jitsiApi.addEventListener('videoConferenceLeft', () => {
             leaveJitsiSession();
