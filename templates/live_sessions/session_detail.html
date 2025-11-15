@@ -479,38 +479,41 @@ async function joinSession(sessionId, userName, sessionTitle) {
 
         jitsiApi = new JitsiMeetExternalAPI(domain, options);
 
-        // Créer une barre de contrôle personnalisée
-        const controlsBar = document.createElement('div');
-        controlsBar.className = 'absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-50';
-        
-        // Ajouter le titre de la session
-        const titleElement = document.createElement('h2');
-        titleElement.innerHTML = `<i class="fas fa-video mr-2 text-red-400"></i> ${sessionTitle}`;
-        titleElement.className = 'text-white text-lg font-semibold bg-black/50 px-4 py-2 rounded-lg';
-        
-        // Créer un conteneur pour les boutons de droite
-        const rightButtons = document.createElement('div');
-        rightButtons.className = 'flex items-center space-x-4';
+        // 5. Ajouter les contrôles personnalisés SEULEMENT sur les écrans larges
+        if (window.innerWidth > 768) {
+            // Créer une barre de contrôle personnalisée
+            const controlsBar = document.createElement('div');
+            controlsBar.className = 'absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-50';
+            
+            // Ajouter le titre de la session
+            const titleElement = document.createElement('h2');
+            titleElement.innerHTML = `<i class="fas fa-video mr-2 text-red-400"></i> ${sessionTitle}`;
+            titleElement.className = 'text-white text-lg font-semibold bg-black/50 px-4 py-2 rounded-lg';
+            
+            // Créer un conteneur pour les boutons de droite
+            const rightButtons = document.createElement('div');
+            rightButtons.className = 'flex items-center space-x-4';
 
-        // Ajouter notre propre bouton plein écran
-        const fullscreenButton = document.createElement('button');
-        fullscreenButton.id = 'fullscreen-btn';
-        fullscreenButton.innerHTML = '<i class="fas fa-expand"></i>';
-        fullscreenButton.className = 'bg-gray-700 text-white w-10 h-10 rounded-lg hover:bg-gray-600 transition-colors font-semibold flex items-center justify-center';
-        fullscreenButton.title = 'Plein Écran';
-        fullscreenButton.onclick = toggleFullScreen;
+            // Ajouter notre propre bouton plein écran
+            const fullscreenButton = document.createElement('button');
+            fullscreenButton.id = 'fullscreen-btn';
+            fullscreenButton.innerHTML = '<i class="fas fa-expand"></i>';
+            fullscreenButton.className = 'bg-gray-700 text-white w-10 h-10 rounded-lg hover:bg-gray-600 transition-colors font-semibold flex items-center justify-center';
+            fullscreenButton.title = 'Plein Écran';
+            fullscreenButton.onclick = toggleFullScreen;
 
-        // Assembler la barre de contrôle
-        rightButtons.appendChild(fullscreenButton);
-        controlsBar.appendChild(titleElement);
-        controlsBar.appendChild(rightButtons);
-        jitsiContainer.appendChild(controlsBar);
+            // Assembler la barre de contrôle
+            rightButtons.appendChild(fullscreenButton);
+            controlsBar.appendChild(titleElement);
+            controlsBar.appendChild(rightButtons);
+            jitsiContainer.appendChild(controlsBar);
 
-        // Ajouter les écouteurs d'événements pour le plein écran
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
-        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+            // Ajouter les écouteurs d'événements pour le plein écran
+            document.addEventListener('fullscreenchange', handleFullscreenChange);
+            document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+        }
 
         // Gérer la fin de la réunion
         jitsiApi.addEventListener('videoConferenceLeft', () => {
