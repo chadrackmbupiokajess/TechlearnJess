@@ -442,17 +442,22 @@ async function joinSession(sessionId, userName, sessionTitle, isModerator) {
         const roomName = url.pathname.substring(1);
         const jwt = url.searchParams.get('jwt');
 
+        // Définir la liste des boutons de base, disponibles pour tout le monde
         let toolbarButtons = [
-            'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen',
-            'fodeviceselection', 'hangup', 'profile', 'chat', 'recording',
+            'microphone', 'camera', 'chat', 'desktop', 'fullscreen',
+            'fodeviceselection', 'hangup', 'profile', 
             'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
-            'videoquality', 'filmstrip', 'feedback', 'stats', 'shortcuts',
+            'videoquality', 'filmstrip', 'stats', 'shortcuts',
             'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone',
             'e2ee'
         ];
 
+        // Ajouter les boutons réservés aux modérateurs
         if (isModerator) {
             toolbarButtons.push('invite');
+            // Le bouton d'enregistrement est commenté car il nécessite un plan payant.
+            // Si vous mettez à niveau votre compte JaaS, décommentez la ligne suivante.
+            // toolbarButtons.push('recording');
         }
 
         const options = {
