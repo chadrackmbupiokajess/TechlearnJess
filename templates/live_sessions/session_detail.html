@@ -445,7 +445,7 @@ async function joinSession(sessionId, userName, sessionTitle, isModerator) {
         // Définir la liste des boutons de base, disponibles pour tout le monde
         let toolbarButtons = [
             'microphone', 'camera', 'chat', 'desktop', 'fullscreen',
-            'fodeviceselection', 'hangup', 'profile', 
+            'fodeviceselection', 'hangup', 'profile',
             'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand',
             'videoquality', 'filmstrip', 'stats', 'shortcuts',
             'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone',
@@ -508,7 +508,7 @@ function leaveJitsiSession() {
     document.getElementById('jitsi-container').classList.add('hidden');
     document.getElementById('jitsi-container').innerHTML = '';
     document.getElementById('main-content').classList.remove('hidden');
-    
+
     fetch(`/sessions-live/{{ session.session_id }}/quitter/`, {
         method: 'POST',
         headers: { 'X-CSRFToken': '{{ csrf_token }}' }
@@ -529,7 +529,7 @@ async function askQuestion(event, sessionId) {
         if (data.success) {
             alert(data.message);
             form.reset();
-            location.reload(); 
+            location.reload();
         } else {
             alert('Erreur: ' + data.error);
         }

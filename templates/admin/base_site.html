@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{# 1. Charger notre CSS personnalisé #}
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'admin/css/custom_admin.css' %}">
+{% endblock %}
+
+{# 2. Remplacer le bloc du titre pour qu'il soit affecté par notre CSS #}
+{% block branding %}
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a>
+    </h1>
+{% endblock %}
+
+{# 3. Laisser les liens utilisateur intacts #}
+{% block userlinks %}
+    {{ block.super }}
+{% endblock %}

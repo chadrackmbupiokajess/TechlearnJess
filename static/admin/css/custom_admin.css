@@ -1,0 +1,173 @@
+/*
+ * CSS Personnalisé pour l'administration de TechLearnJess (Thème Clair avec Accents - SANS BORDURES AJOUTÉES)
+ */
+
+/* --- Réinitialisation des couleurs de fond et de texte par défaut de Django --- */
+html, body, #container, #content, .module, #changelist-filter ul, #footer {
+    background-color: initial; /* Laisse Django gérer les fonds clairs par défaut */
+    color: initial; /* Laisse Django gérer les couleurs de texte sombres par défaut */
+}
+
+/* --- En-tête (couleurs de marque) --- */
+#header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Garde le dégradé original */
+    color: white; /* Texte blanc dans l'en-tête */
+}
+#header a, #header a:link, #header a:visited {
+    color: white; /* Liens blancs dans l'en-tête */
+}
+#site-name a {
+    font-weight: bold;
+}
+
+/* --- Fil d'Ariane (breadcrumbs - couleurs de marque) --- */
+.breadcrumbs {
+    background: #764ba2; /* Violet foncé de la marque */
+    color: #e0d5f5; /* Violet très clair pour le texte/séparateurs */
+    border-bottom: none;
+}
+.breadcrumbs a {
+    color: #e0d5f5; /* Violet très clair pour les liens sur fond foncé */
+}
+.breadcrumbs a:hover {
+    color: white; /* Blanc au survol pour un meilleur contraste */
+    text-decoration: underline;
+}
+
+/* --- Liens Généraux (nouvelle couleur d'accent) --- */
+a:link, a:visited {
+    color: #6a5acd; /* Nouveau violet-bleu plus doux */
+}
+a:hover {
+    color: #764ba2; /* Violet foncé au survol */
+}
+
+/* --- Formulaires (bordures par défaut, fonds par défaut) --- */
+input[type="text"], input[type="password"], input[type="email"], input[type="number"],
+textarea, select {
+    border: initial; /* Laisse la bordure par défaut de Django */
+    color: initial; /* Texte par défaut */
+    background-color: initial; /* Fond par défaut */
+    border-radius: 4px;
+}
+input[type="text"]:focus, textarea:focus, select:focus {
+    border-color: #6a5acd; /* Nouveau violet-bleu au focus */
+    box-shadow: none;
+}
+
+/* --- Boutons (couleurs de marque, SANS bordures ajoutées) --- */
+.button, input[type="submit"], input[type="button"], .submit-row input {
+    background: #6a5acd; /* Nouveau violet-bleu pour les boutons */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+.button:hover, input[type="submit"]:hover, input[type="button"]:hover, .submit-row input:hover {
+    background: #764ba2; /* Violet foncé au survol */
+    border: none;
+}
+.button.default, input[type="submit"].default { /* Boutons d'action primaire (ex: Sauvegarder) */
+    background: #764ba2; /* Violet foncé */
+    border: none;
+}
+.button.default:hover, input[type="submit"].default:hover {
+    background: #6a5acd; /* Nouveau violet-bleu au survol */
+    border: none;
+}
+.button.delete, input[type="submit"].delete { /* Boutons de suppression */
+    background: #e53e3e; /* Rouge */
+    border: none;
+}
+.button.delete:hover, input[type="submit"].delete:hover {
+    background: #c53030;
+    border: none;
+}
+
+/* --- Messages (bordures par défaut, fonds par défaut) --- */
+ul.messagelist li {
+    background-color: initial; /* Fond par défaut */
+    color: initial; /* Texte par défaut */
+    border-radius: 4px;
+    border: none;
+    margin-bottom: 10px;
+    padding: 10px;
+}
+ul.messagelist li.info { border: none; }
+ul.messagelist li.success { border: none; }
+ul.messagelist li.warning { border: none; }
+ul.messagelist li.error { border: none; }
+
+/* --- Style des Tables (vues de liste) --- */
+.changelist-form table thead th {
+    background-color: initial; /* Fond par défaut */
+    color: initial; /* Texte par défaut */
+    border-bottom: none;
+}
+.changelist-form table tbody th a {
+    color: #6a5acd; /* Nouveau violet-bleu pour les liens dans les en-têtes de table */
+}
+
+/* --- Modules de la page d'index et filtres (couleurs de marque pour titres) --- */
+.module h2, .module caption, #changelist-filter h2 {
+    background: #764ba2 !important; /* Violet foncé pour les titres de module/filtre */
+    color: white !important; /* Texte blanc */
+    border-radius: 4px 4px 0 0;
+    padding: 10px; /* Ajoute un peu de padding pour l'esthétique */
+    margin: 0; /* Supprime les marges par défaut */
+}
+.module h2 a, .module caption a, #changelist-filter h2 a {
+    color: white !important; /* Liens blancs dans les titres de module/filtre */
+}
+.module h2 a:hover, .module caption a:hover, #changelist-filter h2 a:hover {
+    color: #e0d5f5 !important;
+}
+.module, #changelist-filter ul {
+    background-color: initial; /* Fond par défaut */
+    border: none;
+    border-radius: 4px;
+    box-shadow: none;
+}
+.module ul, #changelist-filter ul {
+    background-color: initial; /* Fond par défaut */
+}
+.module ul li, #changelist-filter li {
+    border-bottom: none;
+}
+.module ul li:last-child, #changelist-filter li:last-child {
+    border-bottom: none;
+}
+.module ul li a, #changelist-filter a {
+    color: #6a5acd; /* Nouveau violet-bleu pour les liens */
+}
+.module ul li a:hover, #changelist-filter a:hover {
+    color: #764ba2; /* Violet foncé au survol */
+}
+#changelist-filter h3 {
+    color: initial; /* Texte par défaut */
+    border-bottom: none;
+    padding: 10px;
+    margin: 0;
+}
+
+/* --- Paginator (couleurs de marque) --- */
+.paginator a {
+    color: #6a5acd; /* Nouveau violet-bleu */
+}
+.paginator a:hover {
+    color: #764ba2; /* Violet foncé au survol */
+}
+.paginator .this-page {
+    background-color: #6a5acd; /* Nouveau violet-bleu */
+    color: white;
+    border: none;
+    border-radius: 4px;
+}
+
+/* --- Footer --- */
+#footer {
+    background-color: initial; /* Fond par défaut */
+    color: initial; /* Texte par défaut */
+    border-top: none;
+}
