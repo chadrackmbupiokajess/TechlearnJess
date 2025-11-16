@@ -88,16 +88,27 @@ class LiveSession(models.Model):
 
     def can_join(self, user):
         """Vérifier si un utilisateur peut rejoindre la session"""
-        if not self.is_upcoming and not self.is_live_now:
-            return False, "La session n'est pas disponible"
-        
-        if self.requires_enrollment and not self.participants.filter(id=user.id).exists():
-            return False, "Vous devez vous inscrire à cette session"
-        
-        if self.participants_count >= self.max_participants:
-            return False, "La session est complète"
-        
-        return True, "Vous pouvez rejoindre la session"
+        # Personne ne peut rejoindre une session terminée ou annulée
+        if self.status in ['ended', 'cancelled']:
+            return False, "Cette session est terminée."
+
+        # Si la session est en direct, on est plus permissif
+        if self.is_live_now:
+            # On vérifie juste si la session n'est pas déjà complète
+            if self.participants_count >= self.max_participants and not self.participants.filter(id=user.id).exists():
+                return False, "La session est complète."
+            return True, "Vous pouvez rejoindre la session."
+
+        # Si la session est programmée (à venir)
+        if self.status == 'scheduled':
+            if self.requires_enrollment and not self.participants.filter(id=user.id).exists():
+                # On vérifie les places uniquement s'il n'est pas déjà inscrit
+                if self.participants_count >= self.max_participants:
+                    return False, "La session est complète."
+                return True, "Vous pouvez vous inscrire." # Message pour l'inscription
+            return True, "Vous pouvez rejoindre la session."
+
+        return False, "La session n'est pas disponible pour le moment."
 
     def start_session(self):
         """Démarrer la session"""
