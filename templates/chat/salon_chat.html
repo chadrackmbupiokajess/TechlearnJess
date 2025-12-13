@@ -364,7 +364,7 @@
 
             <!-- Actions rapides -->
             <div class="space-y-2">
-                <button class="w-full flex items-center space-x-3 p-3 text-left text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-lg transition-colors">
+                <button type="button" class="w-full flex items-center space-x-3 p-3 text-left text-gray-700 dark:text-gray-300 hover:bg-white/50 dark:hover:bg-gray-700/50 rounded-lg transition-colors" onclick="openInviteModal()">
                     <i class="fas fa-user-plus text-indigo-600 dark:text-indigo-400"></i>
                     <span>Inviter des membres</span>
                 </button>
@@ -385,6 +385,54 @@
                 </button>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Modal d'invitation de membres -->
+<div id="inviteMembersModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 max-w-md w-full mx-4">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Inviter des Membres</h3>
+            <button onclick="closeInviteModal()" class="text-gray-400 hover:text-gray-600">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <form method="post" action="{% url 'chat:invite_members' salon.id %}">
+            {% csrf_token %}
+            <div class="mb-4">
+                {{ invite_form.users_to_invite.label_tag }}
+                <div class="mt-2 space-y-2">
+                    {% for checkbox in invite_form.users_to_invite %}
+                        <div class="flex items-center">
+                            {{ checkbox.tag }}
+                            <label for="{{ checkbox.id_for_label }}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                                {{ checkbox.choice_label }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if invite_form.users_to_invite.errors %}
+                    <div class="text-red-500 text-sm mt-2">
+                        {% for error in invite_form.users_to_invite.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="flex space-x-3">
+                <button type="button" 
+                        onclick="closeInviteModal()"
+                        class="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                    Annuler
+                </button>
+                <button type="submit" 
+                        class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-4 py-3 rounded-lg font-medium transition-all duration-300">
+                    Inviter
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 
@@ -551,6 +599,25 @@ async function pollMessages() {
 function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
+
+// Fonctions pour la modale d'invitation
+function openInviteModal() {
+    document.getElementById('inviteMembersModal').classList.remove('hidden');
+    document.getElementById('inviteMembersModal').classList.add('flex');
+}
+
+function closeInviteModal() {
+    document.getElementById('inviteMembersModal').classList.add('hidden');
+    document.getElementById('inviteMembersModal').classList.remove('flex');
+}
+
+// Fermer le modal en cliquant à l'extérieur
+document.getElementById('inviteMembersModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        closeInviteModal();
+    }
+});
+
 
 // Fonction pour toggle la sidebar sur mobile
 function toggleSidebar() {

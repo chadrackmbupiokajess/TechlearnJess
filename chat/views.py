@@ -6,16 +6,21 @@ from django.contrib import messages
 from django.utils import timezone as django_timezone # Renommé pour éviter les conflits
 from datetime import datetime, timezone # Importation de datetime et timezone de la bibliothèque standard
 import logging
+from django.db.models import Q # Importation de Q pour les requêtes complexes
 # from django.views.decorators.csrf import csrf_exempt # Plus nécessaire avec un formulaire HTML standard
 from .models import ChatRoom, Message
-from .forms import ChatRoomForm
+from .forms import ChatRoomForm, InviteMembersForm # Importation du nouveau formulaire
 
 logger = logging.getLogger(__name__) # Initialisation du logger
 
 @login_required
 def liste_salons(request):
     """Affiche la liste des salons de chat"""
-    salons = ChatRoom.objects.filter(participants=request.user)
+    # Récupérer les salons où l'utilisateur est participant OU les salons publics
+    salons = ChatRoom.objects.filter(
+        Q(participants=request.user) | Q(est_prive=False)
+    ).distinct().order_by('-cree_le') # Assurez-vous d'ordonner les résultats
+    
     context = {
         'salons': salons,
     }
@@ -25,13 +30,26 @@ def liste_salons(request):
 @login_required
 def salon_chat(request, salon_id):
     """Affiche un salon de chat spécifique"""
-    salon = get_object_or_404(ChatRoom, id=salon_id, participants=request.user)
+    salon = get_object_or_404(ChatRoom, id=salon_id) # Ne filtre plus par participant ici
+    
+    # Vérifier si l'utilisateur est déjà membre du salon
+    if not salon.participants.filter(id=request.user.id).exists():
+        # Si l'utilisateur n'est pas membre, l'ajouter
+        salon.participants.add(request.user)
+        messages.info(request, f"Vous avez rejoint le salon '{salon.nom}'.")
+        # Optionnel: Rediriger pour rafraîchir le contexte, ou continuer
+        # return redirect('chat:salon_chat', salon_id=salon_id)
+
     messages_chat = salon.messages.all().order_by('timestamp') # Assurez-vous que les messages sont triés
     
+    # Instancier le formulaire d'invitation pour le contexte
+    invite_form = InviteMembersForm(chatroom=salon)
+
     context = {
         'salon': salon,
         'messages': messages_chat,
         'salon_id_json': salon_id,
+        'invite_form': invite_form, # Ajouter le formulaire au contexte
     }
     
     return render(request, 'chat/salon_chat.html', context)
@@ -90,6 +108,34 @@ def envoyer_message(request, salon_id):
 
 
 @login_required
+@require_http_methods(["POST"])
+def invite_members(request, salon_id):
+    """Vue pour inviter des membres à un salon de chat."""
+    salon = get_object_or_404(ChatRoom, id=salon_id)
+
+    # Vérifier si l'utilisateur actuel a la permission d'inviter
+    # Pour l'instant, tout membre peut inviter. Pour une logique plus stricte,
+    # on pourrait vérifier si request.user est le créateur du salon, ou un admin.
+    if not salon.participants.filter(id=request.user.id).exists():
+        messages.error(request, "Vous n'êtes pas autorisé à inviter des membres dans ce salon.")
+        return redirect('chat:salon_chat', salon_id=salon_id)
+
+    form = InviteMembersForm(request.POST, chatroom=salon)
+    if form.is_valid():
+        users_to_invite = form.cleaned_data['users_to_invite']
+        for user_to_add in users_to_invite:
+            salon.participants.add(user_to_add)
+        messages.success(request, f"{len(users_to_invite)} membre(s) invité(s) avec succès !")
+    else:
+        # Si le formulaire n'est pas valide, afficher les erreurs
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f"Erreur dans le champ '{field}': {error}")
+
+    return redirect('chat:salon_chat', salon_id=salon_id)
+
+
+@login_required
 @require_http_methods(["GET"])
 def messages_api(request, salon_id):
     """API pour récupérer les messages d'un salon, éventuellement filtrés par timestamp"""
@@ -124,7 +170,7 @@ def messages_api(request, salon_id):
             'auteur_avatar_url': message.auteur.userprofile.get_avatar_url() if hasattr(message.auteur, 'userprofile') else '',
             'contenu': message.contenu,
             'timestamp': message.timestamp.astimezone(timezone.utc).isoformat(timespec='microseconds'), # MODIFIÉ ICI
-            'is_own': (message.auteur == request.user) # Indique si le message vient de l'utilisateur actuel
+            'is_own': (message.auteur == request.user) # Indique que c'est le message de l'utilisateur actuel
         })
     
     return JsonResponse({'messages': messages_data})
