@@ -401,10 +401,20 @@
         <form method="post" action="{% url 'chat:invite_members' salon.id %}">
             {% csrf_token %}
             <div class="mb-4">
+                <div class="relative mb-4">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <i class="fas fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" 
+                           id="invite-search-input"
+                           class="w-full pl-10 pr-4 py-2 sm:py-3 rounded-2xl focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base text-gray-900 placeholder-gray-500"
+                           placeholder="Rechercher un membre...">
+                </div>
+
                 {{ invite_form.users_to_invite.label_tag }}
-                <div class="mt-2 space-y-2">
+                <div id="invite-members-list" class="mt-2 space-y-2 max-h-60 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-3">
                     {% for checkbox in invite_form.users_to_invite %}
-                        <div class="flex items-center">
+                        <div class="flex items-center invite-member-item">
                             {{ checkbox.tag }}
                             <label for="{{ checkbox.id_for_label }}" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
                                 {{ checkbox.choice_label }}
@@ -510,6 +520,27 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Démarrer le polling des messages
     setInterval(pollMessages, 3000); // Toutes les 3 secondes
+
+    // Logique de recherche dans la modale d'invitation
+    const inviteSearchInput = document.getElementById('invite-search-input');
+    if (inviteSearchInput) {
+        inviteSearchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const memberItems = document.querySelectorAll('#invite-members-list .invite-member-item');
+            
+            memberItems.forEach(item => {
+                const label = item.querySelector('label');
+                if (label) {
+                    const username = label.textContent.toLowerCase();
+                    if (username.includes(searchTerm)) {
+                        item.style.display = 'flex'; // Afficher l'élément
+                    } else {
+                        item.style.display = 'none'; // Masquer l'élément
+                    }
+                }
+            });
+        });
+    }
 });
 
 // Fonction pour ajouter un message au DOM
@@ -604,6 +635,15 @@ function scrollToBottom() {
 function openInviteModal() {
     document.getElementById('inviteMembersModal').classList.remove('hidden');
     document.getElementById('inviteMembersModal').classList.add('flex');
+    // Réinitialiser la recherche et afficher tous les membres à l'ouverture
+    const inviteSearchInput = document.getElementById('invite-search-input');
+    if (inviteSearchInput) {
+        inviteSearchInput.value = '';
+        const memberItems = document.querySelectorAll('#invite-members-list .invite-member-item');
+        memberItems.forEach(item => {
+            item.style.display = 'flex';
+        });
+    }
 }
 
 function closeInviteModal() {
