@@ -392,7 +392,8 @@ let jitsiApi = null;
 // Rejoindre une session (pour s'inscrire si 'scheduled')
 async function enrollSession(sessionId) {
     try {
-        const response = await fetch(`/sessions-live/${sessionId}/rejoindre/`, {
+        const url = `/sessions-live/${sessionId}/rejoindre/`;
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': '{{ csrf_token }}',
@@ -417,7 +418,8 @@ async function enrollSession(sessionId) {
 // Démarrer et rejoindre la visio Jitsi
 async function joinSession(sessionId, userName, sessionTitle, isModerator) {
     try {
-        const response = await fetch(`/sessions-live/${sessionId}/rejoindre/`, {
+        const url = `/sessions-live/${sessionId}/rejoindre/`;
+        const response = await fetch(url, {
             method: 'POST',
             headers: {
                 'X-CSRFToken': '{{ csrf_token }}',
@@ -437,10 +439,10 @@ async function joinSession(sessionId, userName, sessionTitle, isModerator) {
         jitsiContainer.classList.remove('hidden');
         jitsiContainer.innerHTML = '';
 
-        const url = new URL(data.meeting_url);
-        const domain = url.hostname;
-        const roomName = url.pathname.substring(1);
-        const jwt = url.searchParams.get('jwt');
+        const meetingUrl = new URL(data.meeting_url);
+        const domain = meetingUrl.hostname;
+        const roomName = meetingUrl.pathname.substring(1);
+        const jwt = meetingUrl.searchParams.get('jwt');
 
         // Définir la liste des boutons de base, disponibles pour tout le monde
         let toolbarButtons = [
@@ -509,7 +511,8 @@ function leaveJitsiSession() {
     document.getElementById('jitsi-container').innerHTML = '';
     document.getElementById('main-content').classList.remove('hidden');
 
-    fetch(`/sessions-live/{{ session.session_id }}/quitter/`, {
+    const url = `/sessions-live/{{ session.session_id }}/quitter/`;
+    fetch(url, {
         method: 'POST',
         headers: { 'X-CSRFToken': '{{ csrf_token }}' }
     });
@@ -520,7 +523,8 @@ async function askQuestion(event, sessionId) {
     const form = event.target;
     const formData = new FormData(form);
     try {
-        const response = await fetch(`/sessions-live/${sessionId}/question/`, {
+        const url = `/sessions-live/${sessionId}/question/`;
+        const response = await fetch(url, {
             method: 'POST',
             headers: { 'X-CSRFToken': '{{ csrf_token }}' },
             body: formData
@@ -543,11 +547,6 @@ function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(function() {
         alert('Lien copié dans le presse-papiers !');
     });
-}
-
-const originalJoinButton = document.querySelector('button[onclick*="S\'inscrire"]');
-if (originalJoinButton) {
-    originalJoinButton.setAttribute('onclick', `enrollSession('{{ session.session_id }}')`);
 }
 </script>
 

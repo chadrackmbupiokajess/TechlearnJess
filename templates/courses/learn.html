@@ -225,23 +225,23 @@
                                         <span x-text="quizData.title || 'Quiz de la leçon'"></span>
                                     </h3>
                                     <p class="text-yellow-100 mb-4" x-text="quizData.description || 'Testez vos connaissances avec ce quiz interactif.'"></p>
-                                    
+
                                     <div class="text-sm text-yellow-200 mb-4" x-show="quizData.passing_score">
                                         <i class="fas fa-info-circle mr-2"></i>
-                                        Score de réussite : <span x-text="quizData.passing_score"></span>% • 
+                                        Score de réussite : <span x-text="quizData.passing_score"></span>% •
                                         Tentatives autorisées : <span x-text="quizData.max_attempts"></span>
                                         <span x-show="quizData.time_limit_minutes">
                                             • Temps limité : <span x-text="quizData.time_limit_minutes"></span> min
                                         </span>
                                     </div>
-                                    
+
                                     <!-- Tentatives précédentes -->
                                     <div x-show="attempts.length > 0" class="mb-4 p-3 bg-blue-900/20 rounded-lg">
                                         <h4 class="text-sm font-semibold text-blue-200 mb-2">Tentatives précédentes :</h4>
                                         <template x-for="attempt in attempts" :key="attempt.id">
                                             <div class="text-xs text-blue-100 mb-1">
-                                                Tentative <span x-text="attempt.attempt_number"></span> : 
-                                                <span x-text="attempt.score.toFixed(1)"></span>% 
+                                                Tentative <span x-text="attempt.attempt_number"></span> :
+                                                <span x-text="attempt.score.toFixed(1)"></span>%
                                                 <span x-show="attempt.is_passed" class="text-green-400">(Réussi)</span>
                                                 <span x-show="!attempt.is_passed" class="text-red-400">(Échoué)</span>
                                             </div>
@@ -250,16 +250,16 @@
                                             Tentatives restantes : <span x-text="remainingAttempts"></span>
                                         </div>
                                     </div>
-                                    
-                                    <button @click="startQuiz()" 
-                                            :disabled="!canStartNew" 
+
+                                    <button @click="startQuiz()"
+                                            :disabled="!canStartNew"
                                             :class="canStartNew ? 'bg-yellow-600 hover:bg-yellow-700' : 'bg-gray-600 cursor-not-allowed'"
                                             class="text-white px-6 py-3 rounded-lg font-medium transition-colors">
                                         <i class="fas fa-play mr-2"></i>
                                         <span x-text="canStartNew ? 'Commencer le quiz' : 'Nombre maximum de tentatives atteint'"></span>
                                     </button>
                                 </div>
-                                
+
                                 <!-- Loading -->
                                 <div x-show="loading" class="bg-gray-800 rounded-xl p-6 text-center">
                                     <i class="fas fa-spinner fa-spin text-2xl text-yellow-500 mb-4"></i>
@@ -294,14 +294,14 @@
                                                     <span x-text="question.text"></span>
                                                     <span class="text-sm text-yellow-400 ml-2" x-text="`(${question.points} points)`"></span>
                                                 </h4>
-                                                
+
                                                 <!-- Choix Multiple / Vrai-Faux -->
                                                 <div x-show="question.type === 'multiple_choice' || question.type === 'true_false'" class="space-y-3">
                                                     <template x-for="answer in question.answers" :key="answer.id">
                                                         <label class="flex items-center p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition-colors cursor-pointer">
-                                                            <input :type="question.type === 'multiple_choice' ? 'checkbox' : 'radio'" 
+                                                            <input :type="question.type === 'multiple_choice' ? 'checkbox' : 'radio'"
                                                                    :name="`question_${question.id}`"
-                                                                   :value="answer.id" 
+                                                                   :value="answer.id"
                                                                    @change="updateAnswer(question.id, answer.id, question.type)"
                                                                    class="mr-3 text-yellow-500">
                                                             <span class="text-gray-200 flex items-center">
@@ -316,22 +316,22 @@
                                                         </label>
                                                     </template>
                                                 </div>
-                                                
+
                                                 <!-- Texte Libre -->
                                                 <div x-show="question.type === 'text'" class="space-y-3">
                                                     <textarea :id="`text_${question.id}`"
                                                               @input="updateTextAnswer(question.id, $event.target.value)"
-                                                              class="w-full p-4 bg-gray-700 border border-gray-600 rounded-lg text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none" 
-                                                              rows="4" 
+                                                              class="w-full p-4 bg-gray-700 border border-gray-600 rounded-lg text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                                                              rows="4"
                                                               placeholder="Tapez votre réponse ici..."></textarea>
                                                     <p class="text-sm text-gray-400">
                                                         <i class="fas fa-info-circle mr-1"></i>
                                                         Répondez de manière claire et précise
                                                     </p>
                                                 </div>
-                                                
+
                                                 <!-- Feedback immédiat si réponse soumise -->
-                                                <div x-show="questionFeedback[question.id]" class="mt-4 p-4 rounded-lg" 
+                                                <div x-show="questionFeedback[question.id]" class="mt-4 p-4 rounded-lg"
                                                      :class="questionFeedback[question.id]?.is_correct ? 'bg-green-900/30 border border-green-700' : 'bg-red-900/30 border border-red-700'">
                                                     <div class="flex items-center mb-2">
                                                         <i :class="questionFeedback[question.id]?.is_correct ? 'fas fa-check text-green-400' : 'fas fa-times text-red-400'" class="mr-2"></i>
@@ -341,8 +341,8 @@
                                                             <span x-text="`(${questionFeedback[question.id]?.points_earned}/${questionFeedback[question.id]?.points_possible} points)`"></span>
                                                         </span>
                                                     </div>
-                                                    <p x-show="questionFeedback[question.id]?.explanation" 
-                                                       x-text="questionFeedback[question.id]?.explanation" 
+                                                    <p x-show="questionFeedback[question.id]?.explanation"
+                                                       x-text="questionFeedback[question.id]?.explanation"
                                                        class="text-sm text-gray-300"></p>
                                                     <div x-show="questionFeedback[question.id]?.correct_answers" class="mt-2">
                                                         <p class="text-sm text-gray-400 mb-1">Bonne(s) réponse(s) :</p>
@@ -357,30 +357,30 @@
 
                                     <!-- Navigation Buttons -->
                                     <div class="flex justify-between items-center mt-8 pt-6 border-t border-gray-700">
-                                        <button @click="previousQuestion()" 
+                                        <button @click="previousQuestion()"
                                                 x-show="currentQuestion > 0"
                                                 class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                                             <i class="fas fa-chevron-left mr-2"></i>
                                             Précédent
                                         </button>
                                         <div x-show="currentQuestion === 0"></div>
-                                        
+
                                         <div class="flex space-x-3">
-                                            <button @click="submitCurrentAnswer()" 
+                                            <button @click="submitCurrentAnswer()"
                                                     x-show="!questionFeedback[questions[currentQuestion]?.id] && hasAnsweredCurrentQuestion()"
                                                     class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                                                 <i class="fas fa-check mr-2"></i>
                                                 Valider la réponse
                                             </button>
-                                            
-                                            <button @click="nextQuestion()" 
+
+                                            <button @click="nextQuestion()"
                                                     x-show="currentQuestion < questions.length - 1 && questionFeedback[questions[currentQuestion]?.id]"
                                                     class="bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                                                 <span>Suivant</span>
                                                 <i class="fas fa-chevron-right ml-2"></i>
                                             </button>
-                                            
-                                            <button @click="finishQuiz()" 
+
+                                            <button @click="finishQuiz()"
                                                     x-show="currentQuestion === questions.length - 1 && questionFeedback[questions[currentQuestion]?.id]"
                                                     class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                                                 <i class="fas fa-flag-checkered mr-2"></i>
@@ -393,7 +393,7 @@
                                 <!-- Quiz Results -->
                                 <div x-show="showResults" class="bg-gray-800 rounded-xl p-6 border border-gray-700">
                                     <div class="text-center mb-6">
-                                        <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center" 
+                                        <div class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center"
                                              :class="finalResults.is_passed ? 'bg-green-500' : 'bg-red-500'">
                                             <i class="fas text-2xl text-white" :class="finalResults.is_passed ? 'fa-trophy' : 'fa-times'"></i>
                                         </div>
@@ -408,22 +408,22 @@
                                             </span>
                                         </p>
                                         <div class="text-sm text-gray-400 mt-2">
-                                            <span x-text="finalResults.earned_points"></span> / <span x-text="finalResults.total_points"></span> points • 
+                                            <span x-text="finalResults.earned_points"></span> / <span x-text="finalResults.total_points"></span> points •
                                             Tentative <span x-text="finalResults.attempt_number"></span>
                                         </div>
                                     </div>
 
                                     <div class="space-y-4 mb-6">
                                         <h4 class="text-lg font-semibold text-white">Résultats détaillés :</h4>
-                                        
+
                                         <template x-for="(question, index) in questions" :key="question.id">
                                             <div class="p-4 bg-gray-700 rounded-lg">
                                                 <div class="flex items-center justify-between mb-2">
                                                     <span class="text-gray-300">
-                                                        Question <span x-text="index + 1"></span> 
+                                                        Question <span x-text="index + 1"></span>
                                                         (<span x-text="question.type === 'multiple_choice' ? 'Choix multiple' : question.type === 'true_false' ? 'Vrai/Faux' : 'Texte libre'"></span>)
                                                     </span>
-                                                    <span x-show="questionFeedback[question.id]" 
+                                                    <span x-show="questionFeedback[question.id]"
                                                           :class="questionFeedback[question.id]?.is_correct ? 'text-green-400' : 'text-red-400'">
                                                         <i :class="questionFeedback[question.id]?.is_correct ? 'fas fa-check' : 'fas fa-times'" class="mr-1"></i>
                                                         <span x-text="questionFeedback[question.id]?.is_correct ? 'Correct' : 'Incorrect'"></span>
@@ -431,27 +431,27 @@
                                                     </span>
                                                 </div>
                                                 <p class="text-sm text-gray-400 mb-1" x-text="question.text"></p>
-                                                <p x-show="questionFeedback[question.id]?.explanation" 
-                                                   class="text-sm text-gray-300 italic" 
+                                                <p x-show="questionFeedback[question.id]?.explanation"
+                                                   class="text-sm text-gray-300 italic"
                                                    x-text="questionFeedback[question.id]?.explanation"></p>
                                             </div>
                                         </template>
                                     </div>
 
                                     <div class="flex justify-center space-x-4">
-                                        <button @click="resetQuiz()" 
+                                        <button @click="resetQuiz()"
                                                 x-show="finalResults.can_retake"
                                                 class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                                             <i class="fas fa-redo mr-2"></i>
                                             Recommencer
                                         </button>
-                                        <button @click="finalResults.is_passed && markAsCompleted()" 
+                                        <button @click="finalResults.is_passed && markAsCompleted()"
                                                 x-show="finalResults.is_passed"
                                                 class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                                             <i class="fas fa-check mr-2"></i>
                                             Valider la leçon
                                         </button>
-                                        <div x-show="!finalResults.can_retake && !finalResults.is_passed" 
+                                        <div x-show="!finalResults.can_retake && !finalResults.is_passed"
                                              class="text-center text-gray-400 text-sm">
                                             Nombre maximum de tentatives atteint
                                         </div>
@@ -462,7 +462,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Navigation entre les leçons -->
             <div class="bg-gray-800 border-t border-gray-700 p-4">
                 <div class="flex items-center justify-between">
@@ -482,7 +482,7 @@
                             {% endfor %}
                         {% endif %}
                     </div>
-                    
+
                     <!-- Leçon suivante -->
                     <div>
                         {% if lessons|last != current_lesson %}
@@ -572,7 +572,7 @@ function quizManager() {
         questionFeedback: {},
         currentAttemptId: null,
         finalResults: {},
-        
+
         async loadQuizData() {
             this.loading = true;
             try {
@@ -589,7 +589,7 @@ function quizManager() {
                 this.loading = false;
             }
         },
-        
+
         async startQuiz() {
             if (!this.canStartNew) return;
             this.loading = true;
@@ -617,30 +617,30 @@ function quizManager() {
                 this.loading = false;
             }
         },
-        
+
         startTimer() {
             this.timerInterval = setInterval(() => {
                 this.timeRemaining--;
                 if (this.timeRemaining <= 0) { this.timeExpired(); }
             }, 1000);
         },
-        
+
         stopTimer() {
             if (this.timerInterval) { clearInterval(this.timerInterval); this.timerInterval = null; }
         },
-        
+
         timeExpired() {
             this.stopTimer();
             alert('Temps écoulé ! Le quiz va être soumis automatiquement.');
             this.finishQuiz('time_expired');
         },
-        
+
         formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
             const secs = seconds % 60;
             return `${minutes}:${secs.toString().padStart(2, '0')}`;
         },
-        
+
         updateAnswer(questionId, answerId, questionType) {
             if (!this.currentAnswers[questionId]) {
                 this.currentAnswers[questionId] = questionType === 'multiple_choice' ? [] : null;
@@ -652,11 +652,11 @@ function quizManager() {
                 this.currentAnswers[questionId] = answerId;
             }
         },
-        
+
         updateTextAnswer(questionId, text) {
             this.currentAnswers[questionId] = text;
         },
-        
+
         hasAnsweredCurrentQuestion() {
             const question = this.questions[this.currentQuestion];
             if (!question) return false;
@@ -665,7 +665,7 @@ function quizManager() {
             else if (question.type === 'multiple_choice') { return answer && answer.length > 0; }
             else { return answer !== null && answer !== undefined; }
         },
-        
+
         async submitCurrentAnswer() {
             const question = this.questions[this.currentQuestion];
             if (!question || !this.hasAnsweredCurrentQuestion()) return;
@@ -683,18 +683,18 @@ function quizManager() {
                     })
                 });
                 const data = await response.json();
-                if (data.success) { this.questionFeedback[question.id] = data; } 
+                if (data.success) { this.questionFeedback[question.id] = data; }
                 else { alert('Erreur lors de la soumission de la réponse'); }
             } catch (error) {
                 console.error('Erreur lors de la soumission:', error);
                 alert('Erreur lors de la soumission de la réponse');
             }
         },
-        
+
         previousQuestion() { if (this.currentQuestion > 0) { this.currentQuestion--; } },
-        
+
         nextQuestion() { if (this.currentQuestion < this.questions.length - 1) { this.currentQuestion++; } },
-        
+
         async finishQuiz(reason = 'completed') {
             this.stopTimer();
             const totalTimeSpent = Math.floor((Date.now() - this.startTime) / 1000);

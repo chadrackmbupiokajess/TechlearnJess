@@ -262,11 +262,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Recherche en temps réel dans les FAQ
     const searchInput = document.querySelector('input[x-model="searchQuery"]');
     const faqItems = document.querySelectorAll('[x-show*="openFaq"]').map(el => el.closest('.bg-white'));
-    
+
     if (searchInput) {
         searchInput.addEventListener('input', function() {
             const query = this.value.toLowerCase();
-            
+
             document.querySelectorAll('.bg-white.dark\\:bg-gray-800').forEach(faqItem => {
                 const question = faqItem.querySelector('span.font-semibold');
                 const answer = faqItem.querySelector('.text-gray-700');

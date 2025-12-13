@@ -41,45 +41,45 @@
     
     <!-- Schema.org structured data -->
     <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "EducationalOrganization",
-        "name": "{{ settings.site_name }}",
-        "alternateName": ["Jessna TechLearn", "JessnaTechLearn", "Jessna Tech Learn", "Jessna", "TechLearn"],
-        "url": "{{ request.build_absolute_uri }}",
-        "logo": "{% if settings.logo %}{{ settings.logo.url }}{% else %}{% static 'images/logo.png' %}{% endif %}",
-        "description": "{{ settings.site_description }}",
-        "founder": {
-            "@type": "Person",
-            "name": "Chadrack Mbu Jess",
-            "alternateName": ["Chadrackmbujess", "Chadrack mbujess", "Chadrackmbu jess", "Chadrack", "Chadrack mbu", "mbu jess", "mbu", "mbu pioka", "pioka"],
-            "jobTitle": "Fondateur et CEO",
-            "url": "https://chadrackmbu.pythonanywhere.com/"
-        },
-        "address": {
-            "@type": "PostalAddress",
-            "addressLocality": "Matadi",
-            "addressRegion": "Kongo Central",
-            "addressCountry": "CD"
-        },
-        "contactPoint": {
-            "@type": "ContactPoint",
-            "telephone": "{{ settings.contact_phone }}",
-            "contactType": "customer service",
-            "email": "{{ settings.contact_email }}"
-        },
-        "sameAs": [
-            "https://github.com/chadrackmbujess",
-            "https://chadrackmbu.pythonanywhere.com/"
-        ],
-        "offers": {
-            "@type": "Offer",
-            "category": "Formation en ligne",
-            "description": "Cours de technologie, développement web, programmation"
-        }
+{
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "{{ settings.site_name }}",
+    "alternateName": ["Jessna TechLearn", "JessnaTechLearn", "Jessna Tech Learn", "Jessna", "TechLearn"],
+    "url": "{{ request.build_absolute_uri }}",
+    "logo": "{% if settings.logo %}{{ settings.logo.url }}{% else %}{% static 'images/logo.png' %}{% endif %}",
+    "description": "{{ settings.site_description }}",
+    "founder": {
+        "@type": "Person",
+        "name": "Chadrack Mbu Jess",
+        "alternateName": ["Chadrackmbujess", "Chadrack mbujess", "Chadrackmbu jess", "Chadrack", "Chadrack mbu", "mbu jess", "mbu", "mbu pioka", "pioka"],
+        "jobTitle": "Fondateur et CEO",
+        "url": "https://chadrackmbu.pythonanywhere.com/"
+    },
+    "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Matadi",
+        "addressRegion": "Kongo Central",
+        "addressCountry": "CD"
+    },
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "telephone": "{{ settings.contact_phone }}",
+        "contactType": "customer service",
+        "email": "{{ settings.contact_email }}"
+    },
+    "sameAs": [
+        "https://github.com/chadrackmbujess",
+        "https://chadrackmbu.pythonanywhere.com/"
+    ],
+    "offers": {
+        "@type": "Offer",
+        "category": "Formation en ligne",
+        "description": "Cours de technologie, développement web, programmation"
     }
-    </script>
-    
+}
+</script>
+
     <!-- Canonical URL -->
     <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
     
@@ -158,8 +158,6 @@
     </style>
     
     {% block extra_css %}{% endblock %}
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5640124347001712"
-     crossorigin="anonymous"></script>
 </head>
 <body class="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300" x-data="{ darkMode: false }" :class="{ 'dark': darkMode }">
     <!-- Bouton d'installation PWA -->
@@ -378,20 +376,6 @@
     <main class="flex-1 min-h-screen pt-16">
         {% block content %}{% endblock %}
     </main>
-
-    <!-- AdSense Ad Unit -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Banniere_bas_de_page -->
-        <ins class="adsbygoogle"
-             style="display:block"
-             data-ad-client="ca-pub-5640124347001712"
-             data-ad-slot="4103617646"
-             data-ad-format="auto"
-             data-full-width-responsive="true"></ins>
-        <script>
-             (adsbygoogle = window.adsbygoogle || []).push({});
-        </script>
-    </div>
 
     <!-- Footer -->
     <footer class="bg-gray-900 dark:bg-gray-950 text-white">
