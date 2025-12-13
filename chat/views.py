@@ -3,12 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
-from django.utils import timezone
-import datetime
+from django.utils import timezone as django_timezone # Renommé pour éviter les conflits
+from datetime import datetime, timezone # Importation de datetime et timezone de la bibliothèque standard
+import logging
 # from django.views.decorators.csrf import csrf_exempt # Plus nécessaire avec un formulaire HTML standard
 from .models import ChatRoom, Message
 from .forms import ChatRoomForm
 
+logger = logging.getLogger(__name__) # Initialisation du logger
 
 @login_required
 def liste_salons(request):
@@ -80,7 +82,7 @@ def envoyer_message(request, salon_id):
                 'auteur_username': message.auteur.username,
                 'auteur_avatar_url': message.auteur.userprofile.get_avatar_url() if hasattr(message.auteur, 'userprofile') else '', # Assurez-vous que UserProfile existe
                 'contenu': message.contenu,
-                'timestamp': message.timestamp.isoformat(),
+                'timestamp': message.timestamp.astimezone(timezone.utc).isoformat(timespec='microseconds'), # MODIFIÉ ICI
                 'is_own': True # Indique que c'est le message de l'utilisateur actuel
             }
         })
@@ -100,15 +102,17 @@ def messages_api(request, salon_id):
 
     if since_timestamp_str:
         try:
-            # Convertir le timestamp ISO 8601 en objet datetime
-            since_datetime = datetime.datetime.fromisoformat(since_timestamp_str)
-            # Assurez-vous que le datetime est aware si USE_TZ est True
-            if timezone.is_naive(since_datetime):
-                since_datetime = timezone.make_aware(since_datetime, timezone.get_current_timezone())
+            # fromisoformat est sensible au format, notamment l'espace avant le décalage horaire
+            # Nous allons tenter de remplacer l'espace par un '+' si le format est celui qui pose problème
+            if ' ' in since_timestamp_str and since_timestamp_str.endswith('00:00'):
+                since_timestamp_str = since_timestamp_str.replace(' ', '+', 1)
+            
+            since_datetime = datetime.fromisoformat(since_timestamp_str)
             
             messages_query = messages_query.filter(timestamp__gt=since_datetime)
-        except ValueError:
-            return JsonResponse({'error': 'Format de timestamp "since" invalide.'}, status=400)
+        except ValueError as e:
+            logger.error(f"Invalid 'since' timestamp format: '{since_timestamp_str}' - Error: {e}")
+            return JsonResponse({'error': f'Format de timestamp "since" invalide: {e}'}, status=400)
             
     messages_query = messages_query.order_by('timestamp')
     
@@ -119,7 +123,7 @@ def messages_api(request, salon_id):
             'auteur_username': message.auteur.username,
             'auteur_avatar_url': message.auteur.userprofile.get_avatar_url() if hasattr(message.auteur, 'userprofile') else '',
             'contenu': message.contenu,
-            'timestamp': message.timestamp.isoformat(),
+            'timestamp': message.timestamp.astimezone(timezone.utc).isoformat(timespec='microseconds'), # MODIFIÉ ICI
             'is_own': (message.auteur == request.user) # Indique si le message vient de l'utilisateur actuel
         })
     
