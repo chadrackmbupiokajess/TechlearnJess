@@ -257,26 +257,30 @@
 
             <!-- Zone de saisie -->
             <div class="chat-header p-3 sm:p-4 chat-input-container">
-                <div class="flex items-center space-x-2 sm:space-x-3">
-                    <button class="hidden sm:block p-2 text-gray-500 hover:text-indigo-600 transition-colors" title="Joindre un fichier">
-                        <i class="fas fa-paperclip text-lg"></i>
-                    </button>
-                    <button class="hidden sm:block p-2 text-gray-500 hover:text-indigo-600 transition-colors" title="Ajouter une image">
-                        <i class="fas fa-image text-lg"></i>
-                    </button>
-                    <div class="flex-1 relative">
-                        <input type="text" 
-                               class="chat-input w-full px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
-                               placeholder="Tapez votre message..."
-                               id="message-input">
-                        <button class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 sm:p-2 text-gray-500 hover:text-indigo-600 transition-colors" title="Émojis">
-                            <i class="fas fa-smile text-sm sm:text-lg"></i>
+                <form id="message-form" method="post" action="{% url 'chat:envoyer_message' salon.id %}">
+                    {% csrf_token %}
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        <button type="button" class="hidden sm:block p-2 text-gray-500 hover:text-indigo-600 transition-colors" title="Joindre un fichier">
+                            <i class="fas fa-paperclip text-lg"></i>
+                        </button>
+                        <button type="button" class="hidden sm:block p-2 text-gray-500 hover:text-indigo-600 transition-colors" title="Ajouter une image">
+                            <i class="fas fa-image text-lg"></i>
+                        </button>
+                        <div class="flex-1 relative">
+                            <input type="text" 
+                                   name="contenu"
+                                   class="chat-input w-full px-3 sm:px-4 py-2 sm:py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm sm:text-base text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                                   placeholder="Tapez votre message..."
+                                   id="message-input">
+                            <button type="button" class="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 sm:p-2 text-gray-500 hover:text-indigo-600 transition-colors" title="Émojis">
+                                <i class="fas fa-smile text-sm sm:text-lg"></i>
+                            </button>
+                        </div>
+                        <button type="submit" id="send-button" class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-2 sm:p-3 rounded-full hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex-shrink-0">
+                            <i class="fas fa-paper-plane text-sm sm:text-base"></i>
                         </button>
                     </div>
-                    <button id="send-button" class="bg-gradient-to-r from-indigo-500 to-purple-600 text-white p-2 sm:p-3 rounded-full hover:from-indigo-600 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105 flex-shrink-0">
-                        <i class="fas fa-paper-plane text-sm sm:text-base"></i>
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -389,10 +393,12 @@
 const salonId = "{{ salon.id }}";
 const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
-const sendButton = document.getElementById('send-button');
-const typingIndicator = document.getElementById('typing-indicator');
 const sendMessageUrl = "{% url 'chat:envoyer_message' salon.id %}";
+const messagesApiUrl = "{% url 'chat:messages_api' salon.id %}"; // URL pour l'API de récupération des messages
+const currentUserUsername = "{{ user.username }}";
 const currentUserAvatar = "{% if user.userprofile %}{{ user.userprofile.get_avatar_url }}{% else %}{% static 'images/default_avatar.png' %}{% endif %}";
+
+let lastMessageTimestamp = "{% if messages %}{{ messages.last.timestamp|date:'c' }}{% else %}null{% endif %}"; // Timestamp du dernier message affiché
 
 // Fonction pour récupérer le token CSRF
 function getCookie(name) {
@@ -401,7 +407,6 @@ function getCookie(name) {
         const cookies = document.cookie.split(';');
         for (let i = 0; i < cookies.length; i++) {
             const cookie = cookies[i].trim();
-            // Does this cookie string begin with the name we want?
             if (cookie.substring(0, name.length + 1) === (name + '=')) {
                 cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                 break;
@@ -416,60 +421,60 @@ const csrftoken = getCookie('csrftoken');
 document.addEventListener('DOMContentLoaded', function() {
     scrollToBottom();
     messageInput.focus();
-    
-    messageInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter' && this.value.trim()) {
-            sendMessage(this.value.trim());
-            this.value = '';
+
+    // Gestion de l'envoi de messages via AJAX
+    document.getElementById('message-form').addEventListener('submit', async function(e) {
+        e.preventDefault(); // Empêche le rechargement de la page
+        const messageText = messageInput.value.trim();
+
+        if (messageText) {
+            const formData = new FormData();
+            formData.append('contenu', messageText);
+
+            try {
+                const response = await fetch(sendMessageUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': csrftoken,
+                    },
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    console.error('Erreur lors de l\'envoi du message:', errorData.error);
+                    // Afficher une notification d'erreur à l'utilisateur si nécessaire
+                    return;
+                }
+
+                const data = await response.json();
+                if (data.status === 'success' && data.message) {
+                    // Ajouter le message envoyé par l'utilisateur immédiatement
+                    addMessage(data.message);
+                    messageInput.value = ''; // Effacer l'input
+                    lastMessageTimestamp = data.message.timestamp; // Mettre à jour le timestamp
+                }
+            } catch (error) {
+                console.error('Erreur réseau ou autre:', error);
+            }
         }
     });
-    
-    sendButton.addEventListener('click', function() {
-        if (messageInput.value.trim()) {
-            sendMessage(messageInput.value.trim());
-            messageInput.value = '';
-        }
-    });
+
+    // Démarrer le polling des messages
+    setInterval(pollMessages, 3000); // Toutes les 3 secondes
 });
 
-async function sendMessage(text) {
-    const formData = new FormData();
-    formData.append('contenu', text);
-
-    try {
-        const response = await fetch(sendMessageUrl, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': csrftoken,
-            },
-            body: formData,
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            console.error('Erreur lors de l\'envoi du message:', errorData.error);
-            // Afficher une notification d'erreur à l'utilisateur si nécessaire
-            return;
-        }
-
-        const data = await response.json();
-        if (data.status === 'success' && data.message) {
-            addMessage(data.message);
-        }
-    } catch (error) {
-        console.error('Erreur réseau ou autre:', error);
-    }
-}
-
+// Fonction pour ajouter un message au DOM
 function addMessage(messageData) {
     const messageDiv = document.createElement('div');
-    const isOwn = messageData.is_own; // La vue Django renvoie 'is_own'
+    // Déterminer si le message est de l'utilisateur actuel
+    const isOwn = (messageData.auteur_username === currentUserUsername);
     
     messageDiv.className = `message-bubble flex items-start space-x-2 sm:space-x-3 ${isOwn ? 'justify-end' : ''}`;
     
     const avatarSrc = isOwn 
         ? currentUserAvatar
-        : messageData.auteur_avatar_url || "{% static 'images/default_avatar.png' %}"; // Utiliser l'avatar de l'auteur du message ou un avatar par défaut
+        : messageData.auteur_avatar_url || "{% static 'images/default_avatar.png' %}";
     
     const messageTime = new Date(messageData.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const authorName = isOwn ? "Vous" : messageData.auteur_username;
@@ -506,40 +511,46 @@ function addMessage(messageData) {
     scrollToBottom();
 }
 
-function showTypingIndicator() {
-    typingIndicator.classList.remove('hidden');
-    scrollToBottom();
+// Fonction pour récupérer les nouveaux messages
+async function pollMessages() {
+    try {
+        let url = messagesApiUrl;
+        if (lastMessageTimestamp && lastMessageTimestamp !== 'null') {
+            url += `?since=${lastMessageTimestamp}`; // Envoyer le timestamp du dernier message connu
+        }
+
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'X-CSRFToken': csrftoken, // CSRF est aussi nécessaire pour les GET si la vue est décorée
+            },
+        });
+
+        if (!response.ok) {
+            console.error('Erreur lors de la récupération des messages:', response.statusText);
+            return;
+        }
+
+        const data = await response.json();
+        if (data.messages && data.messages.length > 0) {
+            data.messages.forEach(msg => {
+                // Vérifier si le message n'est pas déjà affiché (utile si le polling est rapide)
+                // Ou si le message n'est pas celui que l'utilisateur vient d'envoyer (pour éviter les doublons)
+                // Pour simplifier, on ajoute tous les messages reçus par l'API
+                addMessage(msg);
+            });
+            // Mettre à jour le timestamp du dernier message
+            lastMessageTimestamp = data.messages[data.messages.length - 1].timestamp;
+        }
+    } catch (error) {
+        console.error('Erreur réseau lors du polling des messages:', error);
+    }
 }
 
-function hideTypingIndicator() {
-    typingIndicator.classList.add('hidden');
-}
 
 function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
-
-// Simulation de connexion WebSocket (à remplacer par une vraie implémentation)
-function initWebSocket() {
-    console.log('WebSocket simulation pour le salon:', salonId);
-    // Ici, vous initialiseriez la vraie connexion WebSocket
-    // Exemple:
-    // const chatSocket = new WebSocket(
-    //     'ws://' + window.location.host + '/ws/chat/' + salonId + '/'
-    // );
-    // chatSocket.onmessage = function(e) {
-    //     const data = JSON.parse(e.data);
-    //     if (data.type === 'chat_message') {
-    //         addMessage(data.message); // Assurez-vous que le format correspond
-    //     }
-    // };
-    // chatSocket.onclose = function(e) {
-    //     console.error('Chat socket closed unexpectedly');
-    // };
-}
-
-// Initialiser la connexion
-initWebSocket();
 
 // Fonction pour toggle la sidebar sur mobile
 function toggleSidebar() {

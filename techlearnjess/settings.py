@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sites',
 
     # Third party apps
-    'channels',
+    # 'channels', # Removed for AJAX polling
     'crispy_forms',
     'crispy_tailwind',
     'ckeditor',
@@ -75,8 +75,8 @@ MIDDLEWARE = [
 # ------------------------------
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3003",
-    "http://127.0.0.1:3003",
-    "http://192.168.1.193:3003",
+    "http://127.0.0.1:8000",
+    "http://192.168.1.193:8000",
     "https://techlearnjess.pythonanywhere.com",
 ]
 # Si vous voulez être plus permissif en développement, vous pouvez utiliser :
@@ -105,7 +105,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'techlearnjess.wsgi.application'
-ASGI_APPLICATION = 'techlearnjess.asgi.application'
+# ASGI_APPLICATION = 'techlearnjess.asgi.application' # Removed for AJAX polling
 
 # ------------------------------
 # DATABASE
@@ -226,14 +226,14 @@ CKEDITOR_CONFIGS = {
 # ------------------------------
 # CHANNELS
 # ------------------------------
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
-        },
-    },
-}
+# CHANNEL_LAYERS = { # Removed for AJAX polling
+#     'default': {
+#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
+#         'CONFIG': {
+#             "hosts": [('127.0.0.1', 6379)],
+#         },
+#     },
+# }
 
 # ------------------------------
 # LOGIN URLS
