@@ -245,3 +245,8 @@ def robots_txt(request):
     ]
     
     return HttpResponse("\n".join(lines), content_type="text/plain")
+
+def ads_txt(request):
+    """Serves the ads.txt file."""
+    content = "google.com, pub-5640124347001712, DIRECT, f08c47fec0942fa0"
+    return HttpResponse(content, content_type='text/plain')

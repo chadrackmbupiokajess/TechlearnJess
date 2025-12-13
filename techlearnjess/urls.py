@@ -4,7 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic import TemplateView
-from core.views import sitemap_xml, robots_txt
+from core.views import sitemap_xml, robots_txt, ads_txt
 
 admin.site.site_header = "Administration Jessna TechLearn"
 admin.site.site_title = "Portail d'administration Jessna TechLearn"
@@ -17,6 +17,7 @@ urlpatterns = [
     # SEO files
     path('sitemap.xml', sitemap_xml, name='sitemap_xml'),
     path('robots.txt', robots_txt, name='robots_txt'),
+    path('ads.txt', ads_txt, name='ads_txt'),
 
     path('', include('core.urls')),
     path('comptes/', include('accounts.urls')),
@@ -30,9 +31,6 @@ urlpatterns = [
     
     # Google Search Console verification
     path('googleff7e45855a024362.html', TemplateView.as_view(template_name='googleff7e45855a024362.html', content_type='text/html')),
-    
-    # AdSense ads.txt
-    path('ads.txt', TemplateView.as_view(template_name='ads.txt', content_type='text/plain')),
 ]
 
 # Servir les fichiers médias en développement
