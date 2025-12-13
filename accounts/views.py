@@ -12,7 +12,8 @@ from django.contrib.auth import update_session_auth_hash
 from .models import UserProfile, LoginHistory
 from .forms import UserRegistrationForm, UserProfileForm, UserUpdateForm
 from core.models import SiteSettings
-
+from courses.models import Enrollment
+from certificates.models import Certificate
 
 def register(request):
     """Inscription d'un nouvel utilisateur"""
@@ -99,22 +100,18 @@ def profile(request, username=None):
     
     # Statistiques du profil
     stats = {
-        'total_courses': 0,
-        'completed_courses': profile.total_courses_completed,
-        'certificates': profile.total_certificates,
+        'total_courses': Enrollment.objects.filter(user=user).count(),
+        'completed_courses': Enrollment.objects.filter(user=user, is_completed=True).count(),
+        'certificates': Certificate.objects.filter(user=user).count(),
         'join_date': user.date_joined,
     }
     
     # Cours récents (si l'utilisateur consulte son propre profil)
     recent_courses = []
     if is_own_profile:
-        try:
-            from courses.models import Enrollment
-            recent_courses = Enrollment.objects.filter(
-                user=user
-            ).select_related('course').order_by('-enrolled_at')[:5]
-        except ImportError:
-            pass
+        recent_courses = Enrollment.objects.filter(
+            user=user
+        ).select_related('course').order_by('-enrolled_at')[:5]
     
     settings = SiteSettings.get_settings()
     context = {
@@ -146,11 +143,18 @@ def edit_profile(request):
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = UserProfileForm(instance=profile)
+
+    # Statistiques du profil
+    stats = {
+        'total_courses': Enrollment.objects.filter(user=request.user).count(),
+        'certificates': Certificate.objects.filter(user=request.user).count(),
+    }
     
     settings = SiteSettings.get_settings()
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
+        'stats': stats,
         'settings': settings,
     }
     
