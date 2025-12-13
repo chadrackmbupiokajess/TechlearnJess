@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Salons de Chat - Jessna TechLearn{% endblock %}
+{% block title %}Salons de Chat - {{ settings.site_name }}{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -54,6 +54,17 @@
 {% block content %}
 <div class="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900 py-8">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Messages Django -->
+        {% if messages %}
+            <div class="mb-4">
+                {% for message in messages %}
+                    <div class="p-3 rounded-lg {% if message.tags == 'success' %}bg-green-100 text-green-800{% elif message.tags == 'error' %}bg-red-100 text-red-800{% else %}bg-blue-100 text-blue-800{% endif %}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         <!-- Header -->
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">
@@ -132,8 +143,8 @@
                 {% if salon.messages.last %}
                 <div class="message-preview rounded-lg p-3 mb-4">
                     <div class="flex items-center space-x-2 mb-1">
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=24&h=24&fit=crop&crop=face" 
-                             alt="Avatar" class="w-6 h-6 rounded-full">
+                        <img src="{{ salon.messages.last.auteur.userprofile.get_avatar_url }}" 
+                             alt="{{ salon.messages.last.auteur.username }}" class="w-6 h-6 rounded-full">
                         <span class="text-sm font-medium text-gray-700">{{ salon.messages.last.auteur.username }}</span>
                         <span class="text-xs text-gray-500">{{ salon.messages.last.timestamp|timesince }}</span>
                     </div>
@@ -145,7 +156,7 @@
                 <div class="flex items-center justify-between">
                     <div class="flex -space-x-2">
                         {% for participant in salon.participants.all|slice:":4" %}
-                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=32&h=32&fit=crop&crop=face" 
+                        <img src="{{ participant.userprofile.get_avatar_url }}" 
                              alt="{{ participant.username }}" 
                              class="w-8 h-8 rounded-full border-2 border-white dark:border-gray-800"
                              title="{{ participant.username }}">
@@ -204,8 +215,8 @@
                     </div>
                     
                     <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                        <div class="w-2 h-2 online-indicator rounded-full mr-2"></div>
-                        Actif
+                        <div class="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+                        Inactif
                     </div>
                 </div>
             </div>
@@ -247,8 +258,8 @@
                     </div>
                     
                     <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                        <div class="w-2 h-2 online-indicator rounded-full mr-2"></div>
-                        Actif
+                        <div class="w-2 h-2 bg-gray-400 rounded-full mr-2"></div>
+                        Inactif
                     </div>
                 </div>
             </div>
@@ -327,29 +338,37 @@
             </button>
         </div>
         
-        <form id="createSalonForm">
+        <form id="createSalonForm" method="post" action="{% url 'chat:creer_salon' %}">
+            {% csrf_token %}
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label for="id_nom" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Nom du salon
                 </label>
                 <input type="text" 
+                       name="nom"
+                       id="id_nom"
                        class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                        placeholder="Ex: Développement Web"
                        required>
             </div>
             
             <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label for="id_description" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Description
                 </label>
-                <textarea class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                <textarea name="description"
+                          id="id_description"
+                          class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                           rows="3"
                           placeholder="Décrivez le sujet de discussion..."></textarea>
             </div>
             
             <div class="mb-6">
-                <label class="flex items-center">
-                    <input type="checkbox" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                <label for="id_est_prive" class="flex items-center">
+                    <input type="checkbox" 
+                           name="est_prive"
+                           id="id_est_prive"
+                           class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                     <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Salon privé (sur invitation uniquement)</span>
                 </label>
             </div>
@@ -405,12 +424,12 @@ document.getElementById('createSalonModal').addEventListener('click', function(e
     }
 });
 
-// Gestion du formulaire de création
-document.getElementById('createSalonForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    // Ici, vous ajouteriez la logique pour créer le salon
-    alert('Fonctionnalité de création de salon à implémenter');
-    closeCreateSalonModal();
-});
+// La soumission du formulaire est maintenant gérée par Django, donc nous n'avons plus besoin de cette fonction JS.
+// document.getElementById('createSalonForm').addEventListener('submit', function(e) {
+//     e.preventDefault();
+//     // Ici, vous ajouteriez la logique pour créer le salon
+//     alert('Fonctionnalité de création de salon à implémenter');
+//     closeCreateSalonModal();
+// });
 </script>
 {% endblock %}

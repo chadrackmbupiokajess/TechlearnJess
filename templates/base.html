@@ -42,7 +42,7 @@
     <meta property="twitter:description" content="{% block twitter_description %}{{ settings.site_description|default:settings.site_slogan }}{% endblock %}">
     <meta property="twitter:image" content="{% block twitter_image %}{% static 'images/techlearnjess-og.jpg' %}{% endblock %}">
     <meta property="twitter:creator" content="@chadrackmbujess">
-    
+
     <!-- Schema.org structured data -->
     <script type="application/ld+json">
 {
@@ -86,7 +86,7 @@
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
-    
+
     <!-- Favicon -->
     {% if settings.favicon %}
         <link rel="icon" type="image/x-icon" href="{{ settings.favicon.url }}">
@@ -96,22 +96,22 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
     <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
+
     <!-- Jitsi External API -->
     <script src="https://8x8.vc/vpaas-magic-cookie-81789623447a44518155995183d6395e/external_api.js" async></script>
-    
+
     <style>
         body { font-family: 'Inter', sans-serif; }
         .font-heading { font-family: 'Poppins', sans-serif; }
@@ -125,12 +125,12 @@
         .text-shadow { text-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .neon-glow { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
         .neon-glow:hover { box-shadow: 0 0 30px rgba(59, 130, 246, 0.5); }
-        
+
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-20px); }
         }
-        
+
         .dark-mode {
             background: #0f172a;
             color: #f8fafc;
@@ -150,7 +150,7 @@
         .info-box > *:last-child, .success-box > *:last-child, .warning-box > *:last-child, .error-box > *:last-child, .purple-box > *:last-child, .pink-box > *:last-child, .gray-box > *:last-child, .cyan-box > *:last-child {
             margin-bottom: 0;
         }
-        
+
         .info-box { background-color: #EBF8FF; }
         .success-box { background-color: #F0FFF4; }
         .warning-box { background-color: #FFFBEB; }
@@ -160,7 +160,7 @@
         .gray-box { background-color: #F7FAFC; }
         .cyan-box { background-color: #ECFEFF; }
     </style>
-    
+
     {% block extra_css %}{% endblock %}
 </head>
 <body class="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300" x-data="{ darkMode: false }" :class="{ 'dark': darkMode }">
@@ -186,7 +186,7 @@
                             <span>{{ settings.site_name }}</span>
                         </a>
                     </div>
-                    
+
                     <!-- Navigation principale -->
                     <div class="hidden md:ml-10 md:flex md:space-x-8">
                         <a href="{% url 'core:home' %}" class="text-gray-900 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 px-3 py-2 text-sm font-medium transition-colors relative group">
@@ -211,7 +211,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <!-- Actions utilisateur -->
                 <div class="hidden md:flex md:items-center md:space-x-4">
                     <!-- Mode sombre -->
@@ -219,7 +219,7 @@
                         <i class="fas fa-moon" x-show="!darkMode"></i>
                         <i class="fas fa-sun" x-show="darkMode"></i>
                     </button>
-                    
+
                     {% if user.is_authenticated %}
                         <!-- Notifications -->
                         <div class="relative" x-data="{ notifOpen: false }">
@@ -227,7 +227,7 @@
                                 <i class="fas fa-bell text-lg"></i>
                                 <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-pulse">3</span>
                             </button>
-                            
+
                             <div x-show="notifOpen" @click.away="notifOpen = false" x-transition class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl py-2 z-50 border border-gray-200 dark:border-gray-700">
                                 <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                                     <h3 class="font-semibold text-gray-900 dark:text-gray-100">Notifications</h3>
@@ -250,12 +250,12 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <!-- Chat -->
                         <a href="{% url 'chat:liste_salons' %}" class="p-2 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                             <i class="fas fa-comments text-lg"></i>
                         </a>
-                        
+
                         <!-- Menu utilisateur -->
                         <div class="relative" x-data="{ dropdownOpen: false }">
                             <button @click="dropdownOpen = !dropdownOpen" class="flex items-center text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 hover:ring-2 hover:ring-blue-300 transition-all">
@@ -263,13 +263,13 @@
                                 <span class="ml-2 text-gray-700 dark:text-gray-300 font-medium">{{ user.get_full_name|default:user.username }}</span>
                                 <i class="fas fa-chevron-down ml-1 text-xs text-gray-500 dark:text-gray-400"></i>
                             </button>
-                            
+
                             <div x-show="dropdownOpen" @click.away="dropdownOpen = false" x-transition class="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-800 rounded-lg shadow-xl py-2 z-50 border border-gray-200 dark:border-gray-700">
                                 <div class="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                                     <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ user.get_full_name|default:user.username }}</p>
                                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ user.email }}</p>
                                 </div>
-                                
+
                                 <a href="{% url 'core:dashboard' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                     <i class="fas fa-tachometer-alt mr-3 text-blue-500"></i>Tableau de bord
                                 </a>
@@ -285,9 +285,9 @@
                                 <a href="{% url 'payments:history' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                     <i class="fas fa-credit-card mr-3 text-orange-500"></i>Paiements
                                 </a>
-                                
+
                                 <hr class="my-2 border-gray-200 dark:border-gray-700">
-                                
+
                                 <a href="{% url 'accounts:edit_profile' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                     <i class="fas fa-cog mr-3 text-gray-500"></i>Paramètres
                                 </a>
@@ -305,7 +305,7 @@
                         </a>
                     {% endif %}
                 </div>
-                
+
                 <!-- Menu mobile -->
                 <div class="md:hidden flex items-center">
                     <button @click="mobileMenuOpen = !mobileMenuOpen" class="text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
@@ -315,7 +315,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- Menu mobile -->
         <div x-show="mobileMenuOpen" x-transition class="md:hidden bg-white/95 dark:bg-gray-900/95 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700">
             <div class="px-2 pt-2 pb-3 space-y-1">
