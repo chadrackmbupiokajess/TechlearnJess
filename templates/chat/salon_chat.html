@@ -198,7 +198,7 @@
                 {% for message in messages %}
                 <div class="message-bubble flex items-start space-x-2 sm:space-x-3 {% if message.auteur == user %}justify-end{% endif %}">
                     {% if message.auteur != user %}
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                    <img src="{% if message.auteur.userprofile %}{{ message.auteur.userprofile.get_avatar_url }}{% else %}{% static 'images/default_avatar.png' %}{% endif %}" 
                          alt="{{ message.auteur.username }}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0">
                     {% endif %}
                     
@@ -223,7 +223,7 @@
                     </div>
                     
                     {% if message.auteur == user %}
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face" 
+                    <img src="{% if user.userprofile %}{{ user.userprofile.get_avatar_url }}{% else %}{% static 'images/default_avatar.png' %}{% endif %}" 
                          alt="Votre avatar" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0">
                     {% endif %}
                 </div>
@@ -243,7 +243,7 @@
 
                 <!-- Indicateur de frappe -->
                 <div id="typing-indicator" class="typing-indicator flex items-center space-x-3 hidden">
-                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                    <img src="{% static 'images/default_avatar.png' %}" 
                          alt="Avatar" class="w-8 h-8 rounded-full">
                     <div class="message-other rounded-2xl rounded-tl-md p-3 shadow-sm">
                         <div class="flex space-x-1">
@@ -302,7 +302,7 @@
                     {% for participant in salon.participants.all %}
                     <div class="flex items-center space-x-2 sm:space-x-3 p-2 rounded-lg hover:bg-white/50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer">
                         <div class="relative flex-shrink-0">
-                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                            <img src="{% if participant.userprofile %}{{ participant.userprofile.get_avatar_url }}{% else %}{% static 'images/default_avatar.png' %}{% endif %}" 
                                  alt="{{ participant.username }}" class="w-8 h-8 sm:w-10 sm:h-10 rounded-full">
                             <div class="absolute -bottom-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 online-indicator rounded-full border-2 border-white"></div>
                         </div>
@@ -345,7 +345,7 @@
                     <div class="bg-white/50 dark:bg-gray-700/50 rounded-lg p-3">
                         <div class="flex items-center justify-between text-sm">
                             <span class="text-gray-600 dark:text-gray-400">Créé le</span>
-                            <span class="text-gray-900 dark:text-white">{{ salon.date_creation|date:"d/m/Y" }}</span>
+                            <span class="text-gray-900 dark:text-white">{{ salon.cree_le|date:"d/m/Y" }}</span>
                         </div>
                     </div>
                     
@@ -391,19 +391,32 @@ const chatMessages = document.getElementById('chat-messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
 const typingIndicator = document.getElementById('typing-indicator');
+const sendMessageUrl = "{% url 'chat:envoyer_message' salon.id %}";
+const currentUserAvatar = "{% if user.userprofile %}{{ user.userprofile.get_avatar_url }}{% else %}{% static 'images/default_avatar.png' %}{% endif %}";
 
-// Simulation WebSocket pour le chat en temps réel
-let ws = null;
+// Fonction pour récupérer le token CSRF
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
 
 // Initialisation
 document.addEventListener('DOMContentLoaded', function() {
-    // Faire défiler vers le bas
     scrollToBottom();
-    
-    // Focus sur l'input
     messageInput.focus();
     
-    // Gestion de l'envoi de messages
     messageInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter' && this.value.trim()) {
             sendMessage(this.value.trim());
@@ -417,64 +430,73 @@ document.addEventListener('DOMContentLoaded', function() {
             messageInput.value = '';
         }
     });
-    
-    // Indicateur de frappe
-    let typingTimer;
-    messageInput.addEventListener('input', function() {
-        // Simuler l'indicateur de frappe
-        clearTimeout(typingTimer);
-        typingTimer = setTimeout(() => {
-            // Masquer l'indicateur après 3 secondes
-        }, 3000);
-    });
 });
 
-function sendMessage(text) {
-    // Créer le message localement
-    addMessage(text, true, 'Maintenant');
-    
-    // Ici, vous ajouteriez l'envoi via WebSocket ou AJAX
-    // Pour la démo, on simule une réponse
-    setTimeout(() => {
-        showTypingIndicator();
-        setTimeout(() => {
-            hideTypingIndicator();
-            addMessage("Message reçu ! Ceci est une simulation.", false, 'Maintenant', 'Bot');
-        }, 2000);
-    }, 1000);
+async function sendMessage(text) {
+    const formData = new FormData();
+    formData.append('contenu', text);
+
+    try {
+        const response = await fetch(sendMessageUrl, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+            },
+            body: formData,
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Erreur lors de l\'envoi du message:', errorData.error);
+            // Afficher une notification d'erreur à l'utilisateur si nécessaire
+            return;
+        }
+
+        const data = await response.json();
+        if (data.status === 'success' && data.message) {
+            addMessage(data.message);
+        }
+    } catch (error) {
+        console.error('Erreur réseau ou autre:', error);
+    }
 }
 
-function addMessage(text, isOwn = false, time = 'Maintenant', author = 'Vous') {
+function addMessage(messageData) {
     const messageDiv = document.createElement('div');
-    messageDiv.className = `message-bubble flex items-start space-x-3 ${isOwn ? 'justify-end' : ''}`;
+    const isOwn = messageData.is_own; // La vue Django renvoie 'is_own'
+    
+    messageDiv.className = `message-bubble flex items-start space-x-2 sm:space-x-3 ${isOwn ? 'justify-end' : ''}`;
     
     const avatarSrc = isOwn 
-        ? 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face'
-        : 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face';
+        ? currentUserAvatar
+        : messageData.auteur_avatar_url || "{% static 'images/default_avatar.png' %}"; // Utiliser l'avatar de l'auteur du message ou un avatar par défaut
     
+    const messageTime = new Date(messageData.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const authorName = isOwn ? "Vous" : messageData.auteur_username;
+
     if (isOwn) {
         messageDiv.innerHTML = `
             <div class="text-right">
-                <div class="flex items-center justify-end space-x-2 mb-1">
-                    <span class="text-xs text-gray-500 dark:text-gray-400">${time}</span>
-                    <span class="text-sm font-medium text-gray-900 dark:text-white">${author}</span>
+                <div class="flex items-center justify-end space-x-1 sm:space-x-2 mb-1">
+                    <span class="text-xs text-gray-500 dark:text-gray-400">${messageTime}</span>
+                    <span class="text-sm font-medium text-gray-900 dark:text-white">${authorName}</span>
                 </div>
-                <div class="message-own text-white rounded-2xl rounded-tr-md p-3 shadow-sm inline-block">
-                    <p>${text}</p>
+                <div class="message-own text-white rounded-2xl rounded-tr-md p-2 sm:p-3 shadow-sm inline-block max-w-xs sm:max-w-sm break-words">
+                    <p class="text-sm sm:text-base">${messageData.contenu}</p>
                 </div>
             </div>
-            <img src="${avatarSrc}" alt="Avatar" class="w-8 h-8 rounded-full">
+            <img src="${avatarSrc}" alt="Votre avatar" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0">
         `;
     } else {
         messageDiv.innerHTML = `
-            <img src="${avatarSrc}" alt="Avatar" class="w-8 h-8 rounded-full">
-            <div class="flex-1">
-                <div class="flex items-center space-x-2 mb-1">
-                    <span class="text-sm font-medium text-gray-900 dark:text-white">${author}</span>
-                    <span class="text-xs text-gray-500 dark:text-gray-400">${time}</span>
+            <img src="${avatarSrc}" alt="${authorName}" class="w-6 h-6 sm:w-8 sm:h-8 rounded-full flex-shrink-0">
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center space-x-1 sm:space-x-2 mb-1">
+                    <span class="text-xs sm:text-sm font-medium text-gray-900 dark:text-white truncate">${authorName}</span>
+                    <span class="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0">${messageTime}</span>
                 </div>
-                <div class="message-other text-gray-800 dark:text-gray-200 rounded-2xl rounded-tl-md p-3 shadow-sm">
-                    <p>${text}</p>
+                <div class="message-other text-gray-800 dark:text-gray-200 rounded-2xl rounded-tl-md p-2 sm:p-3 shadow-sm max-w-xs sm:max-w-md break-words">
+                    <p class="text-sm sm:text-base">${messageData.contenu}</p>
                 </div>
             </div>
         `;
@@ -497,10 +519,23 @@ function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// Simulation de connexion WebSocket
+// Simulation de connexion WebSocket (à remplacer par une vraie implémentation)
 function initWebSocket() {
-    // Ici, vous initialiseriez la vraie connexion WebSocket
     console.log('WebSocket simulation pour le salon:', salonId);
+    // Ici, vous initialiseriez la vraie connexion WebSocket
+    // Exemple:
+    // const chatSocket = new WebSocket(
+    //     'ws://' + window.location.host + '/ws/chat/' + salonId + '/'
+    // );
+    // chatSocket.onmessage = function(e) {
+    //     const data = JSON.parse(e.data);
+    //     if (data.type === 'chat_message') {
+    //         addMessage(data.message); // Assurez-vous que le format correspond
+    //     }
+    // };
+    // chatSocket.onclose = function(e) {
+    //     console.error('Chat socket closed unexpectedly');
+    // };
 }
 
 // Initialiser la connexion
