@@ -25,11 +25,12 @@ def liste_salons(request):
     
     # --- Calcul des statistiques dynamiques ---
     
-    five_minutes_ago = django_timezone.now() - timedelta(minutes=5)
+    # Fenêtre de 90 secondes pour considérer un utilisateur comme "en ligne"
+    ninety_seconds_ago = django_timezone.now() - timedelta(seconds=2)
     
     # Récupérer les profils des utilisateurs en ligne (en excluant l'utilisateur actuel)
     online_users_profiles = UserProfile.objects.filter(
-        last_activity__gte=five_minutes_ago
+        last_activity__gte=ninety_seconds_ago
     ).exclude(user=request.user).select_related('user')
     
     online_users_count = online_users_profiles.count()
@@ -176,12 +177,8 @@ def messages_api(request, salon_id):
 
     if since_timestamp_str:
         try:
-            # fromisoformat est sensible au format, notamment l'espace avant le décalage horaire
-            # Nous allons tenter de remplacer l'espace par un '+' si le format est celui qui pose problème
-            if ' ' in since_timestamp_str and since_timestamp_str.endswith('00:00'):
-                since_timestamp_str = since_timestamp_str.replace(' ', '+', 1)
-            
-            since_datetime = datetime.fromisoformat(since_timestamp_str)
+            # Utiliser `fromisoformat` qui est plus robuste
+            since_datetime = datetime.fromisoformat(since_timestamp_str.replace('Z', '+00:00'))
             
             messages_query = messages_query.filter(timestamp__gt=since_datetime)
         except ValueError as e:
@@ -207,10 +204,10 @@ def messages_api(request, salon_id):
 @require_http_methods(["GET"])
 def online_users_api(request):
     """API pour récupérer les utilisateurs en ligne."""
-    five_minutes_ago = django_timezone.now() - timedelta(minutes=5)
+    ninety_seconds_ago = django_timezone.now() - timedelta(seconds=90)
     
     online_users_profiles = UserProfile.objects.filter(
-        last_activity__gte=five_minutes_ago
+        last_activity__gte=ninety_seconds_ago
     ).exclude(user=request.user).select_related('user')
     
     online_users_data = [

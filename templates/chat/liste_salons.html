@@ -103,10 +103,10 @@
                 <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">Salons Actifs</div>
             </div>
             <div class="salon-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center">
-                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 dark:text-green-400 mb-1 sm:mb-2">{{ online_users_count }}</div>
+                <div id="online-users-count" class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 dark:text-green-400 mb-1 sm:mb-2">{{ online_users_count }}</div>
                 <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">En Ligne</div>
                 <!-- Débogage : Afficher les utilisateurs comptés -->
-                <div class="text-xs text-gray-400 mt-1">
+                <div id="online-users-list" class="text-xs text-gray-400 mt-1">
                     {% for profile in online_users_profiles %}
                         {{ profile.user.username }}{% if not forloop.last %}, {% endif %}
                     {% endfor %}
@@ -430,12 +430,33 @@ document.getElementById('createSalonModal').addEventListener('click', function(e
     }
 });
 
-// La soumission du formulaire est maintenant gérée par Django, donc nous n'avons plus besoin de cette fonction JS.
-// document.getElementById('createSalonForm').addEventListener('submit', function(e) {
-//     e.preventDefault();
-//     // Ici, vous ajouteriez la logique pour créer le salon
-//     alert('Fonctionnalité de création de salon à implémenter');
-//     closeCreateSalonModal();
-// });
+// Polling pour les utilisateurs en ligne
+document.addEventListener('DOMContentLoaded', function() {
+    const onlineUsersApiUrl = "{% url 'chat:online_users_api' %}";
+    const onlineUsersCountElement = document.getElementById('online-users-count');
+    const onlineUsersListElement = document.getElementById('online-users-list');
+
+    async function pollOnlineUsers() {
+        try {
+            const response = await fetch(onlineUsersApiUrl);
+            if (!response.ok) {
+                console.error('Erreur lors de la récupération des utilisateurs en ligne.');
+                return;
+            }
+            const data = await response.json();
+            if (onlineUsersCountElement) {
+                onlineUsersCountElement.textContent = data.online_users_count;
+            }
+            if (onlineUsersListElement) {
+                onlineUsersListElement.innerHTML = data.online_users.map(user => user.username).join(', ');
+            }
+        } catch (error) {
+            console.error('Erreur réseau lors du polling des utilisateurs:', error);
+        }
+    }
+
+    // Démarrer le polling toutes les 5 secondes
+    setInterval(pollOnlineUsers, 5000);
+});
 </script>
 {% endblock %}
