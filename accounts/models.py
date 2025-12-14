@@ -7,6 +7,7 @@ from django.utils import timezone as django_timezone
 from django.contrib.auth.signals import user_logged_out
 from datetime import timedelta
 from django_countries.fields import CountryField
+from timezone_field import TimeZoneField
 
 class UserProfile(models.Model):
     """Profil étendu de l'utilisateur"""
@@ -25,7 +26,7 @@ class UserProfile(models.Model):
         ('en', 'English'),
     ], default='fr', verbose_name="Langue")
     
-    timezone = models.CharField(max_length=50, default='Africa/Kinshasa', verbose_name="Fuseau horaire")
+    timezone = TimeZoneField(default='Africa/Kinshasa', verbose_name="Fuseau horaire")
     
     # Notifications
     email_notifications = models.BooleanField(default=True, verbose_name="Notifications par email")
