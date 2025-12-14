@@ -4,7 +4,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from PIL import Image
 from django.utils import timezone as django_timezone # Renommé pour éviter les conflits
-
+from django.contrib.auth.signals import user_logged_out # Importation du signal de déconnexion
+from datetime import timedelta
 
 class UserProfile(models.Model):
     """Profil étendu de l'utilisateur"""
@@ -115,3 +116,10 @@ def save_user_profile(sender, instance, **kwargs):
     """Sauvegarder le profil lors de la sauvegarde de l'utilisateur"""
     if hasattr(instance, 'userprofile'):
         instance.userprofile.save()
+
+@receiver(user_logged_out)
+def on_user_logged_out(sender, request, user, **kwargs):
+    """Mettre à jour last_activity lors de la déconnexion."""
+    if hasattr(user, 'userprofile'):
+        user.userprofile.last_activity = django_timezone.now() - timedelta(minutes=6)
+        user.userprofile.save(update_fields=['last_activity'])

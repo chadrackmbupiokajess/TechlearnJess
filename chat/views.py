@@ -26,7 +26,7 @@ def liste_salons(request):
     # --- Calcul des statistiques dynamiques ---
     
     # Fenêtre de 90 secondes pour considérer un utilisateur comme "en ligne"
-    ninety_seconds_ago = django_timezone.now() - timedelta(seconds=2)
+    ninety_seconds_ago = django_timezone.now() - timedelta(seconds=90)
     
     # Récupérer les profils des utilisateurs en ligne (en excluant l'utilisateur actuel)
     online_users_profiles = UserProfile.objects.filter(

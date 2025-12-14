@@ -105,12 +105,6 @@
             <div class="salon-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center">
                 <div id="online-users-count" class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 dark:text-green-400 mb-1 sm:mb-2">{{ online_users_count }}</div>
                 <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">En Ligne</div>
-                <!-- Débogage : Afficher les utilisateurs comptés -->
-                <div id="online-users-list" class="text-xs text-gray-400 mt-1">
-                    {% for profile in online_users_profiles %}
-                        {{ profile.user.username }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
-                </div>
             </div>
             <div class="salon-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center">
                 <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1 sm:mb-2">{{ total_messages_count }}</div>
@@ -434,7 +428,6 @@ document.getElementById('createSalonModal').addEventListener('click', function(e
 document.addEventListener('DOMContentLoaded', function() {
     const onlineUsersApiUrl = "{% url 'chat:online_users_api' %}";
     const onlineUsersCountElement = document.getElementById('online-users-count');
-    const onlineUsersListElement = document.getElementById('online-users-list');
 
     async function pollOnlineUsers() {
         try {
@@ -447,16 +440,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (onlineUsersCountElement) {
                 onlineUsersCountElement.textContent = data.online_users_count;
             }
-            if (onlineUsersListElement) {
-                onlineUsersListElement.innerHTML = data.online_users.map(user => user.username).join(', ');
-            }
         } catch (error) {
             console.error('Erreur réseau lors du polling des utilisateurs:', error);
         }
     }
 
-    // Démarrer le polling toutes les 5 secondes
-    setInterval(pollOnlineUsers, 5000);
+    // Démarrer le polling toutes les 2 secondes
+    setInterval(pollOnlineUsers, 2000);
 });
 </script>
 {% endblock %}
