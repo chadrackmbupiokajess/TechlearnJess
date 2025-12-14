@@ -156,6 +156,7 @@ def edit_profile(request):
     context = {
         'user_form': user_form,
         'profile_form': profile_form,
+        'profile': profile,
         'stats': stats,
         'settings': settings,
     }

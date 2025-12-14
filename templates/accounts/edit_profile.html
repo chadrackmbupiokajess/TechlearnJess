@@ -25,12 +25,12 @@
                     <!-- Avatar actuel -->
                     <div class="text-center mb-6">
                         <div class="relative inline-block">
-                            <img class="w-32 h-32 rounded-full border-4 border-blue-200 shadow-lg mx-auto"
-                                 src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=3B82F6&color=fff&size=128"
+                            <img id="avatar-preview" class="w-32 h-32 rounded-full border-4 border-blue-200 shadow-lg mx-auto object-cover"
+                                 src="{% if profile.avatar %}{{ profile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=3B82F6&color=fff&size=128{% endif %}"
                                  alt="Avatar">
-                            <button class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700 transition-colors shadow-lg">
+                            <div id="avatar-upload-trigger" class="absolute bottom-0 right-0 bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700 transition-colors shadow-lg cursor-pointer">
                                 <i class="fas fa-camera text-sm"></i>
-                            </button>
+                            </div>
                         </div>
                         <h3 class="text-xl font-semibold text-gray-900 mt-4">
                             {{ user.get_full_name|default:user.username }}
@@ -70,12 +70,11 @@
                 <div class="bg-white rounded-2xl shadow-xl p-8">
                     <form method="post" enctype="multipart/form-data" class="space-y-6">
                         {% csrf_token %}
-                        
-                        {{ user_form.username|as_crispy_field }}
-                        {{ profile_form.country|as_crispy_field }}
-                        {{ profile_form.language|as_crispy_field }}
-                        {{ profile_form.timezone|as_crispy_field }}
 
+                        <!-- Champ avatar caché -->
+                        <div class="hidden">
+                            {{ profile_form.avatar }}
+                        </div>
 
                         <!-- Informations personnelles -->
                         <div class="border-b border-gray-200 pb-6">
@@ -83,13 +82,12 @@
                                 <i class="fas fa-user text-blue-600 mr-2"></i>
                                 Informations personnelles
                             </h2>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                {{ user_form.first_name|as_crispy_field }}
-                                {{ user_form.last_name|as_crispy_field }}
-                            </div>
-
-                            <div class="mt-6">
+                            <div class="space-y-6">
+                                {{ user_form.username|as_crispy_field }}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {{ user_form.first_name|as_crispy_field }}
+                                    {{ user_form.last_name|as_crispy_field }}
+                                </div>
                                 {{ user_form.email|as_crispy_field }}
                             </div>
                         </div>
@@ -100,8 +98,66 @@
                                 <i class="fas fa-info-circle text-green-600 mr-2"></i>
                                 Informations supplémentaires
                             </h2>
+                            <div class="space-y-6">
+                                {{ profile_form.bio|as_crispy_field }}
+                                {{ profile_form.birth_date|as_crispy_field }}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {{ profile_form.phone|as_crispy_field }}
+                                    {{ profile_form.city|as_crispy_field }}
+                                </div>
+                                {{ profile_form.address|as_crispy_field }}
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {{ profile_form.country|as_crispy_field }}
+                                    {{ profile_form.language|as_crispy_field }}
+                                </div>
+                                {{ profile_form.timezone|as_crispy_field }}
+                            </div>
+                        </div>
+                        
+                        <!-- Préférences -->
+                        <div class="border-b border-gray-200 pb-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-cog text-purple-600 mr-2"></i>
+                                Préférences
+                            </h2>
+                            <div class="space-y-4">
+                                <!-- Toggle pour email_notifications -->
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <label for="{{ profile_form.email_notifications.id_for_label }}" class="font-medium text-gray-900">{{ profile_form.email_notifications.label }}</label>
+                                        <p class="text-sm text-gray-500">Recevoir les notifications de cours et actualités par email.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="{{ profile_form.email_notifications.name }}" id="{{ profile_form.email_notifications.id_for_label }}" class="sr-only peer" {% if profile_form.email_notifications.value %}checked{% endif %}>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                                <!-- Toggle pour push_notifications -->
+                                <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <label for="{{ profile_form.push_notifications.id_for_label }}" class="font-medium text-gray-900">{{ profile_form.push_notifications.label }}</label>
+                                        <p class="text-sm text-gray-500">Recevoir des notifications push sur vos appareils.</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" name="{{ profile_form.push_notifications.name }}" id="{{ profile_form.push_notifications.id_for_label }}" class="sr-only peer" {% if profile_form.push_notifications.value %}checked{% endif %}>
+                                        <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
 
-                            {{ profile_form|crispy }}
+                        <!-- Liens Sociaux -->
+                        <div class="pb-6">
+                            <h2 class="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                                <i class="fas fa-share-alt text-blue-600 mr-2"></i>
+                                Sur le web
+                            </h2>
+                            <div class="space-y-6">
+                                {{ profile_form.website|as_crispy_field }}
+                                {{ profile_form.linkedin|as_crispy_field }}
+                                {{ profile_form.github|as_crispy_field }}
+                                {{ profile_form.twitter|as_crispy_field }}
+                            </div>
                         </div>
 
                         <!-- Boutons d'action -->
@@ -160,18 +216,25 @@
 </div>
 
 <script>
-// Prévisualisation de l'avatar
 document.addEventListener('DOMContentLoaded', function() {
-    const avatarInput = document.getElementById('id_avatar');
-    const avatarImg = document.querySelector('img[alt="Avatar"]');
+    const avatarUploadTrigger = document.getElementById('avatar-upload-trigger');
+    // Django-crispy-forms devrait générer un ID comme "id_avatar"
+    const avatarInput = document.getElementById('id_avatar'); 
+    const avatarPreview = document.getElementById('avatar-preview');
 
-    if (avatarInput) {
+    if (avatarUploadTrigger && avatarInput && avatarPreview) {
+        // Déclenche le clic sur le champ de fichier caché
+        avatarUploadTrigger.addEventListener('click', function() {
+            avatarInput.click();
+        });
+
+        // Gère la sélection de fichier et met à jour l'aperçu
         avatarInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
-                    avatarImg.src = e.target.result;
+                reader.onload = function(event) {
+                    avatarPreview.src = event.target.result;
                 };
                 reader.readAsDataURL(file);
             }
