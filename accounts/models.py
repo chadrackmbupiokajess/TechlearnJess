@@ -7,7 +7,7 @@ from django.utils import timezone as django_timezone
 from django.contrib.auth.signals import user_logged_out
 from datetime import timedelta
 from django_countries.fields import CountryField
-from timezone_field import TimeZoneField
+from timezone_field.fields import TimeZoneField
 
 class UserProfile(models.Model):
     """Profil étendu de l'utilisateur"""

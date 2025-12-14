@@ -76,7 +76,7 @@
                     
                     <div class="flex items-center">
                         <i class="fas fa-calendar-alt mr-2"></i>
-                        Membre depuis {{ profile_user.date_joined|date:"F Y" }}
+                        Membre depuis {{ profile_user.date_joined|date:"d F Y, H:i" }}
                     </div>
                     
                     {% if profile.website %}

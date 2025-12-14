@@ -3,7 +3,6 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import UserProfile
 from django_countries.widgets import CountrySelectWidget
-from timezone_field.forms import TimeZoneFormField
 
 class UserRegistrationForm(UserCreationForm):
     """Formulaire d'inscription"""
@@ -74,8 +73,7 @@ class UserUpdateForm(forms.ModelForm):
 
 class UserProfileForm(forms.ModelForm):
     """Formulaire de profil utilisateur"""
-    timezone = TimeZoneFormField()
-
+    
     class Meta:
         model = UserProfile
         fields = [
@@ -83,6 +81,8 @@ class UserProfileForm(forms.ModelForm):
             'language', 'timezone', 'email_notifications', 'push_notifications',
             'website', 'linkedin', 'github', 'twitter'
         ]
+        # On laisse Django générer les champs par défaut pour country et timezone
+        # On ne spécifie que les widgets qui ont besoin de classes CSS spécifiques
         widgets = {
             'avatar': forms.FileInput(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent',
@@ -114,9 +114,6 @@ class UserProfileForm(forms.ModelForm):
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent'
             }),
             'language': forms.Select(attrs={
-                'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent'
-            }),
-            'timezone': forms.Select(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent'
             }),
             'website': forms.URLInput(attrs={
