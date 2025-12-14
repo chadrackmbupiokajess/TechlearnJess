@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from PIL import Image
+from django.utils import timezone as django_timezone # Renommé pour éviter les conflits
 
 
 class UserProfile(models.Model):
@@ -37,6 +38,7 @@ class UserProfile(models.Model):
     # Métadonnées
     is_instructor = models.BooleanField(default=False, verbose_name="Est formateur")
     is_verified = models.BooleanField(default=False, verbose_name="Compte vérifié")
+    last_activity = models.DateTimeField(default=django_timezone.now, verbose_name="Dernière activité") # MODIFIÉ ICI
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

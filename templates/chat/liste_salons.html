@@ -103,15 +103,21 @@
                 <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">Salons Actifs</div>
             </div>
             <div class="salon-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center">
-                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 dark:text-green-400 mb-1 sm:mb-2">127</div>
+                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-green-600 dark:text-green-400 mb-1 sm:mb-2">{{ online_users_count }}</div>
                 <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">En Ligne</div>
+                <!-- Débogage : Afficher les utilisateurs comptés -->
+                <div class="text-xs text-gray-400 mt-1">
+                    {% for profile in online_users_profiles %}
+                        {{ profile.user.username }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </div>
             </div>
             <div class="salon-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center">
-                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1 sm:mb-2">1,234</div>
+                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-600 dark:text-purple-400 mb-1 sm:mb-2">{{ total_messages_count }}</div>
                 <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">Messages</div>
             </div>
             <div class="salon-card rounded-xl sm:rounded-2xl p-3 sm:p-4 lg:p-6 text-center">
-                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1 sm:mb-2">45</div>
+                <div class="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-600 dark:text-orange-400 mb-1 sm:mb-2">{{ new_salons_count }}</div>
                 <div class="text-xs sm:text-sm lg:text-base text-gray-600 dark:text-gray-300">Nouveaux</div>
             </div>
         </div>
@@ -364,7 +370,7 @@
             </div>
             
             <div class="mb-6">
-                <label for="id_est_prive" class="flex items-center">
+                <label class="flex items-center">
                     <input type="checkbox" 
                            name="est_prive"
                            id="id_est_prive"

@@ -4,11 +4,13 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.contrib import messages
 from django.utils import timezone as django_timezone # Renommé pour éviter les conflits
-from datetime import datetime, timezone # Importation de datetime et timezone de la bibliothèque standard
+from datetime import datetime, timedelta, timezone # Importation de datetime, timedelta et timezone de la bibliothèque standard
 import logging
 from django.db.models import Q # Importation de Q pour les requêtes complexes
+from django.contrib.auth.models import User # Importation du modèle User
 # from django.views.decorators.csrf import csrf_exempt # Plus nécessaire avec un formulaire HTML standard
 from .models import ChatRoom, Message
+from accounts.models import UserProfile # Importation du UserProfile
 from .forms import ChatRoomForm, InviteMembersForm # Importation du nouveau formulaire
 
 logger = logging.getLogger(__name__) # Initialisation du logger
@@ -21,8 +23,34 @@ def liste_salons(request):
         Q(participants=request.user) | Q(est_prive=False)
     ).distinct().order_by('-cree_le') # Assurez-vous d'ordonner les résultats
     
+    # --- Calcul des statistiques dynamiques ---
+    
+    five_minutes_ago = django_timezone.now() - timedelta(minutes=5)
+    
+    # Récupérer les profils des utilisateurs en ligne (en excluant l'utilisateur actuel)
+    online_users_profiles = UserProfile.objects.filter(
+        last_activity__gte=five_minutes_ago
+    ).exclude(user=request.user).select_related('user')
+    
+    online_users_count = online_users_profiles.count()
+    
+    # Messages (total des messages dans tous les salons accessibles)
+    total_messages_count = Message.objects.filter(
+        salon__in=salons # Compte les messages des salons que l'utilisateur peut voir
+    ).count()
+    
+    # Nouveaux Salons (créés au cours des dernières 24 heures)
+    twenty_four_hours_ago = django_timezone.now() - timedelta(hours=24)
+    new_salons_count = ChatRoom.objects.filter(
+        cree_le__gte=twenty_four_hours_ago
+    ).count()
+    
     context = {
         'salons': salons,
+        'online_users_count': online_users_count,
+        'online_users_profiles': online_users_profiles, # Ajout pour le débogage
+        'total_messages_count': total_messages_count,
+        'new_salons_count': new_salons_count,
     }
     return render(request, 'chat/liste_salons.html', context)
 
@@ -170,7 +198,7 @@ def messages_api(request, salon_id):
             'auteur_avatar_url': message.auteur.userprofile.get_avatar_url() if hasattr(message.auteur, 'userprofile') else '',
             'contenu': message.contenu,
             'timestamp': message.timestamp.astimezone(timezone.utc).isoformat(timespec='microseconds'), # MODIFIÉ ICI
-            'is_own': (message.auteur == request.user) # Indique que c'est le message de l'utilisateur actuel
+            'is_own': (message.auteur == request.user) # Indique si le message vient de l'utilisateur actuel
         })
     
     return JsonResponse({'messages': messages_data})
