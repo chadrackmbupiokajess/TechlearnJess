@@ -140,6 +140,8 @@ def edit_profile(request):
             profile_form.save()
             messages.success(request, 'Votre profil a été mis à jour avec succès!')
             return redirect('accounts:profile')
+        else:
+            messages.error(request, f"Veuillez corriger les erreurs ci-dessous. {user_form.errors} {profile_form.errors}")
     else:
         user_form = UserUpdateForm(instance=request.user)
         profile_form = UserProfileForm(instance=profile)
