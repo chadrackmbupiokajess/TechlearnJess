@@ -3,9 +3,10 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from PIL import Image
-from django.utils import timezone as django_timezone # Renommé pour éviter les conflits
-from django.contrib.auth.signals import user_logged_out # Importation du signal de déconnexion
+from django.utils import timezone as django_timezone
+from django.contrib.auth.signals import user_logged_out
 from datetime import timedelta
+from django_countries.fields import CountryField
 
 class UserProfile(models.Model):
     """Profil étendu de l'utilisateur"""
@@ -16,7 +17,7 @@ class UserProfile(models.Model):
     phone = models.CharField(max_length=20, blank=True, verbose_name="Téléphone")
     address = models.TextField(blank=True, verbose_name="Adresse")
     city = models.CharField(max_length=100, blank=True, verbose_name="Ville")
-    country = models.CharField(max_length=100, default="République Démocratique du Congo", verbose_name="Pays")
+    country = CountryField(default="CD", verbose_name="Pays")
     
     # Préférences
     language = models.CharField(max_length=10, choices=[
@@ -39,7 +40,7 @@ class UserProfile(models.Model):
     # Métadonnées
     is_instructor = models.BooleanField(default=False, verbose_name="Est formateur")
     is_verified = models.BooleanField(default=False, verbose_name="Compte vérifié")
-    last_activity = models.DateTimeField(default=django_timezone.now, verbose_name="Dernière activité") # MODIFIÉ ICI
+    last_activity = models.DateTimeField(default=django_timezone.now, verbose_name="Dernière activité")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -53,7 +54,6 @@ class UserProfile(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         
-        # Redimensionner l'avatar
         if self.avatar:
             img = Image.open(self.avatar.path)
             if img.height > 300 or img.width > 300:
@@ -72,13 +72,11 @@ class UserProfile(models.Model):
 
     @property
     def total_courses_completed(self):
-        """Nombre total de cours terminés"""
         from courses.models import Enrollment
         return Enrollment.objects.filter(user=self.user, is_completed=True).count()
 
     @property
     def total_certificates(self):
-        """Nombre total de certificats obtenus"""
         try:
             from certificates.models import Certificate
             return Certificate.objects.filter(user=self.user).count()
@@ -106,20 +104,17 @@ class LoginHistory(models.Model):
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
-    """Créer automatiquement un profil lors de la création d'un utilisateur"""
     if created:
         UserProfile.objects.create(user=instance)
 
 
 @receiver(post_save, sender=User)
 def save_user_profile(sender, instance, **kwargs):
-    """Sauvegarder le profil lors de la sauvegarde de l'utilisateur"""
     if hasattr(instance, 'userprofile'):
         instance.userprofile.save()
 
 @receiver(user_logged_out)
 def on_user_logged_out(sender, request, user, **kwargs):
-    """Mettre à jour last_activity lors de la déconnexion."""
     if hasattr(user, 'userprofile'):
         user.userprofile.last_activity = django_timezone.now() - timedelta(minutes=6)
         user.userprofile.save(update_fields=['last_activity'])

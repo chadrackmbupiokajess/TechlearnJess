@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'corsheaders',
+    'django_countries',
 
     # Local apps
     'core',

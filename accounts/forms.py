@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import UserProfile
+from django_countries.widgets import CountrySelectWidget
 
 
 class UserRegistrationForm(UserCreationForm):
@@ -108,7 +109,7 @@ class UserProfileForm(forms.ModelForm):
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent',
                 'placeholder': 'Votre ville'
             }),
-            'country': forms.TextInput(attrs={
+            'country': CountrySelectWidget(attrs={
                 'class': 'w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent'
             }),
             'language': forms.Select(attrs={
