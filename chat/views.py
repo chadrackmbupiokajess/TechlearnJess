@@ -202,3 +202,22 @@ def messages_api(request, salon_id):
         })
     
     return JsonResponse({'messages': messages_data})
+
+@login_required
+@require_http_methods(["GET"])
+def online_users_api(request):
+    """API pour récupérer les utilisateurs en ligne."""
+    five_minutes_ago = django_timezone.now() - timedelta(minutes=5)
+    
+    online_users_profiles = UserProfile.objects.filter(
+        last_activity__gte=five_minutes_ago
+    ).exclude(user=request.user).select_related('user')
+    
+    online_users_data = [
+        {'username': profile.user.username} for profile in online_users_profiles
+    ]
+    
+    return JsonResponse({
+        'online_users_count': len(online_users_data),
+        'online_users': online_users_data,
+    })
