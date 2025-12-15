@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% load crispy_forms_tags humanize %}
 
 {% block title %}Créer un sujet dans {{ categorie.nom }} - Forum{% endblock %}
 
@@ -36,7 +36,7 @@
             <div>
                 <label for="id_contenu" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Contenu du sujet</label>
                 <textarea name="contenu" id="id_contenu" rows="10" required
-                          class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all resize-y"
+                          class="w-full px-4 py-3 border border-gray-300 dark:border-border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all resize-y"
                           placeholder="Décrivez votre question ou votre sujet en détail..."></textarea>
             </div>
 

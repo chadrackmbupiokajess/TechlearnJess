@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load humanize forum_extras %}
 
 {% block title %}Forum Communauté - TechLearnJess{% endblock %}
 
@@ -138,7 +139,7 @@
                                                     {% with latest_topic=category.sujets.first %}
                                                         {% if latest_topic %}
                                                             <i class="fas fa-clock mr-2"></i>
-                                                            <span>Dernière activité {{ latest_topic.derniere_activite|timesince }} ago</span>
+                                                            <span>Dernière activité {{ latest_topic.derniere_activite|human_timesince }}</span>
                                                         {% endif %}
                                                     {% endwith %}
                                                 </div>
@@ -156,7 +157,7 @@
                         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-12 text-center border border-gray-200 dark:border-gray-700">
                             <i class="fas fa-folder-open text-6xl text-gray-300 dark:text-gray-600 mb-4"></i>
                             <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Aucune catégorie disponible</h3>
-                            <p class="text-gray-600 dark:text-gray-400">Les catégories du forum seront bientôt disponibles.</p>
+                            <p class="text-gray-600 dark:text-gray-400 mb-6">Les catégories du forum seront bientôt disponibles.</p>
                         </div>
                     {% endif %}
                 </div>
@@ -195,7 +196,7 @@
                                                 <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
                                                     <span>Par {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}</span>
                                                     <span>•</span>
-                                                    <span>{{ sujet.cree_le|timesince }} ago</span>
+                                                    <span>{{ sujet.cree_le|human_timesince }}</span>
                                                     <span>•</span>
                                                     <a href="{% url 'forum:category_detail' sujet.categorie.slug %}" class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-1 rounded text-xs hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
                                                         {{ sujet.categorie.nom }}
