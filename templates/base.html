@@ -384,9 +384,15 @@
 
     <!-- Messages Flash -->
     {% if messages %}
-        <div class="fixed top-20 right-4 z-50 space-y-2" x-data="{ show: true }" x-show="show" x-transition>
+        <div class="fixed top-20 right-4 z-50 space-y-2">
             {% for message in messages %}
-                <div class="{% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'warning' %}bg-yellow-500{% elif message.tags == 'info' %}bg-blue-500{% else %}bg-green-500{% endif %} text-white px-6 py-4 rounded-lg shadow-xl flex items-center justify-between max-w-sm backdrop-blur-lg">
+                <div x-data="{ show: true }" 
+                     x-init="setTimeout(() => show = false, 5000)"
+                     x-show="show"
+                     x-transition:leave="transition ease-in duration-300"
+                     x-transition:leave-start="opacity-100 transform scale-100"
+                     x-transition:leave-end="opacity-0 transform scale-90"
+                     class="{% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'warning' %}bg-yellow-500{% elif message.tags == 'info' %}bg-blue-500{% else %}bg-green-500{% endif %} text-white px-6 py-4 rounded-lg shadow-xl flex items-center justify-between max-w-sm backdrop-blur-lg">
                     <div class="flex items-center">
                         <i class="{% if message.tags == 'error' %}fas fa-exclamation-triangle{% elif message.tags == 'warning' %}fas fa-exclamation-circle{% elif message.tags == 'info' %}fas fa-info-circle{% else %}fas fa-check-circle{% endif %} mr-3"></i>
                         <span class="font-medium">{{ message }}</span>
