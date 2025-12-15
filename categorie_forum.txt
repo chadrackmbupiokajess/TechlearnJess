@@ -7,9 +7,9 @@
 *   **Ordre :** `10`
 *   **Actif :** [Cocher cette case]
 
-### 2. Programmation Python
-*   **Nom :** `Programmation Python`
-*   **Slug :** `programmation-python`
+### 2. Python
+*   **Nom :** `Python`
+*   **Slug :** `python`
 *   **Description :** `Posez vos questions et partagez vos connaissances sur le langage de programmation Python.`
 *   **Couleur :** `#306998` (Bleu Python)
 *   **Icône :** `python`
@@ -25,7 +25,16 @@
 *   **Ordre :** `30`
 *   **Actif :** [Cocher cette case]
 
-### 4. Sécurité Informatique
+### 4. Projets et Challenges
+*   **Nom :** `Projets et Challenges`
+*   **Slug :** `projets-challenges`
+*   **Description :** `Partagez vos projets, trouvez des collaborateurs et relevez des défis de programmation.`
+*   **Couleur :** `#8BC34A` (Vert clair)
+*   **Icône :** `lightbulb`
+*   **Ordre :** `35`
+*   **Actif :** [Cocher cette case]
+
+### 5. Sécurité Informatique
 *   **Nom :** `Sécurité Informatique`
 *   **Slug :** `securite-informatique`
 *   **Description :** `Discussions sur la cybersécurité, la protection des données, les menaces, les vulnérabilités et les bonnes pratiques.`
@@ -34,27 +43,18 @@
 *   **Ordre :** `40`
 *   **Actif :** [Cocher cette case]
 
-### 5. Questions Générales
-*   **Nom :** `Questions Générales`
-*   **Slug :** `questions-generales`
-*   **Description :** `Pour toutes les discussions qui ne rentrent pas dans une catégorie spécifique du forum.`
-*   **Couleur :** `#607D8B` (Gris bleuté)
-*   **Icône :** `question-circle`
-*   **Ordre :** `90`
-*   **Actif :** [Cocher cette case]
-
-### 6. Annonces du site
-*   **Nom :** `Annonces du site`
-*   **Slug :** `annonces-du-site`
-*   **Description :** `Les dernières nouvelles, mises à jour et annonces importantes de Jessna TechLearn.`
-*   **Couleur :** `#9C27B0` (Violet)
-*   **Icône :** `bullhorn`
-*   **Ordre :** `100`
+### 6. Maintenance Informatique
+*   **Nom :** `Maintenance Informatique`
+*   **Slug :** `maintenance-info`
+*   **Description :** `Conseils et discussions sur la maintenance, le dépannage et l'optimisation des systèmes informatiques.`
+*   **Couleur :** `#FF9800` (Orange)
+*   **Icône :** `tools`
+*   **Ordre :** `45`
 *   **Actif :** [Cocher cette case]
 
 ### 7. Logiciels de Streaming
 *   **Nom :** `Logiciels de Streaming`
-*   **Slug :** `logiciels-de-streaming`
+*   **Slug : `logiciels-de-streaming`
 *   **Description :** `Discutez des logiciels et plateformes de streaming vidéo et audio, des astuces et des configurations.`
 *   **Couleur :** `#E91E63` (Rose)
 *   **Icône :** `video`
@@ -79,7 +79,16 @@
 *   **Ordre :** `70`
 *   **Actif :** [Cocher cette case]
 
-### 10. Technologies & Médias
+### 10. Réseaux et Télécommunications
+*   **Nom :** `Réseaux et Télécommunications`
+*   **Slug :** `reseaux-telecoms`
+*   **Description :** `Discussions sur les réseaux informatiques, la téléphonie, la fibre optique et les infrastructures de communication.`
+*   **Couleur :** `#673AB7` (Violet profond)
+*   **Icône :** `network-wired`
+*   **Ordre :** `75`
+*   **Actif :** [Cocher cette case]
+
+### 11. Technologies & Médias
 *   **Nom :** `Technologies & Médias`
 *   **Slug :** `technologies-medias`
 *   **Description :** `Tout sur le montage vidéo, la retouche photo, les outils créatifs, les nouvelles technologies et le matériel.`
@@ -88,10 +97,28 @@
 *   **Ordre :** `80`
 *   **Actif :** [Cocher cette case]
 
-### 11. Cours de Français
-*   **Nom :** `Cours de Français`
-*   **Slug :** `cours-de-francais`
-*   **Description :** `Améliorez votre français, posez des questions de grammaire, vocabulaire, expression écrite et orale.`
+### 12. Général / Communauté
+*   **Nom :** `Général / Communauté`
+*   **Slug :** `general-communaute`
+*   **Description :** `Pour toutes les discussions générales et les échanges au sein de la communauté.`
+*   **Couleur :** `#607D8B` (Gris bleuté)
+*   **Icône :** `users`
+*   **Ordre :** `90`
+*   **Actif :** [Cocher cette case]
+
+### 13. Annonces du site
+*   **Nom :** `Annonces du site`
+*   **Slug :** `annonces-du-site`
+*   **Description :** `Les dernières nouvelles, mises à jour et annonces importantes de Jessna TechLearn.`
+*   **Couleur :** `#9C27B0` (Violet)
+*   **Icône :** `bullhorn`
+*   **Ordre :** `100`
+*   **Actif :** [Cocher cette case]
+
+### 14. Cours de Langues (Français et Anglais)
+*   **Nom :** `Cours de Langues (Français et Anglais)`
+*   **Slug :** `cours-de-langues`
+*   **Description :** `Améliorez votre français et votre anglais, posez des questions de grammaire, vocabulaire, expression écrite et orale.`
 *   **Couleur :** `#FFC107` (Ambre)
 *   **Icône :** `language`
 *   **Ordre :** `110`

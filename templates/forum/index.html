@@ -101,7 +101,11 @@
                                     <div class="flex items-center">
                                         <!-- Icône de la catégorie -->
                                         <div class="w-16 h-16 rounded-xl flex items-center justify-center mr-6" style="background-color: {{ category.couleur }}20; border: 2px solid {{ category.couleur }}40;">
-                                            <i class="fas fa-{{ category.icone|default:'comments' }} text-2xl" style="color: {{ category.couleur }};"></i>
+                                            {% if category.icone == 'python' %}
+                                                <i class="fab fa-{{ category.icone }} text-2xl" style="color: {{ category.couleur }};"></i>
+                                            {% else %}
+                                                <i class="fas fa-{{ category.icone|default:'comments' }} text-2xl" style="color: {{ category.couleur }};"></i>
+                                            {% endif %}
                                         </div>
                                         
                                         <!-- Informations de la catégorie -->
@@ -302,7 +306,7 @@
                         {% for contributor in top_contributors %}
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
-                                <img src="{% if contributor.userprofile.avatar %}{{ contributor.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ contributor.get_full_name|default:contributor.username }}&background=F59E0B&color=fff&size=32{% endif %}" alt="{{ contributor.get_full_name|default:contributor.username }}" class="w-8 h-8 rounded-full mr-3 object-cover">
+                                <img src="{% if contributor.userprofile.avatar %}{{ contributor.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ contributor.get_full_name|default:contributor.username }}&background=3B82F6&color=fff&size=32{% endif %}" alt="{{ contributor.get_full_name|default:contributor.username }}" class="w-8 h-8 rounded-full mr-3 object-cover">
                                 <div>
                                     <div class="text-sm font-medium text-gray-900 dark:text-white">{{ contributor.get_full_name|default:contributor.username }}</div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ contributor.total_contributions }} contributions</div>
