@@ -21,7 +21,7 @@
                     <div class="text-sm opacity-80">Taux de réussite</div>
                 </div>
                 <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                    <img src="https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=3B82F6&color=fff&size=64" alt="Avatar" class="w-12 h-12 rounded-full">
+                    <img src="{% if user.userprofile.avatar %}{{ user.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ user.get_full_name|default:user.username }}&background=3B82F6&color=fff&size=64{% endif %}" alt="Avatar" class="w-12 h-12 rounded-full object-cover">
                 </div>
             </div>
         </div>
