@@ -25,7 +25,10 @@ def register(request):
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
+            # Message de succès normal
             messages.success(request, f'Compte créé avec succès pour {username}! Vous pouvez maintenant vous connecter.')
+            # Message spécial pour déclencher le modal
+            messages.info(request, 'show_profile_setup_modal')
             return redirect('accounts:login')
     else:
         form = UserRegistrationForm()

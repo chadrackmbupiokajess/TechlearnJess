@@ -159,4 +159,49 @@
 <div class="fixed bottom-20 right-10 w-24 h-24 bg-purple-200 dark:bg-purple-800 rounded-full opacity-20 animate-float" style="animation-delay: 1s;"></div>
 <div class="fixed top-1/2 right-1/4 w-16 h-16 bg-green-200 dark:bg-green-800 rounded-full opacity-20 animate-float" style="animation-delay: 2s;"></div>
 
+<!-- Modal pour la configuration du profil -->
+<div id="profile-setup-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg shadow-xl p-8 max-w-sm w-full text-center">
+        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <i class="fas fa-globe-africa text-3xl text-blue-600"></i>
+        </div>
+        <h2 class="text-2xl font-bold mb-2">Bienvenue !</h2>
+        <p class="text-gray-600 mb-6">
+            Pour une expérience optimale, veuillez prendre un moment pour configurer votre fuseau horaire dans votre profil.
+        </p>
+        <div class="space-y-3">
+            <a href="{% url 'accounts:edit_profile' %}" class="block w-full bg-blue-600 text-white px-4 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                Configurer mon profil
+            </a>
+            <button id="close-modal-btn" class="block w-full bg-gray-200 text-gray-700 px-4 py-3 rounded-lg font-medium hover:bg-gray-300 transition-colors">
+                Plus tard
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('profile-setup-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    
+    // Vérifie si le message spécial est présent
+    const messages = [
+        {% for message in messages %}
+            "{{ message.message }}",
+        {% endfor %}
+    ];
+
+    if (messages.includes('show_profile_setup_modal')) {
+        modal.classList.remove('hidden');
+    }
+
+    // Gère la fermeture du modal
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener('click', function() {
+            modal.classList.add('hidden');
+        });
+    }
+});
+</script>
 {% endblock %}
