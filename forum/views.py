@@ -6,6 +6,7 @@ from django.db.models import Q, Count, F
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
+from django.http import JsonResponse # Importation pour les réponses JSON
 
 from core.models import SiteSettings
 from .models import ForumCategory, ForumTopic, ForumPost
@@ -89,6 +90,10 @@ def category_detail(request, slug):
         'page_obj': page_obj,
         'search': search,
     }
+
+    # Si la requête est AJAX, on renvoie seulement la partie des sujets
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        return render(request, 'forum/includes/topic_list.html', context)
     
     return render(request, 'forum/category_detail.html', context)
 
@@ -171,7 +176,7 @@ def create_post(request, category_slug, topic_slug):
                 contenu=contenu
             )
             messages.success(request, 'Réponse ajoutée avec succès!')
-            return redirect('forum:topic_detail', category_slug=category_slug, slug=topic_slug)
+            return redirect('forum:topic_detail', category_slug=category_slug, slug=sujet.slug)
         else:
             messages.error(request, 'Veuillez saisir un contenu.')
     

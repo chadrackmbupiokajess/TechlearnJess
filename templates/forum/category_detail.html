@@ -45,6 +45,14 @@
 
 <section class="py-12 bg-gray-50 dark:bg-gray-900">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Bouton Retour -->
+        <div class="mb-6">
+            <a href="{% url 'forum:index' %}" class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Retour au Forum
+            </a>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
             <!-- Liste des sujets -->
             <div class="lg:col-span-3">
@@ -55,8 +63,8 @@
                             Sujets dans {{ categorie.nom }}
                         </h2>
                         <!-- Barre de recherche -->
-                        <form method="get" class="flex items-center">
-                            <input type="text" name="search" placeholder="Rechercher un sujet..."
+                        <form id="search-form" method="get" class="flex items-center">
+                            <input type="text" name="search" id="search-input" placeholder="Rechercher un sujet..."
                                    class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all"
                                    value="{{ search|default:'' }}">
                             <button type="submit" class="ml-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
@@ -65,74 +73,9 @@
                         </form>
                     </div>
                     
-                    {% if page_obj %}
-                        {% for sujet in page_obj %}
-                        <div class="p-6 {% if not forloop.last %}border-b border-gray-200 dark:border-gray-700{% endif %} hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <div class="flex items-start">
-                                <!-- Avatar de l'auteur -->
-                                <img src="{% if sujet.auteur.userprofile.avatar %}{{ sujet.auteur.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ sujet.auteur.get_full_name|default:sujet.auteur.username }}&background=3B82F6&color=fff&size=48{% endif %}" alt="{{ sujet.auteur.get_full_name|default:sujet.auteur.username }}" class="w-12 h-12 rounded-full mr-4 object-cover">
-                                
-                                <!-- Contenu du sujet -->
-                                <div class="flex-1">
-                                    <div class="flex items-start justify-between">
-                                        <div>
-                                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                                                <a href="{{ sujet.get_absolute_url }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                                                    {% if sujet.est_epingle %}
-                                                        <i class="fas fa-thumbtack text-yellow-500 mr-2"></i>
-                                                    {% endif %}
-                                                    {% if sujet.est_resolu %}
-                                                        <i class="fas fa-check-circle text-green-500 mr-2"></i>
-                                                    {% endif %}
-                                                    {{ sujet.titre }}
-                                                </a>
-                                            </h3>
-                                            
-                                            <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                                                <span>Par {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}</span>
-                                                <span>•</span>
-                                                <span>{{ sujet.cree_le|timesince }} ago</span>
-                                            </div>
-                                        </div>
-                                        
-                                        <!-- Statistiques -->
-                                        <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
-                                            <div class="text-center">
-                                                <div class="font-medium text-gray-900 dark:text-white">{{ sujet.nombre_reponses }}</div>
-                                                <div class="text-xs">réponses</div>
-                                            </div>
-                                            <div class="text-center">
-                                                <div class="font-medium text-gray-900 dark:text-white">{{ sujet.vues }}</div>
-                                                <div class="text-xs">vues</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        {% endfor %}
-                        
-                        <!-- Pagination -->
-                        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
-                            <nav class="flex justify-center items-center space-x-2">
-                                {% if page_obj.has_previous %}
-                                    <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}" class="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600">Précédent</a>
-                                {% endif %}
-                                <span class="px-3 py-1 text-gray-700 dark:text-gray-300">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
-                                {% if page_obj.has_next %}
-                                    <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}" class="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600">Suivant</a>
-                                {% endif %}
-                            </nav>
-                        </div>
-                    {% else %}
-                        <div class="p-6 text-center text-gray-500 dark:text-gray-400">
-                            Aucun sujet trouvé dans cette catégorie.
-                            {% if user.is_authenticated %}
-                                <a href="{% url 'forum:create_topic' categorie.slug %}" class="text-blue-600 dark:text-blue-400 hover:underline ml-2">
-                                    Soyez le premier à en créer un !
-                                </a>
-                            {% endif %}
-                        </div>
-                    {% endif %}
+                    <div id="topic-list-container">
+                        {% include 'forum/includes/topic_list.html' %}
+                    </div>
                 </div>
             </div>
             
@@ -152,4 +95,71 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const topicListContainer = document.getElementById('topic-list-container');
+    const categorySlug = "{{ categorie.slug }}"; // Récupère le slug de la catégorie
+
+    let searchTimeout;
+
+    function fetchTopics(searchTerm, page = 1) {
+        const url = `/forum/${categorySlug}/?search=${searchTerm}&page=${page}`;
+        
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest' // Indique à Django que c'est une requête AJAX
+            }
+        })
+        .then(response => response.text())
+        .then(html => {
+            topicListContainer.innerHTML = html;
+            // Ré-attacher les écouteurs d'événements pour la pagination après la mise à jour du contenu
+            attachPaginationListeners();
+        })
+        .catch(error => console.error('Erreur lors de la récupération des sujets:', error));
+    }
+
+    // Écoute les changements dans le champ de recherche
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetchTopics(this.value);
+            }, 300); // Délai de 300ms avant d'envoyer la requête
+        });
+    }
+
+    // Gère la soumission du formulaire (pour empêcher le rechargement de la page)
+    const searchForm = document.getElementById('search-form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            fetchTopics(searchInput.value);
+        });
+    }
+
+    // Fonction pour attacher les écouteurs d'événements aux liens de pagination
+    function attachPaginationListeners() {
+        document.querySelectorAll('#topic-list-container .pagination a').forEach(link => {
+            link.removeEventListener('click', handlePaginationClick); // Évite les doublons
+            link.addEventListener('click', handlePaginationClick);
+        });
+    }
+
+    // Gestionnaire de clic pour les liens de pagination
+    function handlePaginationClick(e) {
+        e.preventDefault();
+        const page = this.dataset.page; // On utilise un data-attribut pour la page
+        const searchTerm = searchInput.value;
+        fetchTopics(searchTerm, page);
+    }
+
+    // Attacher les écouteurs au chargement initial
+    attachPaginationListeners();
+});
+</script>
 {% endblock %}

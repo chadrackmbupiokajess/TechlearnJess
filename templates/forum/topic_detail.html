@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ sujet.titre }} - Forum{% endblock %}
+
+{% block content %}
+<section class="relative py-12 gradient-bg text-white overflow-hidden">
+    <div class="absolute inset-0 bg-black/20"></div>
+    
+    <!-- Éléments décoratifs -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-white/10 rounded-full animate-float" style="animation-delay: 1s;"></div>
+    
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+            <h1 class="text-4xl md:text-5xl font-bold font-heading mb-4 text-shadow">
+                {% if sujet.est_epingle %}
+                    <i class="fas fa-thumbtack text-yellow-400 mr-2"></i>
+                {% endif %}
+                {% if sujet.est_resolu %}
+                    <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                {% endif %}
+                {{ sujet.titre }}
+            </h1>
+            <p class="text-xl opacity-90 leading-relaxed max-w-3xl mx-auto mb-6">
+                Dans la catégorie : <a href="{% url 'forum:category_detail' categorie.slug %}" class="font-semibold hover:underline" style="color: {{ categorie.couleur }};">{{ categorie.nom }}</a>
+            </p>
+            
+            <div class="flex items-center justify-center space-x-6 text-lg">
+                <div class="flex items-center">
+                    <i class="fas fa-user mr-2"></i>
+                    <span>Par {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span>{{ sujet.cree_le|date:"d F Y, H:i" }}</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-eye mr-2"></i>
+                    <span>{{ sujet.vues }} vues</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="py-12 bg-gray-50 dark:bg-gray-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Bouton Retour -->
+        <div class="mb-6">
+            <a href="{% url 'forum:category_detail' categorie.slug %}" class="inline-flex items-center text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Retour à la catégorie "{{ categorie.nom }}"
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+            <!-- Contenu du sujet et réponses -->
+            <div class="lg:col-span-3">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden mb-8">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-xl font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-question-circle text-blue-500 mr-2"></i>
+                            Sujet original
+                        </h2>
+                    </div>
+                    <div class="p-6 prose dark:prose-invert max-w-none">
+                        {{ sujet.contenu|safe }}
+                    </div>
+                </div>
+
+                <!-- Réponses -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <h2 class="text-xl font-semibold font-heading text-gray-900 dark:text-white">
+                            <i class="fas fa-reply-all text-green-500 mr-2"></i>
+                            Réponses ({{ sujet.nombre_reponses }})
+                        </h2>
+                    </div>
+                    
+                    {% if page_obj %}
+                        {% for reponse in page_obj %}
+                        <div class="p-6 {% if not forloop.last %}border-b border-gray-200 dark:border-gray-700{% endif %}">
+                            <div class="flex items-start">
+                                <!-- Avatar de l'auteur -->
+                                <img src="{% if reponse.auteur.userprofile.avatar %}{{ reponse.auteur.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ reponse.auteur.get_full_name|default:reponse.auteur.username }}&background=3B82F6&color=fff&size=48{% endif %}" alt="{{ reponse.auteur.get_full_name|default:reponse.auteur.username }}" class="w-12 h-12 rounded-full mr-4 object-cover">
+                                
+                                <!-- Contenu de la réponse -->
+                                <div class="flex-1">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <p class="font-semibold text-gray-900 dark:text-white">{{ reponse.auteur.get_full_name|default:reponse.auteur.username }}</p>
+                                            <p class="text-sm text-gray-500 dark:text-gray-400">{{ reponse.cree_le|date:"d F Y, H:i" }}</p>
+                                        </div>
+                                        {% if reponse.est_solution %}
+                                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">
+                                                <i class="fas fa-check-circle mr-1"></i>Solution
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                    <div class="prose dark:prose-invert max-w-none">
+                                        {{ reponse.contenu|safe }}
+                                    </div>
+                                    <div class="mt-4 flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                        <button class="flex items-center hover:text-blue-600 transition-colors">
+                                            <i class="fas fa-thumbs-up mr-1"></i> {{ reponse.nombre_likes }}
+                                        </button>
+                                        <button class="flex items-center hover:text-blue-600 transition-colors">
+                                            <i class="fas fa-reply mr-1"></i> Répondre
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        
+                        <!-- Pagination -->
+                        <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+                            <nav class="flex justify-center items-center space-x-2">
+                                {% if page_obj.has_previous %}
+                                    <a href="?page={{ page_obj.previous_page_number }}" class="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600">Précédent</a>
+                                {% endif %}
+                                <span class="px-3 py-1 text-gray-700 dark:text-gray-300">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+                                {% if page_obj.has_next %}
+                                    <a href="?page={{ page_obj.next_page_number }}" class="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600">Suivant</a>
+                                {% endif %}
+                            </nav>
+                        </div>
+                    {% else %}
+                        <div class="p-6 text-center text-gray-500 dark:text-gray-400">
+                            Aucune réponse pour ce sujet.
+                        </div>
+                    {% endif %}
+                </div>
+
+                <!-- Formulaire de réponse -->
+                {% if user.is_authenticated and not sujet.est_ferme %}
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 p-8 mt-8">
+                    <h2 class="text-xl font-semibold font-heading text-gray-900 dark:text-white mb-4">
+                        <i class="fas fa-edit text-purple-500 mr-2"></i>
+                        Poster une réponse
+                    </h2>
+                    <form method="post" action="{% url 'forum:create_post' categorie.slug sujet.slug %}" class="space-y-6">
+                        {% csrf_token %}
+                        <div>
+                            <label for="id_contenu_reponse" class="sr-only">Votre réponse</label>
+                            <textarea name="contenu" id="id_contenu_reponse" rows="5" required
+                                      class="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white transition-all resize-y"
+                                      placeholder="Saisissez votre réponse ici..."></textarea>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="submit" class="bg-purple-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-purple-700 transition-colors">
+                                <i class="fas fa-paper-plane mr-2"></i>
+                                Envoyer la réponse
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                {% elif sujet.est_ferme %}
+                <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl shadow-lg border border-yellow-200 dark:border-yellow-700 p-6 mt-8 text-center">
+                    <i class="fas fa-lock text-yellow-600 text-2xl mb-2"></i>
+                    <p class="text-yellow-800 dark:text-yellow-200 font-medium">Ce sujet est fermé aux nouvelles réponses.</p>
+                </div>
+                {% else %}
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl shadow-lg border border-blue-200 dark:border-blue-700 p-6 mt-8 text-center">
+                    <i class="fas fa-sign-in-alt text-blue-600 text-2xl mb-2"></i>
+                    <p class="text-blue-800 dark:text-blue-200 font-medium">
+                        <a href="{% url 'accounts:login' %}" class="text-blue-600 hover:underline">Connectez-vous</a> pour poster une réponse.
+                    </p>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Sidebar -->
+            <div class="lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                        <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                        Informations sur le sujet
+                    </h3>
+                    <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-300">
+                        <li class="flex items-center">
+                            <i class="fas fa-folder-open mr-2 w-5"></i>
+                            Catégorie: <a href="{% url 'forum:category_detail' categorie.slug %}" class="text-blue-600 hover:underline ml-1">{{ categorie.nom }}</a>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-user-edit mr-2 w-5"></i>
+                            Auteur: {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-calendar-alt mr-2 w-5"></i>
+                            Créé le: {{ sujet.cree_le|date:"d F Y" }}
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-clock mr-2 w-5"></i>
+                            Dernière activité: {{ sujet.derniere_activite|timesince }} ago
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-eye mr-2 w-5"></i>
+                            Vues: {{ sujet.vues }}
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-reply mr-2 w-5"></i>
+                            Réponses: {{ sujet.nombre_reponses }}
+                        </li>
+                        {% if sujet.est_epingle %}
+                        <li class="flex items-center text-yellow-600 font-medium">
+                            <i class="fas fa-thumbtack mr-2 w-5"></i>
+                            Sujet épinglé
+                        </li>
+                        {% endif %}
+                        {% if sujet.est_ferme %}
+                        <li class="flex items-center text-red-600 font-medium">
+                            <i class="fas fa-lock mr-2 w-5"></i>
+                            Sujet fermé
+                        </li>
+                        {% endif %}
+                        {% if sujet.est_resolu %}
+                        <li class="flex items-center text-green-600 font-medium">
+                            <i class="fas fa-check-circle mr-2 w-5"></i>
+                            Sujet résolu
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

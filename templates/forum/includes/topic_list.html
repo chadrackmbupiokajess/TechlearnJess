@@ -1,0 +1,74 @@
+{% comment %}
+    Ce template est utilisé pour afficher la liste des sujets et la pagination
+    Il est rendu par la vue `category_detail` pour les requêtes AJAX.
+{% endcomment %}
+
+{% if page_obj %}
+    {% for sujet in page_obj %}
+    <div class="p-6 {% if not forloop.last %}border-b border-gray-200 dark:border-gray-700{% endif %} hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+        <div class="flex items-start">
+            <!-- Avatar de l'auteur -->
+            <img src="{% if sujet.auteur.userprofile.avatar %}{{ sujet.auteur.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ sujet.auteur.get_full_name|default:sujet.auteur.username }}&background=3B82F6&color=fff&size=48{% endif %}" alt="{{ sujet.auteur.get_full_name|default:sujet.auteur.username }}" class="w-12 h-12 rounded-full mr-4 object-cover">
+            
+            <!-- Contenu du sujet -->
+            <div class="flex-1">
+                <div class="flex items-start justify-between">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                            <a href="{{ sujet.get_absolute_url }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                {% if sujet.est_epingle %}
+                                    <i class="fas fa-thumbtack text-yellow-500 mr-2"></i>
+                                {% endif %}
+                                {% if sujet.est_resolu %}
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                {% endif %}
+                                {{ sujet.titre }}
+                            </a>
+                        </h3>
+                        
+                        <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                            <span>Par {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}</span>
+                            <span>•</span>
+                            <span>{{ sujet.cree_le|timesince }} ago</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Statistiques -->
+                    <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                        <div class="text-center">
+                            <div class="font-medium text-gray-900 dark:text-white">{{ sujet.nombre_reponses }}</div>
+                            <div class="text-xs">réponses</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="font-medium text-gray-900 dark:text-white">{{ sujet.vues }}</div>
+                            <div class="text-xs">vues</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    
+    <!-- Pagination -->
+    <div class="p-6 border-t border-gray-200 dark:border-gray-700">
+        <nav class="flex justify-center items-center space-x-2">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if search %}&search={{ search }}{% endif %}" class="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600" data-page="{{ page_obj.previous_page_number }}">Précédent</a>
+            {% endif %}
+            <span class="px-3 py-1 text-gray-700 dark:text-gray-300">Page {{ page_obj.number }} sur {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search %}&search={{ search }}{% endif %}" class="px-3 py-1 rounded-lg bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600" data-page="{{ page_obj.next_page_number }}">Suivant</a>
+            {% endif %}
+        </nav>
+    </div>
+{% else %}
+    <div class="p-6 text-center text-gray-500 dark:text-gray-400">
+        Aucun sujet trouvé dans cette catégorie.
+        {% if user.is_authenticated %}
+            <a href="{% url 'forum:create_topic' categorie.slug %}" class="text-blue-600 dark:text-blue-400 hover:underline ml-2">
+                Soyez le premier à en créer un !
+            </a>
+        {% endif %}
+    </div>
+{% endif %}
