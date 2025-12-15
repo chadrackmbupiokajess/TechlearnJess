@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q, Count
+from django.db.models import Q, Count, F
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.models import User
@@ -22,15 +22,24 @@ def forum_index(request):
     stats = {
         'total_topics': ForumTopic.objects.count(),
         'total_posts': ForumPost.objects.count(),
-        'active_members': User.objects.filter(last_login__gte=timezone.now() - timedelta(days=30)).count(),
+        'active_members': User.objects.filter(userprofile__last_activity__gte=timezone.now() - timedelta(days=30)).count(),
         'resolved_topics': ForumTopic.objects.filter(est_resolu=True).count(),
     }
     
-    # Membres en ligne (derniers 5 minutes)
+    # Membres en ligne (dernières 5 minutes)
     online_members = User.objects.filter(userprofile__last_activity__gte=timezone.now() - timedelta(minutes=5)).select_related('userprofile')[:5]
 
-    # Top contributeurs
-    top_contributors = User.objects.annotate(posts_count=Count('forumpost')).order_by('-posts_count')[:3]
+    # Top contributeurs (sujets + réponses)
+    top_contributors = User.objects.annotate(
+        topic_count=Count('forumtopic', distinct=True),
+        post_count=Count('forumpost', distinct=True)
+    ).annotate(
+        total_contributions=F('topic_count') + F('post_count')
+    ).filter(
+        total_contributions__gt=0
+    ).order_by(
+        '-total_contributions'
+    )[:3]
 
     context = {
         'settings': settings,
@@ -42,6 +51,18 @@ def forum_index(request):
     }
     
     return render(request, 'forum/index.html', context)
+
+
+@login_required
+def select_category_for_topic(request):
+    """Page pour choisir une catégorie avant de créer un sujet."""
+    settings = SiteSettings.get_settings()
+    categories = ForumCategory.objects.filter(est_actif=True)
+    context = {
+        'settings': settings,
+        'categories': categories,
+    }
+    return render(request, 'forum/select_category.html', context)
 
 
 def category_detail(request, slug):

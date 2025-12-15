@@ -1,0 +1,98 @@
+### 1. Développement Web
+*   **Nom :** `Développement Web`
+*   **Slug :** `developpement-web`
+*   **Description :** `Discutez de tout ce qui concerne le développement de sites et applications web : HTML, CSS, JavaScript, frameworks, etc.`
+*   **Couleur :** `#3B82F6` (Bleu)
+*   **Icône :** `code`
+*   **Ordre :** `10`
+*   **Actif :** [Cocher cette case]
+
+### 2. Programmation Python
+*   **Nom :** `Programmation Python`
+*   **Slug :** `programmation-python`
+*   **Description :** `Posez vos questions et partagez vos connaissances sur le langage de programmation Python.`
+*   **Couleur :** `#306998` (Bleu Python)
+*   **Icône :** `python`
+*   **Ordre :** `20`
+*   **Actif :** [Cocher cette case]
+
+### 3. Bases de Données
+*   **Nom :** `Bases de Données`
+*   **Slug :** `bases-de-donnees`
+*   **Description :** `Échangez sur les systèmes de gestion de bases de données, SQL, NoSQL, modélisation, et optimisation.`
+*   **Couleur :** `#4CAF50` (Vert)
+*   **Icône :** `database`
+*   **Ordre :** `30`
+*   **Actif :** [Cocher cette case]
+
+### 4. Sécurité Informatique
+*   **Nom :** `Sécurité Informatique`
+*   **Slug :** `securite-informatique`
+*   **Description :** `Discussions sur la cybersécurité, la protection des données, les menaces, les vulnérabilités et les bonnes pratiques.`
+*   **Couleur :** `#FF5722` (Orange profond)
+*   **Icône :** `shield-alt`
+*   **Ordre :** `40`
+*   **Actif :** [Cocher cette case]
+
+### 5. Questions Générales
+*   **Nom :** `Questions Générales`
+*   **Slug :** `questions-generales`
+*   **Description :** `Pour toutes les discussions qui ne rentrent pas dans une catégorie spécifique du forum.`
+*   **Couleur :** `#607D8B` (Gris bleuté)
+*   **Icône :** `question-circle`
+*   **Ordre :** `90`
+*   **Actif :** [Cocher cette case]
+
+### 6. Annonces du site
+*   **Nom :** `Annonces du site`
+*   **Slug :** `annonces-du-site`
+*   **Description :** `Les dernières nouvelles, mises à jour et annonces importantes de Jessna TechLearn.`
+*   **Couleur :** `#9C27B0` (Violet)
+*   **Icône :** `bullhorn`
+*   **Ordre :** `100`
+*   **Actif :** [Cocher cette case]
+
+### 7. Logiciels de Streaming
+*   **Nom :** `Logiciels de Streaming`
+*   **Slug :** `logiciels-de-streaming`
+*   **Description :** `Discutez des logiciels et plateformes de streaming vidéo et audio, des astuces et des configurations.`
+*   **Couleur :** `#E91E63` (Rose)
+*   **Icône :** `video`
+*   **Ordre :** `50`
+*   **Actif :** [Cocher cette case]
+
+### 8. Suite Office
+*   **Nom :** `Suite Office`
+*   **Slug :** `suite-office`
+*   **Description :** `Aide et astuces pour Microsoft Office, LibreOffice, Google Workspace et autres suites bureautiques.`
+*   **Couleur :** `#2196F3` (Bleu clair)
+*   **Icône :** `file-word`
+*   **Ordre :** `60`
+*   **Actif :** [Cocher cette case]
+
+### 9. Systèmes d'Exploitation
+*   **Nom :** `Systèmes d'Exploitation`
+*   **Slug :** `systemes-d-exploitation`
+*   **Description :** `Discussions sur Windows, macOS, Linux, Android, iOS et leurs fonctionnalités, problèmes et solutions.`
+*   **Couleur :** `#795548` (Marron)
+*   **Icône :** `desktop`
+*   **Ordre :** `70`
+*   **Actif :** [Cocher cette case]
+
+### 10. Technologies & Médias
+*   **Nom :** `Technologies & Médias`
+*   **Slug :** `technologies-medias`
+*   **Description :** `Tout sur le montage vidéo, la retouche photo, les outils créatifs, les nouvelles technologies et le matériel.`
+*   **Couleur :** `#00BCD4` (Cyan)
+*   **Icône :** `camera-retro`
+*   **Ordre :** `80`
+*   **Actif :** [Cocher cette case]
+
+### 11. Cours de Français
+*   **Nom :** `Cours de Français`
+*   **Slug :** `cours-de-francais`
+*   **Description :** `Améliorez votre français, posez des questions de grammaire, vocabulaire, expression écrite et orale.`
+*   **Couleur :** `#FFC107` (Ambre)
+*   **Icône :** `language`
+*   **Ordre :** `110`
+*   **Actif :** [Cocher cette case]
