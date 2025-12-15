@@ -47,7 +47,7 @@
                 <div class="w-12 h-12 bg-blue-500 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <i class="fas fa-comments text-white"></i>
                 </div>
-                <div class="text-2xl font-bold text-blue-900 dark:text-blue-100 mb-1">1,234</div>
+                <div class="text-2xl font-bold text-blue-900 dark:text-blue-100 mb-1">{{ stats.total_topics }}</div>
                 <div class="text-sm text-blue-600 dark:text-blue-400">Sujets</div>
             </div>
             
@@ -56,7 +56,7 @@
                 <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <i class="fas fa-comment text-white"></i>
                 </div>
-                <div class="text-2xl font-bold text-green-900 dark:text-green-100 mb-1">5,678</div>
+                <div class="text-2xl font-bold text-green-900 dark:text-green-100 mb-1">{{ stats.total_posts }}</div>
                 <div class="text-sm text-green-600 dark:text-green-400">Messages</div>
             </div>
             
@@ -65,7 +65,7 @@
                 <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <i class="fas fa-users text-white"></i>
                 </div>
-                <div class="text-2xl font-bold text-purple-900 dark:text-purple-100 mb-1">890</div>
+                <div class="text-2xl font-bold text-purple-900 dark:text-purple-100 mb-1">{{ stats.active_members }}</div>
                 <div class="text-sm text-purple-600 dark:text-purple-400">Membres actifs</div>
             </div>
             
@@ -74,7 +74,7 @@
                 <div class="w-12 h-12 bg-yellow-500 rounded-lg flex items-center justify-center mx-auto mb-3">
                     <i class="fas fa-check-circle text-white"></i>
                 </div>
-                <div class="text-2xl font-bold text-yellow-900 dark:text-yellow-100 mb-1">456</div>
+                <div class="text-2xl font-bold text-yellow-900 dark:text-yellow-100 mb-1">{{ stats.resolved_topics }}</div>
                 <div class="text-sm text-yellow-600 dark:text-yellow-400">Résolus</div>
             </div>
         </div>
@@ -131,8 +131,12 @@
                                             <!-- Dernier sujet -->
                                             <div class="flex items-center justify-between">
                                                 <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
-                                                    <i class="fas fa-clock mr-2"></i>
-                                                    <span>Dernière activité il y a 2 heures</span>
+                                                    {% with latest_topic=category.sujets.first %}
+                                                        {% if latest_topic %}
+                                                            <i class="fas fa-clock mr-2"></i>
+                                                            <span>Dernière activité {{ latest_topic.derniere_activite|timesince }} ago</span>
+                                                        {% endif %}
+                                                    {% endwith %}
                                                 </div>
                                                 <a href="{% url 'forum:category_detail' category.slug %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-sm">
                                                     Voir tous les sujets →
@@ -166,7 +170,7 @@
                             <div class="p-6 {% if not forloop.last %}border-b border-gray-200 dark:border-gray-700{% endif %} hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                 <div class="flex items-start">
                                     <!-- Avatar de l'auteur -->
-                                    <img src="https://ui-avatars.com/api/?name={{ sujet.auteur.get_full_name|default:sujet.auteur.username }}&background=3B82F6&color=fff&size=48" alt="{{ sujet.auteur.get_full_name|default:sujet.auteur.username }}" class="w-12 h-12 rounded-full mr-4">
+                                    <img src="{% if sujet.auteur.userprofile.avatar %}{{ sujet.auteur.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ sujet.auteur.get_full_name|default:sujet.auteur.username }}&background=3B82F6&color=fff&size=48{% endif %}" alt="{{ sujet.auteur.get_full_name|default:sujet.auteur.username }}" class="w-12 h-12 rounded-full mr-4 object-cover">
                                     
                                     <!-- Contenu du sujet -->
                                     <div class="flex-1">
@@ -189,9 +193,9 @@
                                                     <span>•</span>
                                                     <span>{{ sujet.cree_le|timesince }} ago</span>
                                                     <span>•</span>
-                                                    <span class="bg-{{ sujet.categorie.couleur|default:'blue' }}-100 dark:bg-{{ sujet.categorie.couleur|default:'blue' }}-900/30 text-{{ sujet.categorie.couleur|default:'blue' }}-600 dark:text-{{ sujet.categorie.couleur|default:'blue' }}-400 px-2 py-1 rounded text-xs">
+                                                    <a href="{% url 'forum:category_detail' sujet.categorie.slug %}" class="bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-2 py-1 rounded text-xs hover:bg-blue-200 dark:hover:bg-blue-800 transition-colors">
                                                         {{ sujet.categorie.nom }}
-                                                    </span>
+                                                    </a>
                                                 </div>
                                             </div>
                                             
@@ -243,31 +247,21 @@
                         Membres en ligne
                     </h3>
                     <div class="space-y-3">
+                        {% for member in online_members %}
                         <div class="flex items-center">
-                            <img src="https://ui-avatars.com/api/?name=John+Doe&background=3B82F6&color=fff&size=32" alt="John Doe" class="w-8 h-8 rounded-full mr-3">
+                            <img src="{% if member.userprofile.avatar %}{{ member.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ member.get_full_name|default:member.username }}&background=3B82F6&color=fff&size=32{% endif %}" alt="{{ member.get_full_name|default:member.username }}" class="w-8 h-8 rounded-full mr-3 object-cover">
                             <div>
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">John Doe</div>
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">{{ member.get_full_name|default:member.username }}</div>
                                 <div class="text-xs text-gray-500 dark:text-gray-400">En ligne</div>
                             </div>
                         </div>
-                        <div class="flex items-center">
-                            <img src="https://ui-avatars.com/api/?name=Jane+Smith&background=10B981&color=fff&size=32" alt="Jane Smith" class="w-8 h-8 rounded-full mr-3">
-                            <div>
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">Jane Smith</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">En ligne</div>
-                            </div>
-                        </div>
-                        <div class="flex items-center">
-                            <img src="https://ui-avatars.com/api/?name=Mike+Johnson&background=F59E0B&color=fff&size=32" alt="Mike Johnson" class="w-8 h-8 rounded-full mr-3">
-                            <div>
-                                <div class="text-sm font-medium text-gray-900 dark:text-white">Mike Johnson</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">En ligne</div>
-                            </div>
-                        </div>
+                        {% empty %}
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Aucun membre en ligne pour le moment.</p>
+                        {% endfor %}
                     </div>
                     <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                         <p class="text-sm text-gray-500 dark:text-gray-400">
-                            <strong>12</strong> membres en ligne
+                            <strong>{{ online_members|length }}</strong> membre(s) en ligne
                         </p>
                     </div>
                 </div>
@@ -305,45 +299,35 @@
                         Top Contributeurs
                     </h3>
                     <div class="space-y-3">
+                        {% for contributor in top_contributors %}
                         <div class="flex items-center justify-between">
                             <div class="flex items-center">
-                                <img src="https://ui-avatars.com/api/?name=Expert+User&background=F59E0B&color=fff&size=32" alt="Expert User" class="w-8 h-8 rounded-full mr-3">
+                                <img src="{% if contributor.userprofile.avatar %}{{ contributor.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ contributor.get_full_name|default:contributor.username }}&background=F59E0B&color=fff&size=32{% endif %}" alt="{{ contributor.get_full_name|default:contributor.username }}" class="w-8 h-8 rounded-full mr-3 object-cover">
                                 <div>
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Expert User</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Formateur</div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-white">{{ contributor.get_full_name|default:contributor.username }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ contributor.posts_count }} messages</div>
                                 </div>
                             </div>
-                            <div class="text-sm font-medium text-yellow-600 dark:text-yellow-400">
-                                <i class="fas fa-medal mr-1"></i>
-                                1st
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <img src="https://ui-avatars.com/api/?name=Helper+Pro&background=10B981&color=fff&size=32" alt="Helper Pro" class="w-8 h-8 rounded-full mr-3">
-                                <div>
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Helper Pro</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Modérateur</div>
+                            {% if forloop.counter == 1 %}
+                                <div class="text-sm font-medium text-yellow-500 dark:text-yellow-400">
+                                    <i class="fas fa-medal mr-1"></i>
+                                    1er
                                 </div>
-                            </div>
-                            <div class="text-sm font-medium text-gray-500 dark:text-gray-400">
-                                <i class="fas fa-medal mr-1"></i>
-                                2nd
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <img src="https://ui-avatars.com/api/?name=Active+Member&background=8B5CF6&color=fff&size=32" alt="Active Member" class="w-8 h-8 rounded-full mr-3">
-                                <div>
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">Active Member</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">Membre actif</div>
+                            {% elif forloop.counter == 2 %}
+                                <div class="text-sm font-medium text-gray-400 dark:text-gray-300">
+                                    <i class="fas fa-medal mr-1"></i>
+                                    2e
                                 </div>
-                            </div>
-                            <div class="text-sm font-medium text-orange-600 dark:text-orange-400">
-                                <i class="fas fa-medal mr-1"></i>
-                                3rd
-                            </div>
+                            {% elif forloop.counter == 3 %}
+                                <div class="text-sm font-medium text-orange-600 dark:text-orange-500">
+                                    <i class="fas fa-medal mr-1"></i>
+                                    3e
+                                </div>
+                            {% endif %}
                         </div>
+                        {% empty %}
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Pas encore de top contributeurs.</p>
+                        {% endfor %}
                     </div>
                 </div>
             </div>

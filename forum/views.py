@@ -2,10 +2,13 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
+from django.utils import timezone
+from datetime import timedelta
+from django.contrib.auth.models import User
+
 from core.models import SiteSettings
 from .models import ForumCategory, ForumTopic, ForumPost
-
 
 def forum_index(request):
     """Page d'accueil du forum"""
@@ -13,12 +16,29 @@ def forum_index(request):
     categories = ForumCategory.objects.filter(est_actif=True)
     
     # Derniers sujets
-    derniers_sujets = ForumTopic.objects.select_related('categorie', 'auteur').order_by('-derniere_activite')[:5]
+    derniers_sujets = ForumTopic.objects.select_related('categorie', 'auteur', 'auteur__userprofile').order_by('-derniere_activite')[:5]
     
+    # Statistiques du forum
+    stats = {
+        'total_topics': ForumTopic.objects.count(),
+        'total_posts': ForumPost.objects.count(),
+        'active_members': User.objects.filter(last_login__gte=timezone.now() - timedelta(days=30)).count(),
+        'resolved_topics': ForumTopic.objects.filter(est_resolu=True).count(),
+    }
+    
+    # Membres en ligne (derniers 5 minutes)
+    online_members = User.objects.filter(userprofile__last_activity__gte=timezone.now() - timedelta(minutes=5)).select_related('userprofile')[:5]
+
+    # Top contributeurs
+    top_contributors = User.objects.annotate(posts_count=Count('forumpost')).order_by('-posts_count')[:3]
+
     context = {
         'settings': settings,
         'categories': categories,
         'derniers_sujets': derniers_sujets,
+        'stats': stats,
+        'online_members': online_members,
+        'top_contributors': top_contributors,
     }
     
     return render(request, 'forum/index.html', context)
@@ -28,7 +48,7 @@ def category_detail(request, slug):
     """Détail d'une catégorie"""
     settings = SiteSettings.get_settings()
     categorie = get_object_or_404(ForumCategory, slug=slug, est_actif=True)
-    sujets = ForumTopic.objects.filter(categorie=categorie).select_related('auteur')
+    sujets = ForumTopic.objects.filter(categorie=categorie).select_related('auteur', 'auteur__userprofile')
     
     # Recherche
     search = request.GET.get('search')
@@ -62,7 +82,7 @@ def topic_detail(request, category_slug, slug):
     sujet.incrementer_vues()
     
     # Réponses
-    reponses = sujet.reponses.select_related('auteur').order_by('cree_le')
+    reponses = sujet.reponses.select_related('auteur', 'auteur__userprofile').order_by('cree_le')
     
     # Pagination
     paginator = Paginator(reponses, 10)
