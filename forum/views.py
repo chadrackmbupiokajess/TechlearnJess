@@ -28,7 +28,13 @@ def forum_index(request):
     }
     
     # Membres en ligne (dernières 5 minutes)
-    online_members = User.objects.filter(userprofile__last_activity__gte=timezone.now() - timedelta(minutes=5)).select_related('userprofile')[:5]
+    online_members = User.objects.filter(userprofile__last_activity__gte=timezone.now() - timedelta(minutes=5)).select_related('userprofile').distinct()
+    
+    # Exclure l'utilisateur connecté de la liste des membres en ligne
+    if request.user.is_authenticated:
+        online_members = online_members.exclude(id=request.user.id)
+    
+    online_members = online_members[:5] # Limiter à 5 après exclusion
 
     # Top contributeurs (sujets + réponses)
     top_contributors = User.objects.annotate(
