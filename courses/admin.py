@@ -17,6 +17,7 @@ class LessonInline(admin.TabularInline):
     extra = 0
     fields = ['title', 'slug', 'lesson_type', 'order', 'duration_minutes', 'is_preview', 'is_published']
     prepopulated_fields = {'slug': ('title',)}
+    exclude = ['notification_sent']
 
 
 @admin.register(Course)
@@ -27,6 +28,7 @@ class CourseAdmin(admin.ModelAdmin):
     list_editable = ['status', 'is_published', 'is_featured']
     prepopulated_fields = {'slug': ('title',)}
     inlines = [LessonInline]
+    exclude = ['notification_sent']
     
     fieldsets = (
         ('Informations générales', {
@@ -64,6 +66,7 @@ class LessonAdmin(admin.ModelAdmin):
     search_fields = ['title', 'course__title']
     list_editable = ['order', 'is_preview', 'is_published']
     prepopulated_fields = {'slug': ('title',)}
+    exclude = ['notification_sent']
     
     def get_queryset(self, request):
         qs = super().get_queryset(request)

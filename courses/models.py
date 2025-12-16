@@ -142,7 +142,10 @@ class Lesson(models.Model):
     # Ordre et accès
     order = models.PositiveIntegerField(default=0, verbose_name="Ordre")
     is_preview = models.BooleanField(default=False, verbose_name="Aperçu gratuit")
-    is_published = models.BooleanField(default=True, verbose_name="Publié")
+    is_published = models.BooleanField(default=False, verbose_name="Publié")
+    
+    # Suivi de notification
+    notification_sent = models.BooleanField(default=False, verbose_name="Notification envoyée")
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -160,6 +163,9 @@ class Lesson(models.Model):
         if not self.slug:
             self.slug = slugify(self.title)
         super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('courses:lesson_detail', kwargs={'course_slug': self.course.slug, 'lesson_slug': self.slug})
 
 
 class Enrollment(models.Model):
