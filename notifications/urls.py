@@ -10,4 +10,5 @@ urlpatterns = [
     path('marquer-tout-lu/', views.mark_all_as_read, name='mark_all_as_read'),
     path('supprimer/<int:notification_id>/', views.delete_notification, name='delete'),
     path('api/non-lues/', views.get_unread_count, name='unread_count'),
+    path('api/latest/', views.get_latest_notifications, name='latest_notifications'),
 ]

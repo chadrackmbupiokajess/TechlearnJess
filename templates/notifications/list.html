@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Mes Notifications - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100">Mes Notifications</h1>
+            <p class="mt-2 text-gray-600 dark:text-gray-400">Gérez vos notifications et restez à jour.</p>
+        </div>
+
+        <div class="p-6">
+            <!-- Filtres et Actions -->
+            <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
+                <div class="flex items-center space-x-4">
+                    <a href="{% url 'notifications:list' %}?type=all" class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'all' %}bg-blue-600 text-white{% else %}bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600{% endif %}">Toutes</a>
+                    <a href="{% url 'notifications:list' %}?type=unread" class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'unread' %}bg-blue-600 text-white{% else %}bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600{% endif %}">Non lues ({{ unread_count }})</a>
+                </div>
+                <button id="mark-all-read" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">
+                    <i class="fas fa-check-double mr-2"></i>Tout marquer comme lu
+                </button>
+            </div>
+
+            <!-- Liste des notifications -->
+            <div class="space-y-4">
+                {% for notification in page_obj %}
+                <div id="notification-{{ notification.id }}" class="p-4 rounded-lg flex items-start space-x-4 {% if not notification.is_read %}bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500{% else %}bg-gray-50 dark:bg-gray-700/50{% endif %}">
+                    <div class="flex-shrink-0 w-8 text-center">
+                        {% if notification.notification_type == 'course_new' %}
+                            <i class="fas fa-book text-blue-500 text-xl"></i>
+                        {% elif notification.notification_type == 'course_update' %}
+                            <i class="fas fa-book-reader text-blue-500 text-xl"></i>
+                        {% elif notification.notification_type == 'lesson_new' %}
+                            <i class="fas fa-file-alt text-green-500 text-xl"></i>
+                        {% elif notification.notification_type == 'message' %}
+                            <i class="fas fa-comments text-purple-500 text-xl"></i>
+                        {% elif notification.notification_type == 'forum_reply' %}
+                            <i class="fas fa-reply text-indigo-500 text-xl"></i>
+                        {% elif notification.notification_type == 'live_session' %}
+                            <i class="fas fa-video text-red-500 text-xl"></i>
+                        {% elif notification.notification_type == 'certificate' %}
+                            <i class="fas fa-certificate text-yellow-500 text-xl"></i>
+                        {% elif notification.notification_type == 'payment' %}
+                            <i class="fas fa-credit-card text-orange-500 text-xl"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle text-gray-500 text-xl"></i>
+                        {% endif %}
+                    </div>
+                    <div class="flex-grow">
+                        <a href="{{ notification.action_url|default:'#' }}" class="hover:underline">
+                            <p class="font-semibold text-gray-900 dark:text-gray-100">{{ notification.title }}</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300">{{ notification.message }}</p>
+                        </a>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ notification.created_at|naturaltime }}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        {% if not notification.is_read %}
+                        <button class="mark-as-read" data-id="{{ notification.id }}" title="Marquer comme lu">
+                            <i class="fas fa-check-circle text-gray-400 hover:text-green-500"></i>
+                        </button>
+                        {% endif %}
+                        <button class="delete-notification" data-id="{{ notification.id }}" title="Supprimer">
+                            <i class="fas fa-times-circle text-gray-400 hover:text-red-500"></i>
+                        </button>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-12">
+                    <i class="fas fa-bell-slash text-5xl text-gray-400"></i>
+                    <p class="mt-4 text-lg font-medium text-gray-700 dark:text-gray-300">Aucune notification à afficher.</p>
+                    <p class="text-gray-500 dark:text-gray-400">Il semble que vous soyez à jour !</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+            <div class="mt-8 flex justify-center">
+                <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    {% if page_obj.has_previous %}
+                    <a href="?page={{ page_obj.previous_page_number }}&type={{ current_filter }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
+                        <span class="sr-only">Précédent</span>
+                        <i class="fas fa-chevron-left h-5 w-5"></i>
+                    </a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if page_obj.number == num %}
+                            <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600 dark:bg-blue-900/50 dark:text-blue-300">{{ num }}</span>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <a href="?page={{ num }}&type={{ current_filter }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">{{ num }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <a href="?page={{ page_obj.next_page_number }}&type={{ current_filter }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-700">
+                        <span class="sr-only">Suivant</span>
+                        <i class="fas fa-chevron-right h-5 w-5"></i>
+                    </a>
+                    {% endif %}
+                </nav>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const csrftoken = '{{ csrf_token }}';
+
+    // Marquer une notification comme lue
+    document.querySelectorAll('.mark-as-read').forEach(button => {
+        button.addEventListener('click', function() {
+            const notificationId = this.dataset.id;
+            fetch(`/notifications/mark-as-read/${notificationId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const notifElement = document.getElementById(`notification-${notificationId}`);
+                    notifElement.classList.remove('bg-blue-50', 'dark:bg-blue-900/20', 'border-l-4', 'border-blue-500');
+                    notifElement.classList.add('bg-gray-50', 'dark:bg-gray-700/50');
+                    this.remove(); // Supprime le bouton "marquer comme lu"
+                }
+            });
+        });
+    });
+
+    // Supprimer une notification
+    document.querySelectorAll('.delete-notification').forEach(button => {
+        button.addEventListener('click', function() {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette notification ?')) return;
+            
+            const notificationId = this.dataset.id;
+            fetch(`/notifications/delete/${notificationId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById(`notification-${notificationId}`).remove();
+                }
+            });
+        });
+    });
+
+    // Marquer toutes les notifications comme lues
+    const markAllReadButton = document.getElementById('mark-all-read');
+    if (markAllReadButton) {
+        markAllReadButton.addEventListener('click', function() {
+            fetch(`/notifications/mark-all-as-read/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.reload(); // Recharge la page pour voir les changements
+                }
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

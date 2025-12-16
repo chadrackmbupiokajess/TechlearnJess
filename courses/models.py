@@ -74,6 +74,9 @@ class Course(models.Model):
     prerequisites = models.TextField(blank=True, verbose_name="Prérequis")
     learning_objectives = models.TextField(verbose_name="Objectifs d'apprentissage")
     
+    # Suivi de notification
+    notification_sent = models.BooleanField(default=False, verbose_name="Notification envoyée")
+    
     # Métadonnées
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
