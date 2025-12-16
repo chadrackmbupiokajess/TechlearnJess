@@ -43,6 +43,11 @@ class LiveSession(models.Model):
     is_public = models.BooleanField(default=False, verbose_name="Session publique")
     requires_enrollment = models.BooleanField(default=True, verbose_name="Inscription requise")
     
+    # Suivi des notifications
+    scheduled_notification_sent = models.BooleanField(default=False, verbose_name="Notification de programmation envoyée")
+    starting_notification_sent = models.BooleanField(default=False, verbose_name="Notification de début imminent envoyée")
+    live_notification_sent = models.BooleanField(default=False, verbose_name="Notification de direct envoyée")
+
     # Dates
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

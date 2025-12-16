@@ -11,7 +11,9 @@ class Notification(models.Model):
         ('lesson_new', 'Nouvelle leçon'),
         ('message', 'Nouveau message'),
         ('forum_reply', 'Réponse au forum'),
-        ('live_session', 'Session live'),
+        ('live_session_scheduled', 'Session live programmée'),
+        ('live_session_starting', 'Session live imminente'),
+        ('live_session_live', 'Session en direct'),
         ('certificate', 'Certificat disponible'),
         ('payment', 'Paiement'),
         ('system', 'Système'),
@@ -20,7 +22,7 @@ class Notification(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Utilisateur")
     title = models.CharField(max_length=200, verbose_name="Titre")
     message = models.TextField(verbose_name="Message")
-    notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, verbose_name="Type")
+    notification_type = models.CharField(max_length=30, choices=NOTIFICATION_TYPES, verbose_name="Type")
     
     # Liens et actions
     action_url = models.URLField(blank=True, verbose_name="URL d'action")
