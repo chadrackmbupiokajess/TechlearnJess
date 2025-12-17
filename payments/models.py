@@ -96,7 +96,7 @@ class Payment(models.Model):
         return f"Paiement {self.payment_id} - {self.user.username} - {self.amount} {self.currency}"
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # Si c'est une nouvelle instance
+        if not self.pk:
             if not self.fees:
                 self.fees = self.payment_method.calculate_fees(self.amount)
             if not self.total_amount:
@@ -104,20 +104,18 @@ class Payment(models.Model):
         
         is_newly_completed = self.status == 'completed' and self.__original_status != 'completed'
         
+        if is_newly_completed:
+            self.completed_at = timezone.now()
+
         super().save(*args, **kwargs)
         
         if is_newly_completed:
-            self.mark_as_completed()
+            self._post_completion_actions()
         
         self.__original_status = self.status
 
-    def mark_as_completed(self):
-        """Marquer le paiement comme terminé et inscrire l'utilisateur."""
-        if self.status != 'completed':
-            self.status = 'completed'
-            self.completed_at = timezone.now()
-            self.save(update_fields=['status', 'completed_at'])
-
+    def _post_completion_actions(self):
+        """Actions à effectuer après la complétion d'un paiement."""
         from courses.models import Enrollment
         enrollment, created = Enrollment.objects.get_or_create(
             user=self.user,
@@ -134,6 +132,12 @@ class Payment(models.Model):
                 action_url=self.course.get_absolute_url(),
                 action_text="Accéder au cours"
             )
+
+    def mark_as_completed(self):
+        """Méthode publique pour marquer le paiement comme terminé."""
+        if self.status != 'completed':
+            self.status = 'completed'
+            self.save()
 
     def mark_as_failed(self, reason=""):
         self.status = 'failed'
