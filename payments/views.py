@@ -83,10 +83,15 @@ def process_paypal(request, payment_id):
         "item_name": payment.course.title,
         "invoice": str(payment.payment_id),
         "currency_code": "USD",
-        "notify_url": request.build_absolute_uri(reverse('paypal-ipn')),
         "return_url": request.build_absolute_uri(reverse('payments:payment_success', args=[payment.payment_id])),
         "cancel_return": request.build_absolute_uri(reverse('payments:payment_cancelled', args=[payment.payment_id])),
     }
+
+    # L'URL de notification est importante, mais peut causer des problèmes en développement/début de production
+    # Nous la laissons pour le moment car la confirmation se fait sur la page de succès.
+    if not settings.DEBUG:
+         paypal_dict["notify_url"] = request.build_absolute_uri(reverse('paypal-ipn'))
+
 
     form = PayPalPaymentsForm(initial=paypal_dict)
     context = {'form': form, 'payment': payment}
@@ -117,10 +122,10 @@ def payment_success(request, payment_id):
     C'est ici que nous confirmons le paiement pour contourner les problèmes d'IPN en sandbox.
     """
     payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
-
+    
     if payment.status != 'completed':
         payment.mark_as_completed()
-
+    
     messages.success(request, "Votre paiement a été effectué avec succès. Bienvenue au cours !")
     return render(request, 'payments/success.html', {'payment': payment})
 
