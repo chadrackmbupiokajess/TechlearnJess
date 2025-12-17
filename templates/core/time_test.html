@@ -5,8 +5,16 @@
 {% block content %}
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Diagnostic Temporel</h1>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Diagnostic du Site</h1>
         
+        <!-- Section PayPal -->
+        <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg mb-8">
+            <h2 class="text-xl font-semibold text-red-800 dark:text-red-300 mb-2">4. Vérification de la Configuration PayPal</h2>
+            <p class="text-gray-600 dark:text-gray-300">Ceci est la valeur de <code>PAYPAL_RECEIVER_EMAIL</code> que votre site utilise actuellement pour les transactions.</p>
+            <p class="text-2xl font-mono bg-gray-100 dark:bg-gray-700 p-2 rounded mt-2">{{ paypal_receiver_email }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Assurez-vous que cette valeur correspond exactement à votre adresse e-mail ou ID de marchand de votre compte Business Sandbox.</p>
+        </div>
+
         <p class="text-gray-600 dark:text-gray-300 mb-8">
             Cette page permet de comparer l'heure de votre navigateur avec celle du serveur pour diagnostiquer les problèmes de synchronisation.
         </p>

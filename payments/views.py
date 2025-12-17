@@ -78,14 +78,14 @@ def process_paypal(request, payment_id):
     host = request.get_host()
 
     paypal_dict = {
-        'business': settings.PAYPAL_RECEIVER_EMAIL,
-        'amount': f'{payment.amount:.2f}',
-        'item_name': f'Cours: {payment.course.title}',
-        'invoice': str(payment.payment_id),
-        'currency_code': payment.currency,
-        'notify_url': f'http://{host}{reverse("paypal-ipn")}',
-        'return_url': f'http://{host}{reverse("payments:payment_success", args=[payment.payment_id])}',
-        'cancel_return': f'http://{host}{reverse("payments:payment_cancelled", args=[payment.payment_id])}',
+        "business": settings.PAYPAL_RECEIVER_EMAIL,
+        "amount": f'{payment.amount:.2f}',
+        "item_name": payment.course.title,
+        "invoice": str(payment.payment_id),
+        "currency_code": "USD",
+        "notify_url": request.build_absolute_uri(reverse('paypal-ipn')),
+        "return_url": request.build_absolute_uri(reverse('payments:payment_success', args=[payment.payment_id])),
+        "cancel_return": request.build_absolute_uri(reverse('payments:payment_cancelled', args=[payment.payment_id])),
     }
 
     form = PayPalPaymentsForm(initial=paypal_dict)

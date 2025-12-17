@@ -6,6 +6,7 @@ from django.utils import timezone
 from django.http import HttpResponse
 from django.template import loader
 from datetime import datetime
+from django.conf import settings
 
 from .models import SiteSettings, Testimonial, FAQ, GalleryImage
 from courses.models import Course, Enrollment
@@ -259,5 +260,6 @@ def time_test_view(request):
         'datetime_now': datetime.now(),
         'timezone_now': timezone.now(),
         'user_timezone': user_timezone,
+        'paypal_receiver_email': settings.PAYPAL_RECEIVER_EMAIL,
     }
     return render(request, 'core/time_test.html', context)
