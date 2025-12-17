@@ -122,11 +122,11 @@
                                         {% endif %}
                                     </div>
                                     
-                                    <div class="ml-4 flex-1">
-                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1">
+                                    <div class="ml-4 flex-1 min-w-0">
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-1 truncate" title="{{ enrollment.course.title }}">
                                             {{ enrollment.course.title }}
                                         </h3>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2 truncate">
                                             {{ enrollment.course.category.name }} • {{ enrollment.course.instructor.get_full_name|default:enrollment.course.instructor.username }}
                                         </p>
                                         
@@ -139,7 +139,7 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="ml-4">
+                                    <div class="ml-4 flex-shrink-0">
                                         <a href="{% url 'courses:learn' enrollment.course.slug %}" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                             Continuer
                                         </a>
@@ -180,8 +180,8 @@
                                         </div>
                                     </div>
                                     
-                                    <div class="ml-4 flex-1">
-                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                                    <div class="ml-4 flex-1 min-w-0">
+                                        <h3 class="text-lg font-medium text-gray-900 dark:text-white truncate" title="{{ enrollment.course.title }}">
                                             {{ enrollment.course.title }}
                                         </h3>
                                         <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -189,7 +189,7 @@
                                         </p>
                                     </div>
                                     
-                                    <div class="ml-4">
+                                    <div class="ml-4 flex-shrink-0">
                                         <a href="{% url 'certificates:my_certificates' %}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                                             <i class="fas fa-certificate mr-1"></i>
                                             Certificat
@@ -201,7 +201,7 @@
                         {% else %}
                             <div class="text-center py-8">
                                 <i class="fas fa-trophy text-4xl text-gray-300 dark:text-gray-600 mb-3"></i>
-                                <p class="text-gray-500 dark:text-gray-400">Aucun cours terminé pour le moment</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">Aucun cours terminé pour le moment</p>
                             </div>
                         {% endif %}
                     </div>
@@ -224,7 +224,7 @@
                             <div class="space-y-4">
                                 {% for session in upcoming_sessions %}
                                 <div class="p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-700">
-                                    <h3 class="font-medium text-gray-900 dark:text-white mb-2">{{ session.title }}</h3>
+                                    <h3 class="font-medium text-gray-900 dark:text-white mb-2 truncate" title="{{ session.title }}">{{ session.title }}</h3>
                                     <div class="text-sm text-gray-500 dark:text-gray-400 space-y-1">
                                         <div class="flex items-center">
                                             <i class="fas fa-calendar mr-2"></i>
@@ -275,8 +275,8 @@
                                             <i class="fas fa-{% if notification.notification_type == 'course_new' %}book{% elif notification.notification_type == 'message' %}envelope{% elif notification.notification_type == 'live_session' %}video{% else %}bell{% endif %} text-white text-xs"></i>
                                         </div>
                                     </div>
-                                    <div class="ml-3 flex-1">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">{{ notification.title }}</p>
+                                    <div class="ml-3 flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900 dark:text-white truncate" title="{{ notification.title }}">{{ notification.title }}</p>
                                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">{{ notification.created_at|timesince }} ago</p>
                                     </div>
                                 </div>
