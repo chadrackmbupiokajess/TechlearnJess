@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirmez votre paiement M-PESA - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-100 dark:bg-gray-900 py-16">
+    <div class="max-w-lg mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
+            
+            <div class="mb-6">
+                <img src="{% static 'images/logos/mpesa.png' %}" alt="M-PESA" class="h-12 mx-auto">
+            </div>
+
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Vérifiez votre téléphone</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+                Une demande de paiement a été envoyée sur votre téléphone. Veuillez composer le code demandé pour valider la transaction.
+            </p>
+
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-left space-y-4 mb-8">
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-300">Cours :</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ payment.course.title }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-300">Montant :</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ payment.amount }} {{ payment.currency }}</span>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <i class="fas fa-spinner fa-spin text-4xl text-green-500"></i>
+                <p class="text-sm text-gray-500 mt-4">En attente de confirmation...</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

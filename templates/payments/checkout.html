@@ -41,10 +41,14 @@
                     <div class="space-y-4">
                         {% for method in payment_methods %}
                         <label class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
-                            <input type="radio" name="payment_method" value="{{ method.id }}" class="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500" {% if forloop.first %}checked{% endif %}>
+                            <input type="radio" name="payment_method" value="{{ method.id }}" data-type="{{ method.payment_type }}" class="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500" {% if forloop.first %}checked{% endif %}>
                             <div class="ml-4 flex items-center">
-                                {% if method.icon_url %}
-                                <img src="{{ method.icon_url }}" alt="{{ method.name }}" class="h-8 w-auto mr-3">
+                                {% if method.logo %}
+                                <img src="{{ method.logo.url }}" alt="{{ method.name }}" class="h-8 w-auto mr-3">
+                                {% else %}
+                                <div class="w-12 h-8 bg-gray-200 dark:bg-gray-600 rounded flex items-center justify-center mr-3">
+                                    <i class="fas fa-credit-card text-gray-400"></i>
+                                </div>
                                 {% endif %}
                                 <span class="text-lg font-medium text-gray-900 dark:text-white">{{ method.name }}</span>
                             </div>
@@ -52,9 +56,9 @@
                         {% endfor %}
                     </div>
 
-                    <!-- Champ pour le numéro de téléphone (pour les paiements mobiles) -->
+                    <!-- Champ pour le numéro de téléphone (pour Orange Money, etc.) -->
                     <div id="phone-number-field" class="mt-6" style="display: none;">
-                        <label for="phone_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Numéro de téléphone</label>
+                        <label for="phone_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Numéro de téléphone Orange Money</label>
                         <input type="text" name="phone_number" id="phone_number" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Ex: 0891234567">
                     </div>
 
@@ -82,8 +86,9 @@ document.addEventListener('DOMContentLoaded', function() {
     function togglePhoneField() {
         const selectedRadio = document.querySelector('input[name="payment_method"]:checked');
         if (selectedRadio) {
-            const selectedMethodLabel = selectedRadio.closest('label').textContent.trim().toLowerCase();
-            if (selectedMethodLabel.includes('mobile')) {
+            const paymentType = selectedRadio.dataset.type;
+            // Affiche le champ si le type est orange_money ou un autre paiement mobile
+            if (paymentType === 'orange_money' || paymentType === 'airtel_money' || paymentType === 'mpesa') {
                 phoneField.style.display = 'block';
             } else {
                 phoneField.style.display = 'none';

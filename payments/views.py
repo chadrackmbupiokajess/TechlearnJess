@@ -3,15 +3,16 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
 from django.urls import reverse
-from decimal import Decimal
-import uuid
 from django.conf import settings
 from paypal.standard.forms import PayPalPaymentsForm
 
 from .models import Payment, PaymentMethod, Invoice, Refund
 from courses.models import Course
 from core.models import SiteSettings
+from . import orange_money
+from . import mpesa
 
 @login_required
 def checkout(request, course_slug):
@@ -45,19 +46,24 @@ def create_payment(request, course_slug):
         return JsonResponse({'error': 'Ce cours est gratuit'}, status=400)
     
     payment_method_id = request.POST.get('payment_method')
+    phone_number = request.POST.get('phone_number')
     
     try:
         payment_method = PaymentMethod.objects.get(id=payment_method_id, is_active=True)
     except PaymentMethod.DoesNotExist:
         return JsonResponse({'error': 'Méthode de paiement invalide'}, status=400)
     
+    if (payment_method.payment_type == 'orange_money' or payment_method.payment_type == 'mpesa') and not phone_number:
+        return JsonResponse({'error': 'Veuillez fournir un numéro de téléphone pour ce mode de paiement.'}, status=400)
+
     payment = Payment.objects.create(
         user=request.user,
         course=course,
         payment_method=payment_method,
         amount=course.price,
         currency='USD',
-        status='pending'
+        status='pending',
+        phone_number=phone_number if phone_number else ''
     )
 
     if payment_method.payment_type == 'paypal':
@@ -65,7 +71,19 @@ def create_payment(request, course_slug):
             'success': True,
             'redirect_url': reverse('payments:process_paypal', kwargs={'payment_id': payment.payment_id})
         })
-    else:
+    elif payment_method.payment_type == 'orange_money':
+        redirect_url = orange_money.initiate_payment(payment, request)
+        return JsonResponse({
+            'success': True,
+            'redirect_url': redirect_url
+        })
+    elif payment_method.payment_type == 'mpesa':
+        redirect_url = mpesa.initiate_payment(payment, request)
+        return JsonResponse({
+            'success': True,
+            'redirect_url': redirect_url
+        })
+    else: # Pour "Espèces" et autres méthodes manuelles
         return JsonResponse({
             'success': True,
             'redirect_url': reverse('payments:pending', kwargs={'payment_id': payment.payment_id})
@@ -75,8 +93,7 @@ def create_payment(request, course_slug):
 @login_required
 def process_paypal(request, payment_id):
     payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
-    host = request.get_host()
-
+    
     paypal_dict = {
         "business": settings.PAYPAL_RECEIVER_EMAIL,
         "amount": f'{payment.amount:.2f}',
@@ -87,15 +104,40 @@ def process_paypal(request, payment_id):
         "cancel_return": request.build_absolute_uri(reverse('payments:payment_cancelled', args=[payment.payment_id])),
     }
 
-    # L'URL de notification est importante, mais peut causer des problèmes en développement/début de production
-    # Nous la laissons pour le moment car la confirmation se fait sur la page de succès.
     if not settings.DEBUG:
          paypal_dict["notify_url"] = request.build_absolute_uri(reverse('paypal-ipn'))
-
 
     form = PayPalPaymentsForm(initial=paypal_dict)
     context = {'form': form, 'payment': payment}
     return render(request, 'payments/process_paypal.html', context)
+
+
+@login_required
+def orange_money_pending(request, payment_id):
+    payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
+    context = {'payment': payment}
+    return render(request, 'payments/orange_money_pending.html', context)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def orange_money_callback(request):
+    orange_money.handle_callback(request)
+    return JsonResponse({'status': 'notification received'})
+
+
+@login_required
+def mpesa_pending(request, payment_id):
+    payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
+    context = {'payment': payment}
+    return render(request, 'payments/mpesa_pending.html', context)
+
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def mpesa_callback(request):
+    mpesa.handle_callback(request)
+    return JsonResponse({'status': 'notification received'})
 
 
 @login_required
@@ -117,10 +159,6 @@ def payment_pending(request, payment_id):
 
 @login_required
 def payment_success(request, payment_id):
-    """
-    Page de succès du paiement.
-    C'est ici que nous confirmons le paiement pour contourner les problèmes d'IPN en sandbox.
-    """
     payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
     
     if payment.status != 'completed':

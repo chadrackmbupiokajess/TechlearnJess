@@ -158,10 +158,17 @@ DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ------------------------------
-# PAYPAL
+# PAYMENT GATEWAYS
 # ------------------------------
+# PayPal
 PAYPAL_TEST = config('PAYPAL_TEST', default=True, cast=bool)
 PAYPAL_RECEIVER_EMAIL = config('PAYPAL_RECEIVER_EMAIL')
+
+# Orange Money (placeholders)
+ORANGE_MONEY_MERCHANT_KEY = config('ORANGE_MONEY_MERCHANT_KEY', default='YOUR_ORANGE_MONEY_KEY')
+
+# M-PESA (placeholders)
+MPESA_SHORT_CODE = config('MPESA_SHORT_CODE', default='YOUR_MPESA_SHORT_CODE')
 
 # ------------------------------
 # COMPANY INFO & LEGAL
