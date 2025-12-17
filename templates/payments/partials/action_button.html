@@ -1,0 +1,9 @@
+{% if payment.status == 'completed' %}
+    <button data-url="{% url 'payments:view_invoice' payment.payment_id %}" class="view-invoice-btn text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium">
+        Voir la facture
+    </button>
+{% else %}
+    <a href="{% url 'payments:detail' payment.payment_id %}" class="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-300 text-sm font-medium">
+        Détails
+    </a>
+{% endif %}
