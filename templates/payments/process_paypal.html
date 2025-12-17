@@ -27,10 +27,38 @@
                 </div>
             </div>
 
-            <!-- Formulaire PayPal généré par la bibliothèque -->
-            {{ form.render }}
+            <!-- Formulaire PayPal caché -->
+            <div class="hidden">
+                {{ form.render }}
+            </div>
 
+            <!-- Notre bouton personnalisé -->
+            <button id="custom-paypal-button" class="w-full bg-blue-800 hover:bg-blue-900 text-white py-3 px-6 rounded-lg font-semibold text-lg transition-colors flex items-center justify-center">
+                <i class="fab fa-paypal mr-3"></i>
+                Payer avec PayPal
+            </button>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const customButton = document.getElementById('custom-paypal-button');
+    
+    // Le bouton généré par form.render est une image avec un input.
+    // Nous devons trouver cet input pour le cliquer.
+    const realPaypalButton = document.querySelector('input[type="image"][name="submit"]');
+
+    if (customButton && realPaypalButton) {
+        customButton.addEventListener('click', function() {
+            // Désactiver notre bouton pour éviter les double-clics
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Redirection...';
+            
+            // Cliquer sur le vrai bouton PayPal (qui est caché)
+            realPaypalButton.click();
+        });
+    }
+});
+</script>
 {% endblock %}
