@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reçu {{ invoice.invoice_number }}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inconsolata', monospace;
+        }
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .no-print {
+                display: none;
+            }
+            .receipt-container {
+                box-shadow: none !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-200 dark:bg-gray-900">
+    <div class="receipt-container max-w-md mx-auto my-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 relative overflow-hidden">
+        
+        <!-- Filigrane "PAYÉ" -->
+        <div class="absolute inset-0 flex items-center justify-center">
+            <span class="text-8xl font-bold text-green-500 opacity-10 dark:opacity-20 transform -rotate-12 select-none">
+                PAYÉ
+            </span>
+        </div>
+
+        <div class="relative z-10">
+            <!-- En-tête -->
+            <header class="text-center pb-4 border-b-2 border-dashed border-gray-400 dark:border-gray-600">
+                {% if settings.logo %}
+                    <img src="{{ settings.logo.url }}" alt="Logo" class="h-12 mx-auto mb-2">
+                {% endif %}
+                <h1 class="text-xl font-bold text-gray-900 dark:text-white">{{ settings.site_name }}</h1>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ settings.company_address }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ settings.contact_email }}</p>
+            </header>
+
+            <!-- Informations de la transaction -->
+            <section class="my-4 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Facture #:</span>
+                    <span class="font-bold text-gray-800 dark:text-gray-200">{{ invoice.invoice_number }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Date:</span>
+                    <span class="font-bold text-gray-800 dark:text-gray-200">{{ invoice.payment.completed_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Client:</span>
+                    <span class="font-bold text-gray-800 dark:text-gray-200">{{ invoice.billing_name }}</span>
+                </div>
+            </section>
+
+            <!-- Tableau des articles -->
+            <section class="py-4 border-t-2 border-b-2 border-dashed border-gray-400 dark:border-gray-600">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr>
+                            <th class="pb-2 text-left font-bold uppercase">Description</th>
+                            <th class="pb-2 text-right font-bold uppercase">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <p>Cours: "{{ invoice.payment.course.title }}"</p>
+                            </td>
+                            <td class="text-right">{{ invoice.payment.amount }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Total -->
+            <section class="my-4 text-sm">
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Sous-total:</span>
+                    <span>{{ invoice.payment.amount }} {{ invoice.payment.currency }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-400">Frais:</span>
+                    <span>{{ invoice.payment.fees }} {{ invoice.payment.currency }}</span>
+                </div>
+                <div class="flex justify-between font-bold text-lg mt-2 pt-2 border-t border-dashed border-gray-400 dark:border-gray-600">
+                    <span>TOTAL:</span>
+                    <span>{{ invoice.payment.total_amount }} {{ invoice.payment.currency }}</span>
+                </div>
+            </section>
+
+            <!-- Méthode de paiement -->
+            <section class="py-4 border-t-2 border-dashed border-gray-400 dark:border-gray-600 text-center text-sm">
+                <p>Payé via {{ invoice.payment.payment_method.name }}</p>
+            </section>
+
+            <!-- Footer -->
+            <footer class="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
+                <p>Merci pour votre achat !</p>
+                <p>TechLearnJess - "Apprenez, Innovez, Réussissez"</p>
+            </footer>
+        </div>
+
+        <!-- Boutons d'action -->
+        <div class="text-center mt-8 no-print">
+            <button onclick="window.print()" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                <i class="fas fa-print mr-2"></i>Imprimer
+            </button>
+            <a href="{% url 'payments:history' %}" class="inline-block bg-gray-200 text-gray-800 py-2 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors ml-4">
+                Retour
+            </a>
+        </div>
+    </div>
+</body>
+</html>

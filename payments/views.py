@@ -9,7 +9,7 @@ import uuid
 
 from .models import Payment, PaymentMethod, Invoice
 from courses.models import Course
-
+from core.models import SiteSettings
 
 @login_required
 def checkout(request, course_slug):
@@ -59,7 +59,7 @@ def create_payment(request, course_slug):
         amount=course.price,
         currency='USD',
         phone_number=phone_number,
-        status='pending'  # Le paiement commence en attente
+        status='pending'
     )
     
     return JsonResponse({
@@ -124,8 +124,8 @@ def payment_detail(request, payment_id):
 
 
 @login_required
-def download_invoice(request, payment_id):
-    """Télécharger la facture"""
+def view_invoice(request, payment_id):
+    """Afficher la facture HTML"""
     payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user, status='completed')
     
     try:
@@ -137,11 +137,14 @@ def download_invoice(request, payment_id):
             due_date=datetime.now() + timedelta(days=30)
         )
     
-    if not invoice.pdf_file:
-        pass
+    settings = SiteSettings.get_settings()
+
+    context = {
+        'invoice': invoice,
+        'settings': settings,
+    }
     
-    messages.info(request, "Génération de facture en cours de développement.")
-    return redirect('payments:detail', payment_id=payment_id)
+    return render(request, 'payments/invoice.html', context)
 
 
 @login_required

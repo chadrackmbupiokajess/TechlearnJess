@@ -10,6 +10,6 @@ urlpatterns = [
     path('<uuid:payment_id>/en-attente/', views.payment_pending, name='pending'),
     path('<uuid:payment_id>/succes/', views.payment_success, name='success'),
     path('<uuid:payment_id>/', views.payment_detail, name='detail'),
-    path('<uuid:payment_id>/facture/', views.download_invoice, name='download_invoice'),
+    path('<uuid:payment_id>/facture/', views.view_invoice, name='view_invoice'),
     path('<uuid:payment_id>/remboursement/', views.request_refund, name='request_refund'),
 ]
