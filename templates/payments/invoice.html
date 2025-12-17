@@ -13,32 +13,48 @@
         body {
             font-family: 'Inconsolata', monospace;
         }
+        @page {
+            size: auto;
+            margin: 0mm;
+        }
         @media print {
-            body {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
+            body * {
+                visibility: hidden;
             }
-            .no-print {
-                display: none;
+            .receipt-container, .receipt-container * {
+                visibility: visible;
             }
             .receipt-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 1.5rem; /* Ajouter un peu de marge intérieure pour l'impression */
                 box-shadow: none !important;
-                margin: 0 !important;
-                max-width: 100% !important;
+                border: none !important;
+            }
+            .no-print {
+                display: none !important;
             }
         }
     </style>
 </head>
 <body class="bg-gray-200 dark:bg-gray-900">
+    
+    <!-- Barre de contrôle pour l'impression (ne s'imprime pas) -->
+    <div class="max-w-md mx-auto my-8 text-center no-print">
+        <button onclick="window.print()" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+            <i class="fas fa-print mr-2"></i>Imprimer ou Enregistrer en PDF
+        </button>
+        <a href="{% url 'payments:history' %}" class="inline-block bg-gray-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-gray-700 transition-colors ml-4">
+            Retour à l'historique
+        </a>
+    </div>
+
+    <!-- Conteneur du ticket -->
     <div class="receipt-container max-w-md mx-auto my-8 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 relative overflow-hidden">
         
-        <!-- Filigrane "PAYÉ" -->
-        <div class="absolute inset-0 flex items-center justify-center">
-            <span class="text-8xl font-bold text-green-500 opacity-10 dark:opacity-20 transform -rotate-12 select-none">
-                PAYÉ
-            </span>
-        </div>
-
         <div class="relative z-10">
             <!-- En-tête -->
             <header class="text-center pb-4 border-b-2 border-dashed border-gray-400 dark:border-gray-600">
@@ -57,7 +73,7 @@
                     <span class="font-bold text-gray-800 dark:text-gray-200">{{ invoice.invoice_number }}</span>
                 </div>
                 <div class="flex justify-between">
-                    <span class="text-gray-600 dark:text-gray-400">Date:</span>
+                    <span class="text-gray-600 dark:text-gray-400">Date de paiement:</span>
                     <span class="font-bold text-gray-800 dark:text-gray-200">{{ invoice.payment.completed_at|date:"d/m/Y H:i" }}</span>
                 </div>
                 <div class="flex justify-between">
@@ -113,16 +129,14 @@
                 <p>TechLearnJess - "Apprenez, Innovez, Réussissez"</p>
             </footer>
         </div>
-
-        <!-- Boutons d'action -->
-        <div class="text-center mt-8 no-print">
-            <button onclick="window.print()" class="bg-blue-600 text-white py-2 px-6 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-                <i class="fas fa-print mr-2"></i>Imprimer
-            </button>
-            <a href="{% url 'payments:history' %}" class="inline-block bg-gray-200 text-gray-800 py-2 px-6 rounded-lg font-semibold hover:bg-gray-300 transition-colors ml-4">
-                Retour
-            </a>
+        
+        <!-- Filigrane "PAYÉ" -->
+        <div class="absolute inset-0 flex items-center justify-center z-0">
+            <span class="text-8xl font-bold text-green-500 opacity-10 dark:opacity-20 transform -rotate-12 select-none">
+                PAYÉ
+            </span>
         </div>
     </div>
+
 </body>
 </html>
