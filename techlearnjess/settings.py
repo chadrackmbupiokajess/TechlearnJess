@@ -18,7 +18,8 @@ ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
     'techlearnjess.pythonanywhere.com',
-    '192.168.1.193'
+    '192.168.1.193',
+    '.ngrok-free.app'
 ]
 
 # ------------------------------
@@ -33,16 +34,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-    'django.contrib.humanize', # Ajouté ici
+    'django.contrib.humanize',
 
     # Third party apps
-    # 'channels', # Removed for AJAX polling
     'crispy_forms',
     'crispy_tailwind',
     'ckeditor',
     'ckeditor_uploader',
     'corsheaders',
     'django_countries',
+    'paypal.standard.ipn',
 
     # Local apps
     'core',
@@ -54,7 +55,6 @@ INSTALLED_APPS = [
     'notifications',
     'payments',
     'live_sessions',
-    #'csp',
 ]
 
 # ------------------------------
@@ -83,8 +83,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://192.168.1.193:8000",
     "https://techlearnjess.pythonanywhere.com",
 ]
-# Si vous voulez être plus permissif en développement, vous pouvez utiliser :
-# CORS_ALLOW_ALL_ORIGINS = True
 
 # ------------------------------
 # URLS
@@ -110,7 +108,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'techlearnjess.wsgi.application'
-# ASGI_APPLICATION = 'techlearnjess.asgi.application' # Removed for AJAX polling
 
 # ------------------------------
 # DATABASE
@@ -161,9 +158,10 @@ DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # ------------------------------
-# SITES FRAMEWORK
+# PAYPAL
 # ------------------------------
-SITE_ID = 1
+PAYPAL_TEST = config('PAYPAL_TEST', default=True, cast=bool)
+PAYPAL_RECEIVER_EMAIL = config('PAYPAL_RECEIVER_EMAIL')
 
 # ------------------------------
 # COMPANY INFO & LEGAL
@@ -191,7 +189,6 @@ DATA_CONTROLLER = 'Chadrack Mbu Jess'
 DATA_PROTECTION_EMAIL = 'jessnatechlearn@gmail.com'
 GOVERNING_LAW = 'République Démocratique du Congo'
 
-
 # ------------------------------
 # CRISPY FORMS
 # ------------------------------
@@ -207,15 +204,11 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'full',
         'height': 500,
         'width': '100%',
-        'enterMode': 2, # 1=p, 2=br, 3=div
-        'shiftEnterMode': 1, # 1=p, 2=br, 3=div
+        'enterMode': 2,
+        'shiftEnterMode': 1,
         'extraPlugins': ','.join(['floatingspace', 'stylescombo']),
         'stylesSet': [
-            {
-                'name': 'Titre de Section',
-                'element': 'h2',
-                'attributes': {'class': 'text-2xl font-semibold text-gray-900 mb-4'}
-            },
+            {'name': 'Titre de Section', 'element': 'h2', 'attributes': {'class': 'text-2xl font-semibold text-gray-900 mb-4'}},
             { 'name': 'Boîte Bleue', 'element': 'div', 'attributes': {'class': 'info-box'} },
             { 'name': 'Boîte Verte', 'element': 'div', 'attributes': {'class': 'success-box'} },
             { 'name': 'Boîte Jaune', 'element': 'div', 'attributes': {'class': 'warning-box'} },
@@ -227,18 +220,6 @@ CKEDITOR_CONFIGS = {
         ]
     },
 }
-
-# ------------------------------
-# CHANNELS
-# ------------------------------
-# CHANNEL_LAYERS = { # Removed for AJAX polling
-#     'default': {
-#         'BACKEND': 'channels_redis.core.RedisChannelLayer',
-#         'CONFIG': {
-#             "hosts": [('127.0.0.1', 6379)],
-#         },
-#     },
-# }
 
 # ------------------------------
 # LOGIN URLS
@@ -260,53 +241,8 @@ JAAS_API_KEY = config('JAAS_API_KEY', default='vpaas-magic-cookie-d45a7fec84d447
 JAAS_DOMAIN = config('JAAS_DOMAIN', default='8x8.vc')
 JAAS_PRIVATE_KEY_PATH = config('JAAS_PRIVATE_KEY_PATH', default=os.path.join(BASE_DIR, 'jaas_private_key.pk'))
 
-
 # ------------------------------
 # SECURITY
 # ------------------------------
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
-# X_FRAME_OPTIONS = 'DENY' # Remplacé par la directive CSP 'frame-ancestors'
-
-# ------------------------------
-# CONTENT SECURITY POLICY (CSP)
-# ------------------------------
-"""CONTENT_SECURITY_POLICY = {
-    'DIRECTIVES': {
-        'frame-ancestors': [
-            "'self'",
-            "https://tousprojetmbujess.pythonanywhere.com/"
-        ],
-        'default-src': [
-            "'self'",
-        ],
-        'script-src': [
-            "'self'",
-            "'unsafe-inline'",
-            "'unsafe-eval'",  # Requis pour Alpine.js
-            "https://cdn.tailwindcss.com",
-            "https://unpkg.com",
-            "https://cdnjs.cloudflare.com",
-        ],
-        'style-src': [
-            "'self'",
-            "'unsafe-inline'",
-            "https://cdnjs.cloudflare.com",
-            "https://fonts.googleapis.com",
-        ],
-        'font-src': [
-            "'self'",
-            "https://cdnjs.cloudflare.com",
-            "https://fonts.gstatic.com",
-        ],
-        'img-src': [
-            "'self'",
-            "data:",
-            "https://ui-avatars.com",
-        ],
-    }
-}"""
-
-# ------------------------------
-# END
-# ------------------------------

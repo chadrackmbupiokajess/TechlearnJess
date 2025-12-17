@@ -6,14 +6,15 @@ from django.views.decorators.http import require_http_methods
 from django.urls import reverse
 from decimal import Decimal
 import uuid
+from django.conf import settings
+from paypal.standard.forms import PayPalPaymentsForm
 
-from .models import Payment, PaymentMethod, Invoice
+from .models import Payment, PaymentMethod, Invoice, Refund
 from courses.models import Course
 from core.models import SiteSettings
 
 @login_required
 def checkout(request, course_slug):
-    """Page de paiement pour un cours"""
     course = get_object_or_404(Course, slug=course_slug, is_published=True)
     
     if course.is_free:
@@ -38,14 +39,12 @@ def checkout(request, course_slug):
 @login_required
 @require_http_methods(["POST"])
 def create_payment(request, course_slug):
-    """Créer un nouveau paiement"""
     course = get_object_or_404(Course, slug=course_slug, is_published=True)
     
     if course.is_free:
         return JsonResponse({'error': 'Ce cours est gratuit'}, status=400)
     
     payment_method_id = request.POST.get('payment_method')
-    phone_number = request.POST.get('phone_number', '')
     
     try:
         payment_method = PaymentMethod.objects.get(id=payment_method_id, is_active=True)
@@ -58,20 +57,44 @@ def create_payment(request, course_slug):
         payment_method=payment_method,
         amount=course.price,
         currency='USD',
-        phone_number=phone_number,
         status='pending'
     )
-    
-    return JsonResponse({
-        'success': True,
-        'payment_id': str(payment.payment_id),
-        'redirect_url': reverse('payments:pending', kwargs={'payment_id': payment.payment_id})
-    })
+
+    if payment_method.payment_type == 'paypal':
+        return JsonResponse({
+            'success': True,
+            'redirect_url': reverse('payments:process_paypal', kwargs={'payment_id': payment.payment_id})
+        })
+    else:
+        return JsonResponse({
+            'success': True,
+            'redirect_url': reverse('payments:pending', kwargs={'payment_id': payment.payment_id})
+        })
+
+
+@login_required
+def process_paypal(request, payment_id):
+    payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
+    host = request.get_host()
+
+    paypal_dict = {
+        'business': settings.PAYPAL_RECEIVER_EMAIL,
+        'amount': f'{payment.amount:.2f}',
+        'item_name': f'Cours: {payment.course.title}',
+        'invoice': str(payment.payment_id),
+        'currency_code': payment.currency,
+        'notify_url': f'http://{host}{reverse("paypal-ipn")}',
+        'return_url': f'http://{host}{reverse("payments:payment_success", args=[payment.payment_id])}',
+        'cancel_return': f'http://{host}{reverse("payments:payment_cancelled", args=[payment.payment_id])}',
+    }
+
+    form = PayPalPaymentsForm(initial=paypal_dict)
+    context = {'form': form, 'payment': payment}
+    return render(request, 'payments/process_paypal.html', context)
 
 
 @login_required
 def payment_pending(request, payment_id):
-    """Affiche les instructions pour un paiement en attente."""
     payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
     
     if payment.status == 'completed':
@@ -89,43 +112,40 @@ def payment_pending(request, payment_id):
 
 @login_required
 def payment_success(request, payment_id):
-    """Page de succès du paiement"""
-    payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user, status='completed')
-    
-    context = {
-        'payment': payment,
-    }
-    
-    return render(request, 'payments/success.html', context)
+    payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
+    # La logique de complétion est maintenant dans le signal de save du modèle Payment
+    messages.success(request, "Votre paiement a été effectué avec succès.")
+    return render(request, 'payments/success.html', {'payment': payment})
+
+@login_required
+def payment_cancelled(request, payment_id):
+    payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
+    payment.status = 'cancelled'
+    payment.save()
+    messages.error(request, "Votre paiement a été annulé.")
+    return render(request, 'payments/cancelled.html', {'payment': payment})
 
 
 @login_required
 def payment_history(request):
-    """Historique des paiements"""
     payments = Payment.objects.filter(user=request.user).order_by('-created_at')
-    
     context = {
         'payments': payments,
     }
-    
     return render(request, 'payments/history.html', context)
 
 
 @login_required
 def payment_detail(request, payment_id):
-    """Détail d'un paiement"""
     payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
-    
     context = {
         'payment': payment,
     }
-    
     return render(request, 'payments/detail.html', context)
 
 
 @login_required
 def view_invoice(request, payment_id):
-    """Afficher la facture HTML"""
     payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user, status='completed')
     
     try:
@@ -150,7 +170,6 @@ def view_invoice(request, payment_id):
 @login_required
 @require_http_methods(["POST"])
 def request_refund(request, payment_id):
-    """Demander un remboursement"""
     payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user, status='completed')
     
     reason = request.POST.get('reason', '')
@@ -158,12 +177,11 @@ def request_refund(request, payment_id):
         messages.error(request, "Veuillez indiquer la raison du remboursement.")
         return redirect('payments:detail', payment_id=payment_id)
     
-    from .models import Refund
     if Refund.objects.filter(payment=payment).exists():
         messages.warning(request, "Une demande de remboursement existe déjà pour ce paiement.")
         return redirect('payments:detail', payment_id=payment_id)
     
-    refund = Refund.objects.create(
+    Refund.objects.create(
         payment=payment,
         amount=payment.total_amount,
         reason=reason

@@ -6,6 +6,7 @@ import uuid
 class PaymentMethod(models.Model):
     """Méthodes de paiement disponibles"""
     PAYMENT_TYPES = [
+        ('paypal', 'PayPal'),
         ('orange_money', 'Orange Money'),
         ('airtel_money', 'Airtel Money'),
         ('mpesa', 'M-Pesa'),

@@ -13,6 +13,7 @@ admin.site.index_title = "Bienvenue sur le portail d'administration"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('paypal/', include('paypal.standard.ipn.urls')),
     
     # SEO files
     path('sitemap.xml', sitemap_xml, name='sitemap_xml'),
