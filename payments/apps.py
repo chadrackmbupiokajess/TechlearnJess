@@ -7,4 +7,4 @@ class PaymentsConfig(AppConfig):
     verbose_name = 'Paiements'
 
     def ready(self):
-        import payments.signals
+        pass

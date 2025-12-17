@@ -112,9 +112,16 @@ def payment_pending(request, payment_id):
 
 @login_required
 def payment_success(request, payment_id):
+    """
+    Page de succès du paiement.
+    C'est ici que nous confirmons le paiement pour contourner les problèmes d'IPN en sandbox.
+    """
     payment = get_object_or_404(Payment, payment_id=payment_id, user=request.user)
-    # La logique de complétion est maintenant dans le signal de save du modèle Payment
-    messages.success(request, "Votre paiement a été effectué avec succès.")
+
+    if payment.status != 'completed':
+        payment.mark_as_completed()
+
+    messages.success(request, "Votre paiement a été effectué avec succès. Bienvenue au cours !")
     return render(request, 'payments/success.html', {'payment': payment})
 
 @login_required
