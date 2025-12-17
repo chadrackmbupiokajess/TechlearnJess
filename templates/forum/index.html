@@ -101,7 +101,7 @@
                                 <div class="p-6">
                                     <div class="flex items-center">
                                         <!-- Icône de la catégorie -->
-                                        <div class="w-16 h-16 rounded-xl flex items-center justify-center mr-6" style="background-color: {{ category.couleur }}20; border: 2px solid {{ category.couleur }}40;">
+                                        <div class="w-16 h-16 rounded-xl flex items-center justify-center mr-6 flex-shrink-0" style="background-color: {{ category.couleur }}20; border: 2px solid {{ category.couleur }}40;">
                                             {% if category.icone == 'python' %}
                                                 <i class="fab fa-{{ category.icone }} text-2xl" style="color: {{ category.couleur }};"></i>
                                             {% else %}
@@ -110,14 +110,14 @@
                                         </div>
                                         
                                         <!-- Informations de la catégorie -->
-                                        <div class="flex-1">
-                                            <div class="flex items-center justify-between mb-2">
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-2">
                                                 <h3 class="text-xl font-semibold font-heading text-gray-900 dark:text-white">
                                                     <a href="{% url 'forum:category_detail' category.slug %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                                         {{ category.nom }}
                                                     </a>
                                                 </h3>
-                                                <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                                <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mt-1 sm:mt-0 flex-shrink-0">
                                                     <div class="flex items-center">
                                                         <i class="fas fa-comments mr-1"></i>
                                                         <span>{{ category.nombre_sujets }} sujets</span>
@@ -134,8 +134,8 @@
                                             </p>
                                             
                                             <!-- Dernier sujet -->
-                                            <div class="flex items-center justify-between">
-                                                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                                <div class="flex items-center text-sm text-gray-500 dark:text-gray-400 truncate">
                                                     {% with latest_topic=category.sujets.first %}
                                                         {% if latest_topic %}
                                                             <i class="fas fa-clock mr-2"></i>
@@ -143,7 +143,7 @@
                                                         {% endif %}
                                                     {% endwith %}
                                                 </div>
-                                                <a href="{% url 'forum:category_detail' category.slug %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-sm">
+                                                <a href="{% url 'forum:category_detail' category.slug %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium text-sm mt-2 sm:mt-0 flex-shrink-0">
                                                     Voir tous les sujets →
                                                 </a>
                                             </div>
@@ -175,13 +175,13 @@
                             <div class="p-6 {% if not forloop.last %}border-b border-gray-200 dark:border-gray-700{% endif %} hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
                                 <div class="flex items-start">
                                     <!-- Avatar de l'auteur -->
-                                    <img src="{% if sujet.auteur.userprofile.avatar %}{{ sujet.auteur.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ sujet.auteur.get_full_name|default:sujet.auteur.username }}&background=3B82F6&color=fff&size=48{% endif %}" alt="{{ sujet.auteur.get_full_name|default:sujet.auteur.username }}" class="w-12 h-12 rounded-full mr-4 object-cover">
+                                    <img src="{% if sujet.auteur.userprofile.avatar %}{{ sujet.auteur.userprofile.avatar.url }}{% else %}https://ui-avatars.com/api/?name={{ sujet.auteur.get_full_name|default:sujet.auteur.username }}&background=3B82F6&color=fff&size=48{% endif %}" alt="{{ sujet.auteur.get_full_name|default:sujet.auteur.username }}" class="w-12 h-12 rounded-full mr-4 object-cover flex-shrink-0">
                                     
                                     <!-- Contenu du sujet -->
-                                    <div class="flex-1">
-                                        <div class="flex items-start justify-between">
-                                            <div>
-                                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                                    <div class="flex-1 min-w-0">
+                                        <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between">
+                                            <div class="min-w-0">
+                                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2 truncate">
                                                     <a href="{{ sujet.get_absolute_url }}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                                                         {% if sujet.est_epingle %}
                                                             <i class="fas fa-thumbtack text-yellow-500 mr-2"></i>
@@ -193,7 +193,7 @@
                                                     </a>
                                                 </h3>
                                                 
-                                                <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                                <div class="flex items-center flex-wrap gap-x-4 text-sm text-gray-500 dark:text-gray-400">
                                                     <span>Par {{ sujet.auteur.get_full_name|default:sujet.auteur.username }}</span>
                                                     <span>•</span>
                                                     <span>{{ sujet.cree_le|human_timesince }}</span>
@@ -205,7 +205,7 @@
                                             </div>
                                             
                                             <!-- Statistiques -->
-                                            <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                            <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400 mt-2 sm:mt-0 flex-shrink-0">
                                                 <div class="text-center">
                                                     <div class="font-medium text-gray-900 dark:text-white">{{ sujet.nombre_reponses }}</div>
                                                     <div class="text-xs">réponses</div>
