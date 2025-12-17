@@ -18,4 +18,7 @@ urlpatterns = [
     # SEO
     path('sitemap.xml', views.sitemap_xml, name='sitemap_xml'),
     path('robots.txt', views.robots_txt, name='robots_txt'),
+    
+    # Page de test
+    path('time-test/', views.time_test_view, name='time_test'),
 ]

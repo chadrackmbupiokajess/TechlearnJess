@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Test de Synchronisation Temporelle{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Diagnostic Temporel</h1>
+        
+        <p class="text-gray-600 dark:text-gray-300 mb-8">
+            Cette page permet de comparer l'heure de votre navigateur avec celle du serveur pour diagnostiquer les problèmes de synchronisation.
+        </p>
+
+        <div class="space-y-6">
+            <!-- Heure du Navigateur (JavaScript) -->
+            <div class="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-300 mb-2">1. Heure de votre Navigateur (JavaScript)</h2>
+                <p class="text-2xl font-mono" id="js-time">Chargement...</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">C'est l'heure actuelle sur votre propre ordinateur.</p>
+            </div>
+
+            <!-- Heure du Serveur (Django, timezone-aware) -->
+            <div class="p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <h2 class="text-xl font-semibold text-green-800 dark:text-green-300 mb-2">2. Heure du Serveur (Corrigée par Django)</h2>
+                <p class="text-2xl font-mono">{{ timezone_now }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Utilise <code>timezone.now()</code>. C'est l'heure que Django utilise pour toutes ses opérations. Elle devrait être très proche de l'heure de votre navigateur.
+                </p>
+            </div>
+
+            <!-- Heure du Serveur (Brute, non-corrigée) -->
+            <div class="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                <h2 class="text-xl font-semibold text-yellow-800 dark:text-yellow-300 mb-2">3. Heure Brute du Serveur (Sans Django)</h2>
+                <p class="text-2xl font-mono">{{ datetime_now }}</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Utilise <code>datetime.now()</code>. C'est l'heure "brute" du système d'exploitation du serveur. Si cette heure est incorrecte, le problème vient du serveur lui-même.
+                </p>
+            </div>
+
+            <!-- Informations sur le fuseau horaire -->
+            <div class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-2">Informations de Fuseau Horaire</h2>
+                <p><strong>Fuseau horaire détecté pour votre session :</strong> <span class="font-mono">{{ user_timezone }}</span></p>
+                <p><strong>Fuseau horaire par défaut du site (TIME_ZONE) :</strong> <span class="font-mono">Africa/Kinshasa</span></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const jsTimeElement = document.getElementById('js-time');
+    
+    function updateTime() {
+        const now = new Date();
+        jsTimeElement.textContent = now.toLocaleString('fr-FR', { dateStyle: 'full', timeStyle: 'medium' });
+    }
+    
+    updateTime();
+    setInterval(updateTime, 1000);
+});
+</script>
+{% endblock %}

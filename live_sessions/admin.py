@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.utils import timezone
 from .models import LiveSession, SessionParticipant, SessionQuestion, SessionResource
+from .forms import LiveSessionForm
 
 
 class SessionParticipantInline(admin.TabularInline):
@@ -23,11 +24,11 @@ class SessionResourceInline(admin.TabularInline):
 
 @admin.register(LiveSession)
 class LiveSessionAdmin(admin.ModelAdmin):
+    form = LiveSessionForm  # Utiliser notre formulaire personnalisé
     list_display = ['title', 'instructor', 'start_time', 'end_time', 'status', 'participants_count', 'max_participants']
     list_filter = ['status', 'start_time', 'is_public', 'requires_enrollment', 'is_recorded']
     search_fields = ['title', 'description', 'instructor__username']
     readonly_fields = ['session_id', 'created_at', 'updated_at', 'participants_count']
-    list_editable = ['status']
     date_hierarchy = 'start_time'
     inlines = [SessionParticipantInline, SessionQuestionInline, SessionResourceInline]
     
@@ -54,16 +55,27 @@ class LiveSessionAdmin(admin.ModelAdmin):
     )
     
     actions = ['start_sessions', 'end_sessions', 'cancel_sessions']
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super().get_form(request, obj, **kwargs)
+        # Pré-remplir le fuseau horaire de l'utilisateur actuel lors de la création
+        if not obj: # Si c'est un nouvel objet
+            user_timezone = request.session.get('django_timezone')
+            if user_timezone:
+                form.base_fields['timezone'].initial = user_timezone
+        return form
     
     def start_sessions(self, request, queryset):
         for session in queryset:
-            session.start_session()
+            session.status = 'live'
+            session.save()
         self.message_user(request, f"{queryset.count()} sessions démarrées.")
     start_sessions.short_description = "Démarrer les sessions sélectionnées"
     
     def end_sessions(self, request, queryset):
         for session in queryset:
-            session.end_session()
+            session.status = 'ended'
+            session.save()
         self.message_user(request, f"{queryset.count()} sessions terminées.")
     end_sessions.short_description = "Terminer les sessions sélectionnées"
     

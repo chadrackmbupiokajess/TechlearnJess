@@ -8,17 +8,20 @@ from .models import LiveSession
 from notifications.models import Notification
 
 @receiver(post_save, sender=LiveSession)
-def create_live_session_notification(sender, instance, created, **kwargs):
+def live_session_notifications(sender, instance, created, **kwargs):
     """
-    Crée une notification pour tous les utilisateurs lorsqu'une nouvelle session live
-    est programmée.
+    Gère les notifications pour les sessions live :
+    - A la création (programmée).
+    - Au passage en direct.
     """
-    # On envoie la notification uniquement à la création de la session
-    if created and not instance.scheduled_notification_sent:
-        users = User.objects.all()
+    users = User.objects.all()
+    
+    # 1. Notification lors de la programmation de la session
+    if created and instance.status == 'scheduled' and not instance.scheduled_notification_sent:
         title = "Nouvelle session live programmée !"
         message = f"La session '{instance.title}' est prévue pour le {instance.start_time.strftime('%d/%m/%Y à %H:%M')}. Ne manquez pas ça !"
-
+        notification_type = 'live_session_scheduled'
+        
         try:
             action_url = instance.get_absolute_url()
         except Exception:
@@ -28,9 +31,29 @@ def create_live_session_notification(sender, instance, created, **kwargs):
             users=users,
             title=title,
             message=message,
-            notification_type='live_session_scheduled',
+            notification_type=notification_type,
             action_url=action_url
         )
-
-        # Marquer la notification comme envoyée
+        
         LiveSession.objects.filter(pk=instance.pk).update(scheduled_notification_sent=True)
+
+    # 2. Notification lors du passage en direct
+    elif instance.status == 'live' and not instance.live_notification_sent:
+        title = "La session live commence !"
+        message = f"La session '{instance.title}' est maintenant en direct. Rejoignez-nous !"
+        notification_type = 'live_session_live'
+        
+        try:
+            action_url = instance.get_absolute_url()
+        except Exception:
+            action_url = reverse('live_sessions:list')
+
+        Notification.create_bulk_notification(
+            users=users,
+            title=title,
+            message=message,
+            notification_type=notification_type,
+            action_url=action_url
+        )
+        
+        LiveSession.objects.filter(pk=instance.pk).update(live_notification_sent=True)

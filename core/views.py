@@ -5,7 +5,7 @@ from django.db.models import Count, Q
 from django.utils import timezone
 from django.http import HttpResponse
 from django.template import loader
-from datetime import timedelta
+from datetime import datetime
 
 from .models import SiteSettings, Testimonial, FAQ, GalleryImage
 from courses.models import Course, Enrollment
@@ -250,3 +250,14 @@ def ads_txt(request):
     """Serves the ads.txt file."""
     content = "google.com, pub-5640124347001712, DIRECT, f08c47fec0942fa0"
     return HttpResponse(content, content_type='text/plain')
+
+def time_test_view(request):
+    """Vue de test pour diagnostiquer les problèmes de temps."""
+    user_timezone = request.session.get('django_timezone', 'N/A')
+    
+    context = {
+        'datetime_now': datetime.now(),
+        'timezone_now': timezone.now(),
+        'user_timezone': user_timezone,
+    }
+    return render(request, 'core/time_test.html', context)

@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Paiement pour {{ course.title }} - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-100 dark:bg-gray-900 py-12">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 dark:text-white">Finaliser votre Achat</h1>
+            <p class="mt-2 text-lg text-gray-600 dark:text-gray-400">Vous êtes sur le point de débloquer un monde de connaissances !</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Résumé de la commande -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Résumé de la commande</h2>
+                
+                <div class="flex items-center space-x-4 mb-6">
+                    <img src="{{ course.thumbnail.url }}" alt="{{ course.title }}" class="w-24 h-24 object-cover rounded-lg">
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">{{ course.title }}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Par {{ course.instructor.get_full_name|default:course.instructor.username }}</p>
+                    </div>
+                </div>
+
+                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                    <div class="flex justify-between items-center text-lg font-semibold text-gray-900 dark:text-white">
+                        <span>Total</span>
+                        <span>{{ course.price }} USD</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Méthodes de paiement -->
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+                <h2 class="text-2xl font-semibold text-gray-900 dark:text-white mb-6">Choisir une méthode de paiement</h2>
+                
+                <form id="payment-form" action="{% url 'payments:create_payment' course.slug %}" method="POST">
+                    {% csrf_token %}
+                    <div class="space-y-4">
+                        {% for method in payment_methods %}
+                        <label class="flex items-center p-4 border border-gray-200 dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                            <input type="radio" name="payment_method" value="{{ method.id }}" class="h-5 w-5 text-blue-600 border-gray-300 focus:ring-blue-500">
+                            <div class="ml-4 flex items-center">
+                                {% if method.icon_url %}
+                                <img src="{{ method.icon_url }}" alt="{{ method.name }}" class="h-8 w-auto mr-3">
+                                {% endif %}
+                                <span class="text-lg font-medium text-gray-900 dark:text-white">{{ method.name }}</span>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Champ pour le numéro de téléphone (pour les paiements mobiles) -->
+                    <div id="phone-number-field" class="mt-6" style="display: none;">
+                        <label for="phone_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Numéro de téléphone</label>
+                        <input type="text" name="phone_number" id="phone_number" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Ex: 0891234567">
+                    </div>
+
+                    <div class="mt-8">
+                        <button type="submit" id="submit-button" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold text-lg transition-colors flex items-center justify-center">
+                            <i class="fas fa-lock mr-2"></i>
+                            Payer {{ course.price }} USD
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('payment-form');
+    const submitButton = document.getElementById('submit-button');
+    const phoneField = document.getElementById('phone-number-field');
+    const paymentMethodRadios = document.querySelectorAll('input[name="payment_method"]');
+
+    // Afficher le champ du numéro de téléphone si une méthode de paiement mobile est sélectionnée
+    paymentMethodRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            const selectedMethod = this.closest('label').textContent.trim().toLowerCase();
+            if (selectedMethod.includes('mobile')) {
+                phoneField.style.display = 'block';
+            } else {
+                phoneField.style.display = 'none';
+            }
+        });
+    });
+
+    form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Traitement...';
+
+        const formData = new FormData(form);
+
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.href = data.redirect_url;
+            } else {
+                alert('Erreur: ' + data.error);
+                submitButton.disabled = false;
+                submitButton.innerHTML = '<i class="fas fa-lock mr-2"></i>Payer {{ course.price }} USD';
+            }
+        })
+        .catch(error => {
+            console.error('Erreur:', error);
+            alert('Une erreur inattendue est survenue. Veuillez réessayer.');
+            submitButton.disabled = false;
+            submitButton.innerHTML = '<i class="fas fa-lock mr-2"></i>Payer {{ course.price }} USD';
+        });
+    });
+});
+</script>
+{% endblock %}
