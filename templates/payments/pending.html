@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Paiement en Attente - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-100 dark:bg-gray-900 py-16">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
+            
+            <div class="mb-6">
+                <i class="fas fa-hourglass-half text-5xl text-amber-500"></i>
+            </div>
+
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Votre paiement est en attente</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+                Votre demande de paiement a été enregistrée avec succès. Pour finaliser votre inscription, veuillez suivre les instructions ci-dessous.
+            </p>
+
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-left space-y-4 mb-8">
+                <h2 class="text-xl font-semibold text-gray-800 dark:text-white border-b pb-2 mb-4">Détails de la transaction</h2>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-300">Cours :</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ payment.course.title }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-300">Montant à payer :</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ payment.amount }} {{ payment.currency }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-300">Votre ID de Transaction :</span>
+                    <span class="font-mono text-sm text-gray-500 dark:text-gray-400">{{ payment.payment_id }}</span>
+                </div>
+            </div>
+
+            <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-6 text-left mb-8">
+                <h2 class="text-xl font-semibold text-blue-800 dark:text-blue-300 mb-4">Instructions pour le paiement</h2>
+                <p class="text-gray-700 dark:text-gray-200">
+                    Pour activer votre cours, veuillez effectuer votre paiement en espèces auprès de notre agent ou à notre bureau.
+                </p>
+                <p class="mt-4 text-gray-700 dark:text-gray-200">
+                    <strong>N'oubliez pas de mentionner votre ID de Transaction</strong> lors du paiement pour que nous puissions l'associer à votre compte.
+                </p>
+                <p class="mt-4 text-gray-700 dark:text-gray-200">
+                    Une fois le paiement reçu, un administrateur activera votre cours et vous recevrez une notification de confirmation.
+                </p>
+            </div>
+
+            <a href="{% url 'courses:detail' payment.course.slug %}" class="text-blue-600 dark:text-blue-400 hover:underline">
+                Retourner à la page du cours
+            </a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 import uuid
 
-
 class PaymentMethod(models.Model):
     """Méthodes de paiement disponibles"""
     PAYMENT_TYPES = [
@@ -19,12 +18,10 @@ class PaymentMethod(models.Model):
     description = models.TextField(blank=True, verbose_name="Description")
     logo = models.ImageField(upload_to='payment_methods/', blank=True, verbose_name="Logo")
     
-    # Configuration API
     api_key = models.CharField(max_length=200, blank=True, verbose_name="Clé API")
     api_secret = models.CharField(max_length=200, blank=True, verbose_name="Secret API")
     merchant_id = models.CharField(max_length=100, blank=True, verbose_name="ID Marchand")
     
-    # Paramètres
     is_active = models.BooleanField(default=True, verbose_name="Actif")
     min_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Montant minimum")
     max_amount = models.DecimalField(max_digits=10, decimal_places=2, default=10000, verbose_name="Montant maximum")
@@ -42,13 +39,11 @@ class PaymentMethod(models.Model):
         return self.name
 
     def calculate_fees(self, amount):
-        """Calculer les frais pour un montant donné"""
         percentage_fee = amount * (self.fees_percentage / 100)
         total_fees = percentage_fee + self.fees_fixed
         return total_fees
 
     def calculate_total(self, amount):
-        """Calculer le montant total avec frais"""
         return amount + self.calculate_fees(amount)
 
 
@@ -63,34 +58,34 @@ class Payment(models.Model):
         ('refunded', 'Remboursé'),
     ]
     
-    # Identifiants
     payment_id = models.UUIDField(default=uuid.uuid4, unique=True, verbose_name="ID Paiement")
     transaction_id = models.CharField(max_length=100, blank=True, verbose_name="ID Transaction")
     
-    # Relations
     user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Utilisateur")
     course = models.ForeignKey('courses.Course', on_delete=models.CASCADE, verbose_name="Cours")
     payment_method = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE, verbose_name="Méthode de paiement")
     
-    # Montants
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Montant")
     fees = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Frais")
     total_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Montant total")
     currency = models.CharField(max_length=3, default='USD', verbose_name="Devise")
     
-    # Statut et dates
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Statut")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Créé le")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="Mis à jour le")
     completed_at = models.DateTimeField(null=True, blank=True, verbose_name="Terminé le")
     
-    # Informations supplémentaires
     phone_number = models.CharField(max_length=20, blank=True, verbose_name="Numéro de téléphone")
     reference = models.CharField(max_length=100, blank=True, verbose_name="Référence")
     notes = models.TextField(blank=True, verbose_name="Notes")
     
-    # Données de réponse API
     api_response = models.JSONField(default=dict, blank=True, verbose_name="Réponse API")
+
+    __original_status = None
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__original_status = self.status
 
     class Meta:
         verbose_name = "Paiement"
@@ -101,49 +96,56 @@ class Payment(models.Model):
         return f"Paiement {self.payment_id} - {self.user.username} - {self.amount} {self.currency}"
 
     def save(self, *args, **kwargs):
-        if not self.fees:
-            self.fees = self.payment_method.calculate_fees(self.amount)
-        if not self.total_amount:
-            self.total_amount = self.amount + self.fees
+        if not self.pk:  # Si c'est une nouvelle instance
+            if not self.fees:
+                self.fees = self.payment_method.calculate_fees(self.amount)
+            if not self.total_amount:
+                self.total_amount = self.amount + self.fees
+        
+        is_newly_completed = self.status == 'completed' and self.__original_status != 'completed'
+        
         super().save(*args, **kwargs)
+        
+        if is_newly_completed:
+            self.mark_as_completed()
+        
+        self.__original_status = self.status
 
     def mark_as_completed(self):
-        """Marquer le paiement comme terminé"""
-        self.status = 'completed'
-        self.completed_at = timezone.now()
-        self.save()
-        
-        # Inscrire automatiquement l'utilisateur au cours
+        """Marquer le paiement comme terminé et inscrire l'utilisateur."""
+        if self.status != 'completed':
+            self.status = 'completed'
+            self.completed_at = timezone.now()
+            self.save(update_fields=['status', 'completed_at'])
+
         from courses.models import Enrollment
         enrollment, created = Enrollment.objects.get_or_create(
             user=self.user,
             course=self.course
         )
         
-        # Créer une notification
-        from notifications.models import Notification
-        Notification.create_notification(
-            user=self.user,
-            title="Paiement confirmé",
-            message=f"Votre paiement pour le cours '{self.course.title}' a été confirmé. Vous pouvez maintenant accéder au cours.",
-            notification_type='payment',
-            action_url=self.course.get_absolute_url(),
-            action_text="Accéder au cours"
-        )
+        if created:
+            from notifications.models import Notification
+            Notification.create_notification(
+                user=self.user,
+                title="Paiement confirmé et accès au cours",
+                message=f"Votre paiement pour '{self.course.title}' a été validé. Vous pouvez commencer votre formation !",
+                notification_type='payment',
+                action_url=self.course.get_absolute_url(),
+                action_text="Accéder au cours"
+            )
 
     def mark_as_failed(self, reason=""):
-        """Marquer le paiement comme échoué"""
         self.status = 'failed'
         if reason:
             self.notes = reason
         self.save()
         
-        # Créer une notification
         from notifications.models import Notification
         Notification.create_notification(
             user=self.user,
             title="Paiement échoué",
-            message=f"Votre paiement pour le cours '{self.course.title}' a échoué. Veuillez réessayer.",
+            message=f"Votre paiement pour '{self.course.title}' a échoué. Veuillez réessayer.",
             notification_type='payment',
             action_url=f"/paiements/{self.payment_id}/",
             action_text="Voir les détails"
@@ -151,22 +153,18 @@ class Payment(models.Model):
 
 
 class Invoice(models.Model):
-    """Facture"""
     invoice_number = models.CharField(max_length=50, unique=True, verbose_name="Numéro de facture")
     payment = models.OneToOneField(Payment, on_delete=models.CASCADE, verbose_name="Paiement")
     
-    # Informations de facturation
     billing_name = models.CharField(max_length=200, verbose_name="Nom de facturation")
     billing_email = models.EmailField(verbose_name="Email de facturation")
     billing_address = models.TextField(blank=True, verbose_name="Adresse de facturation")
     billing_city = models.CharField(max_length=100, blank=True, verbose_name="Ville")
     billing_country = models.CharField(max_length=100, default="République Démocratique du Congo", verbose_name="Pays")
     
-    # Dates
     issue_date = models.DateTimeField(auto_now_add=True, verbose_name="Date d'émission")
     due_date = models.DateTimeField(verbose_name="Date d'échéance")
     
-    # Fichier PDF
     pdf_file = models.FileField(upload_to='invoices/', blank=True, verbose_name="Fichier PDF")
 
     class Meta:
@@ -179,7 +177,6 @@ class Invoice(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.invoice_number:
-            # Générer un numéro de facture unique
             from datetime import datetime
             date_str = datetime.now().strftime('%Y%m%d')
             count = Invoice.objects.filter(invoice_number__startswith=f'TLJ-{date_str}').count() + 1
@@ -194,7 +191,6 @@ class Invoice(models.Model):
 
 
 class Refund(models.Model):
-    """Remboursement"""
     STATUS_CHOICES = [
         ('pending', 'En attente'),
         ('processing', 'En cours'),
@@ -207,11 +203,9 @@ class Refund(models.Model):
     reason = models.TextField(verbose_name="Raison du remboursement")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Statut")
     
-    # Dates
     requested_at = models.DateTimeField(auto_now_add=True, verbose_name="Demandé le")
     processed_at = models.DateTimeField(null=True, blank=True, verbose_name="Traité le")
     
-    # Informations de traitement
     processed_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='processed_refunds', verbose_name="Traité par")
     admin_notes = models.TextField(blank=True, verbose_name="Notes administrateur")
 

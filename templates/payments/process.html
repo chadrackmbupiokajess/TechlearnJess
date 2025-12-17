@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Traitement du Paiement - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="bg-gray-100 dark:bg-gray-900 py-16">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 text-center">
+            
+            <div class="mb-6">
+                <i class="fas fa-spinner fa-spin text-5xl text-blue-500"></i>
+            </div>
+
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">Traitement de votre paiement</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-400 mb-8">
+                Veuillez patienter pendant que nous traitons votre transaction.
+            </p>
+
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-6 text-left space-y-4 mb-8">
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-300">Cours :</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ payment.course.title }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-300">Montant :</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ payment.amount }} {{ payment.currency }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-300">Méthode :</span>
+                    <span class="font-semibold text-gray-900 dark:text-white">{{ payment.payment_method.name }}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-gray-600 dark:text-gray-300">ID de Transaction :</span>
+                    <span class="font-mono text-sm text-gray-500 dark:text-gray-400">{{ payment.payment_id }}</span>
+                </div>
+            </div>
+
+            <p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                Ceci est une page de simulation. Dans un environnement réel, vous seriez redirigé vers le site du fournisseur de paiement.
+            </p>
+
+            <!-- Formulaire de simulation -->
+            <form method="POST" action="{% url 'payments:process' payment.payment_id %}">
+                {% csrf_token %}
+                <div class="flex space-x-4">
+                    <button type="submit" name="action" value="confirm" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        Simuler la Confirmation
+                    </button>
+                    <button type="submit" name="action" value="cancel" class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-times-circle mr-2"></i>
+                        Annuler
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}
