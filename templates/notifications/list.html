@@ -16,7 +16,7 @@
             <div class="flex flex-col md:flex-row justify-between items-center mb-6 space-y-4 md:space-y-0">
                 <div class="flex items-center space-x-4">
                     <a href="{% url 'notifications:list' %}?type=all" class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'all' %}bg-blue-600 text-white{% else %}bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600{% endif %}">Toutes</a>
-                    <a href="{% url 'notifications:list' %}?type=unread" class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'unread' %}bg-blue-600 text-white{% else %}bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600{% endif %}">Non lues ({{ unread_count }})</a>
+                    <a href="{% url 'notifications:list' %}?type=unread" class="px-4 py-2 text-sm font-medium rounded-md {% if current_filter == 'unread' %}bg-blue-600 text-white{% else %}bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600{% endif %}">Non lues (<span id="unread-count-filter">{{ unread_count }}</span>)</a>
                 </div>
                 <button id="mark-all-read" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">
                     <i class="fas fa-check-double mr-2"></i>Tout marquer comme lu
@@ -24,7 +24,7 @@
             </div>
 
             <!-- Liste des notifications -->
-            <div class="space-y-4">
+            <div id="notification-list-container" class="space-y-4">
                 {% for notification in page_obj %}
                 <div id="notification-{{ notification.id }}" class="p-4 rounded-lg flex items-start space-x-4 {% if not notification.is_read %}bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500{% else %}bg-gray-50 dark:bg-gray-700/50{% endif %}">
                     <div class="flex-shrink-0 w-8 text-center">
@@ -49,7 +49,7 @@
                         {% endif %}
                     </div>
                     <div class="flex-grow">
-                        <a href="{{ notification.action_url|default:'#' }}" class="hover:underline">
+                        <a href="{{ notification.action_url|default:'#' }}" class="notification-link hover:underline" data-id="{{ notification.id }}">
                             <p class="font-semibold text-gray-900 dark:text-gray-100">{{ notification.title }}</p>
                             <p class="text-sm text-gray-700 dark:text-gray-300">{{ notification.message }}</p>
                         </a>
@@ -85,7 +85,7 @@
                         <i class="fas fa-chevron-left h-5 w-5"></i>
                     </a>
                     {% endif %}
-                    
+
                     {% for num in page_obj.paginator.page_range %}
                         {% if page_obj.number == num %}
                             <span class="relative inline-flex items-center px-4 py-2 border border-blue-500 bg-blue-50 text-sm font-medium text-blue-600 dark:bg-blue-900/50 dark:text-blue-300">{{ num }}</span>
@@ -112,67 +112,109 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const csrftoken = '{{ csrf_token }}';
+    const notificationListContainer = document.getElementById('notification-list-container');
+    const unreadCountFilter = document.getElementById('unread-count-filter');
 
-    // Marquer une notification comme lue
-    document.querySelectorAll('.mark-as-read').forEach(button => {
-        button.addEventListener('click', function() {
-            const notificationId = this.dataset.id;
+    function updateUnreadCount() {
+        const currentCount = parseInt(unreadCountFilter.textContent);
+        if (!isNaN(currentCount) && currentCount > 0) {
+            const newCount = currentCount - 1;
+            unreadCountFilter.textContent = newCount;
+            // Mettre à jour également le badge dans la barre de navigation
+            const navBadge = document.getElementById('notification-badge');
+            const navBadgeMobile = document.getElementById('notification-badge-mobile');
+            if (newCount > 0) {
+                if(navBadge) navBadge.textContent = newCount;
+                if(navBadgeMobile) navBadgeMobile.textContent = newCount;
+            } else {
+                if(navBadge) navBadge.style.display = 'none';
+                if(navBadgeMobile) navBadgeMobile.style.display = 'none';
+            }
+        }
+    }
+
+    notificationListContainer.addEventListener('click', function(event) {
+        const markAsReadButton = event.target.closest('.mark-as-read');
+        const deleteButton = event.target.closest('.delete-notification');
+        const notificationLink = event.target.closest('.notification-link');
+
+        if (markAsReadButton) {
+            const notificationId = markAsReadButton.dataset.id;
             fetch(`/notifications/mark-as-read/${notificationId}/`, {
                 method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json' }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     const notifElement = document.getElementById(`notification-${notificationId}`);
+                    if (notifElement.classList.contains('notification-unread')) {
+                        updateUnreadCount();
+                    }
                     notifElement.classList.remove('bg-blue-50', 'dark:bg-blue-900/20', 'border-l-4', 'border-blue-500');
                     notifElement.classList.add('bg-gray-50', 'dark:bg-gray-700/50');
-                    this.remove(); // Supprime le bouton "marquer comme lu"
+                    markAsReadButton.remove();
                 }
             });
-        });
-    });
+        }
 
-    // Supprimer une notification
-    document.querySelectorAll('.delete-notification').forEach(button => {
-        button.addEventListener('click', function() {
+        if (deleteButton) {
             if (!confirm('Êtes-vous sûr de vouloir supprimer cette notification ?')) return;
-            
-            const notificationId = this.dataset.id;
+
+            const notificationId = deleteButton.dataset.id;
             fetch(`/notifications/delete/${notificationId}/`, {
                 method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json' }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById(`notification-${notificationId}`).remove();
+                    const notifElement = document.getElementById(`notification-${notificationId}`);
+                    if (notifElement.classList.contains('notification-unread')) {
+                        updateUnreadCount();
+                    }
+                    notifElement.remove();
                 }
             });
-        });
+        }
+
+        if (notificationLink) {
+            event.preventDefault();
+            const notificationId = notificationLink.dataset.id;
+            const destinationUrl = notificationLink.href;
+            const notifElement = document.getElementById(`notification-${notificationId}`);
+
+            if (notifElement.classList.contains('notification-unread')) {
+                fetch(`/notifications/mark-as-read/${notificationId}/`, {
+                    method: 'POST',
+                    headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        updateUnreadCount();
+                    }
+                })
+                .finally(() => {
+                    window.location.href = destinationUrl;
+                });
+            } else {
+                window.location.href = destinationUrl;
+            }
+        }
     });
 
-    // Marquer toutes les notifications comme lues
     const markAllReadButton = document.getElementById('mark-all-read');
     if (markAllReadButton) {
         markAllReadButton.addEventListener('click', function() {
             fetch(`/notifications/mark-all-as-read/`, {
                 method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrftoken,
-                    'Content-Type': 'application/json'
-                }
+                headers: { 'X-CSRFToken': csrftoken, 'Content-Type': 'application/json' }
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    window.location.reload(); // Recharge la page pour voir les changements
+                    window.location.reload();
                 }
             });
         });

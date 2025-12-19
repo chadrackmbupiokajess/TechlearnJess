@@ -9,7 +9,7 @@
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="{% block description %}{{ settings.site_description|default:settings.site_slogan }}{% endblock %}">
-    <meta name="keywords" content="{% block keywords %}Jessna TechLearn, JessnaTechLearn, Jessna Tech Learn, Jessna, TechLearn, Chadrack Mbu Jess, Chadrackmbujess, Chadrack mbujess, Chadrackmbu jess, Chadrack, Chadrack mbu, mbu jess, mbu, mbu pioka, pioka, formation en ligne, cours technologie, RDC, Congo, Matadi, développement web, programmation, certifications{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}Jessna Techlearn, JessnaTechlearn, Jessna Tech Learn, Jessna, TechLearn, Chadrack Mbu Jess, Chadrackmbujess, Chadrack mbujess, Chadrackmbu jess, Chadrack, Chadrack mbu, mbu jess, mbu, mbu pioka, pioka, formation en ligne, cours technologie, RDC, Congo, Matadi, développement web, programmation, certifications{% endblock %}">
     <meta name="author" content="Chadrack Mbu Jess">
     <meta name="robots" content="index, follow">
     <meta name="language" content="fr-FR">
@@ -32,7 +32,7 @@
     <meta property="og:url" content="{% block og_url %}{{ request.build_absolute_uri }}{% endblock %}">
     <meta property="og:title" content="{% block og_title %}{{ settings.site_name }} - {{ settings.site_slogan }}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}{{ settings.site_description|default:settings.site_slogan }}{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{% static 'images/techlearnjess-og.jpg' %}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% static 'images/jessnatechlearn-og.jpg' %}{% endblock %}">
     <meta property="og:site_name" content="{{ settings.site_name }}">
     <meta property="og:locale" content="fr_FR">
     
@@ -41,7 +41,7 @@
     <meta property="twitter:url" content="{% block twitter_url %}{{ request.build_absolute_uri }}{% endblock %}">
     <meta property="twitter:title" content="{% block twitter_title %}{{ settings.site_name }} - {{ settings.site_slogan }}{% endblock %}">
     <meta property="twitter:description" content="{% block twitter_description %}{{ settings.site_description|default:settings.site_slogan }}{% endblock %}">
-    <meta property="twitter:image" content="{% block twitter_image %}{% static 'images/techlearnjess-og.jpg' %}{% endblock %}">
+    <meta property="twitter:image" content="{% block twitter_image %}{% static 'images/jessnatechlearn-og.jpg' %}{% endblock %}">
     <meta property="twitter:creator" content="@chadrackmbujess">
 
     <!-- Schema.org structured data -->
@@ -50,7 +50,7 @@
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     "name": "{{ settings.site_name }}",
-    "alternateName": ["Jessna TechLearn", "JessnaTechLearn", "Jessna Tech Learn", "Jessna", "TechLearn"],
+    "alternateName": ["Jessna Techlearn", "JessnaTechlearn", "Jessna Tech Learn", "Jessna", "TechLearn"],
     "url": "{{ request.build_absolute_uri }}",
     "logo": "{% if settings.logo %}{{ settings.logo.url }}{% else %}{% static 'images/logo.png' %}{% endif %}",
     "description": "{{ settings.site_description }}",
@@ -182,7 +182,7 @@
                             {% if settings.logo %}
                                 <img src="{{ settings.logo.url }}" alt="{{ settings.site_name }} Logo" class="h-8 w-auto mr-2">
                             {% else %}
-                                <img src="{% static 'images/logo.png' %}" alt="Jessna TechLearn Logo" class="h-8 w-auto mr-2">
+                                <img src="{% static 'images/logo.png' %}" alt="Jessna Techlearn Logo" class="h-8 w-auto mr-2">
                             {% endif %}
                             <span>{{ settings.site_name }}</span>
                         </a>
@@ -427,7 +427,7 @@
                         {% if settings.logo %}
                             <img src="{{ settings.logo.url }}" alt="{{ settings.site_name }} Logo" class="h-10 w-auto mr-3">
                         {% else %}
-                            <img src="{% static 'images/logo.png' %}" alt="Jessna TechLearn Logo" class="h-10 w-auto mr-3">
+                            <img src="{% static 'images/logo.png' %}" alt="Jessna Techlearn Logo" class="h-10 w-auto mr-3">
                         {% endif %}
                         <span class="text-3xl font-bold font-heading">{{ settings.site_name }}</span>
                     </div>
@@ -568,7 +568,7 @@
             });
         }
     </script>
-    
+
     {% block extra_js %}
     {% if user.is_authenticated %}
     <script>
@@ -601,7 +601,7 @@
                             notifLink.href = notif.action_url || '#';
                             notifLink.className = 'notification-link block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors';
                             notifLink.dataset.notificationId = notif.id;
-                            
+
                             let notifClass = notif.is_read ? '' : ' font-bold';
 
                             notifLink.innerHTML = `
@@ -648,6 +648,23 @@
                     headers: {
                         'X-CSRFToken': csrftoken,
                         'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Décrémenter le compteur de notifications
+                        const currentCount = parseInt(notificationBadge.textContent);
+                        if (!isNaN(currentCount) && currentCount > 0) {
+                            const newCount = currentCount - 1;
+                            if (newCount > 0) {
+                                notificationBadge.textContent = newCount;
+                                notificationBadgeMobile.textContent = newCount;
+                            } else {
+                                notificationBadge.style.display = 'none';
+                                notificationBadgeMobile.style.display = 'none';
+                            }
+                        }
                     }
                 })
                 .finally(() => {
