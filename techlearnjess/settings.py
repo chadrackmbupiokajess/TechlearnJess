@@ -169,6 +169,9 @@ ORANGE_MONEY_MERCHANT_KEY = config('ORANGE_MONEY_MERCHANT_KEY', default='YOUR_OR
 
 # M-PESA (placeholders)
 MPESA_SHORT_CODE = config('MPESA_SHORT_CODE', default='YOUR_MPESA_SHORT_CODE')
+MPESA_API_KEY = config('MPESA_API_KEY', default='YOUR_MPESA_API_KEY') # C'est la clé API du bac à sable
+MPESA_PUBLIC_KEY = config('MPESA_PUBLIC_KEY', default='YOUR_MPESA_PUBLIC_KEY') # La longue clé publique
+MPESA_SERVICE_PROVIDER_CODE = config('MPESA_SERVICE_PROVIDER_CODE', default='YOUR_MPESA_SERVICE_PROVIDER_CODE') # Le 000000 de l'exemple
 
 # ------------------------------
 # COMPANY INFO & LEGAL

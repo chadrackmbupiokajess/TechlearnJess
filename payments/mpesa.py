@@ -3,97 +3,110 @@ from django.conf import settings
 from django.urls import reverse
 import base64
 import datetime
+import json # Pour gérer les réponses JSON
+
+# URL de base de l'API M-PESA (Sandbox)
+MPESA_API_BASE_URL = "https://uat.openapi.m-pesa.com"
+MPESA_MARKET = "vodacomRC" # Pour la RDC
 
 def get_mpesa_api_token():
     """
-    Fonction pour obtenir un token d'authentification auprès de l'API M-PESA.
-    (À remplir avec la logique de l'API M-PESA)
+    Obtient un token d'authentification (session ID) auprès de l'API M-PESA.
     """
-    # Cette fonction devra probablement faire une requête POST à une URL de token
-    # avec votre Consumer Key et Consumer Secret.
-    print("DEMANDE DE TOKEN M-PESA (SIMULATION)")
-    return "FAKE_MPESA_TOKEN_67890"
+    print("DEMANDE DE TOKEN M-PESA (UTILISATION DIRECTE DE LA CLÉ API)")
+    return settings.MPESA_API_KEY # Votre clé API du bac à sable
 
 def initiate_payment(payment, request):
     """
     Initie une transaction de paiement avec l'API M-PESA (STK Push).
-    (À remplir avec la logique de l'API M-PESA)
     """
     token = get_mpesa_api_token()
-    
+    if not token:
+        return None # Ou gérer l'erreur
+
     # Construire l'URL de callback que M-PESA appellera
+    # Cette URL doit être accessible publiquement par M-PESA
     callback_url = request.build_absolute_uri(
         reverse('payments:mpesa_callback')
     )
 
     # Les données à envoyer à l'API M-PESA pour initier le paiement
-    # Ces champs sont des exemples, ils devront être ajustés selon la doc M-PESA
+    # Ces champs sont basés sur votre exemple et la documentation M-PESA C2B Single Stage
     payload = {
-        "BusinessShortCode": settings.MPESA_SHORT_CODE,
-        "Password": "GENERATED_PASSWORD_FROM_PASSKEY_AND_TIMESTAMP", # Ceci est complexe, à générer
-        "Timestamp": datetime.datetime.now().strftime('%Y%m%d%H%M%S'),
-        "TransactionType": "CustomerPayBillOnline",
-        "Amount": int(payment.amount), # M-PESA attend souvent des entiers
-        "PartyA": payment.phone_number,
-        "PartyB": settings.MPESA_SHORT_CODE,
-        "PhoneNumber": payment.phone_number,
-        "CallBackURL": callback_url,
-        "AccountReference": str(payment.payment_id),
-        "TransactionDesc": f"Paiement cours {payment.course.title}"
+        "input_Amount": str(int(payment.amount)), # M-PESA attend souvent des entiers ou des chaînes
+        "input_Country": "RDC", # Ou le code pays approprié
+        "input_Currency": payment.currency, # USD ou CDF
+        "input_CustomerMSISDN": payment.phone_number, # Utilise le numéro de test fourni
+        "input_ServiceProviderCode": settings.MPESA_SERVICE_PROVIDER_CODE, # Le code 000000 de l'exemple
+        "input_ThirdPartyConversationID": str(payment.payment_id), # ID unique pour la conversation
+        "input_TransactionReference": str(payment.payment_id), # Référence de transaction
+        "input_PurchasedItemsDesc": f"Paiement cours {payment.course.title}",
+        "input_ShortCode": settings.MPESA_SHORT_CODE, # Votre numéro de marchand
+        "input_CallbackUrl": callback_url, # L'URL où M-PESA enverra la notification
     }
 
     headers = {
         "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
+        "Origin": "*",
     }
 
     # URL de l'API M-PESA pour initier un paiement (STK Push)
-    # (cette URL devra être trouvée dans la documentation)
-    api_url = "https://api.mpesa.com/stkpush/v1/processrequest" # URL D'EXEMPLE
+    api_url = f"{MPESA_API_BASE_URL}/sandbox/ipg/v2/{MPESA_MARKET}/c2bPayment/singleStage/"
 
-    print(f"INITIATION DU PAIEMENT M-PESA (SIMULATION) AVEC LES DONNÉES : {payload}")
+    print(f"INITIATION DU PAIEMENT M-PESA AVEC LES DONNÉES : {payload}")
+    print(f"URL API : {api_url}")
+    print(f"HEADERS : {headers}")
 
-    # Dans la vraie implémentation, nous ferions une requête POST
-    # response = requests.post(api_url, json=payload, headers=headers)
-    # if response.status_code == 200:
-    #     data = response.json()
-    #     # M-PESA ne redirige pas, il envoie un push. On redirige vers une page d'attente.
-    #     return reverse('payments:mpesa_pending', args=[payment.payment_id])
-    # else:
-    #     return None
+    try:
+        response = requests.post(api_url, json=payload, headers=headers, timeout=30)
+        response.raise_for_status() # Lève une exception pour les codes d'erreur HTTP (4xx ou 5xx)
+        data = response.json()
+        print(f"RÉPONSE API M-PESA : {json.dumps(data, indent=2)}")
 
-    # Pour l'instant, nous simulons une redirection vers une page d'attente
-    return reverse('payments:mpesa_pending', args=[payment.payment_id])
+        if data.get('output_ResponseCode') == '0' or data.get('output_ResponseDesc') == 'Request processed successfully':
+            return reverse('payments:mpesa_pending', args=[payment.payment_id])
+        else:
+            print(f"Erreur M-PESA lors de l'initiation: {data.get('output_ResponseDesc', 'Erreur inconnue')}")
+            return None
+    except requests.exceptions.RequestException as e:
+        print(f"Erreur de connexion à l'API M-PESA: {e}")
+        return None
+    except json.JSONDecodeError:
+        print(f"Erreur de décodage JSON de la réponse M-PESA: {response.text}")
+        return None
 
 def handle_callback(request):
     """
     Gère la notification de callback envoyée par M-PESA.
-    (À remplir avec la logique de l'API M-PESA)
     """
-    data = request.json()
-    print(f"CALLBACK M-PESA REÇU (SIMULATION) : {data}")
+    try:
+        data = json.loads(request.body)
+        print(f"CALLBACK M-PESA REÇU : {json.dumps(data, indent=2)}")
 
-    # Ici, nous devrions :
-    # 1. Vérifier l'authenticité de la requête (avec une signature, par exemple).
-    # 2. Récupérer les informations de la transaction (AccountReference, ResultCode).
-    # 3. Mettre à jour notre base de données.
-    
-    # Exemple de récupération d'infos (à ajuster selon la doc M-PESA)
-    # result_code = data.get('Body', {}).get('stkCallback', {}).get('ResultCode')
-    # merchant_request_id = data.get('Body', {}).get('stkCallback', {}).get('MerchantRequestID')
-    # checkout_request_id = data.get('Body', {}).get('stkCallback', {}).get('CheckoutRequestID')
-    # account_reference = data.get('Body', {}).get('stkCallback', {}).get('CallbackMetadata', {}).get('Item', [])[0].get('Value')
+        transaction_id = data.get('input_ThirdPartyConversationID')
+        response_code = data.get('output_ResponseCode')
+        response_desc = data.get('output_ResponseDesc')
 
-    # from .models import Payment
-    # try:
-    #     payment = Payment.objects.get(payment_id=account_reference)
-    #     if result_code == 0: # 0 signifie succès
-    #         payment.mark_as_completed()
-    #     else:
-    #         payment.mark_as_failed(reason=f"Statut M-PESA : {result_code}")
-    # except Payment.DoesNotExist:
-    #     pass
+        from .models import Payment
+        if transaction_id:
+            try:
+                payment = Payment.objects.get(payment_id=transaction_id)
+                if response_code == '0':
+                    payment.mark_as_completed()
+                    print(f"Paiement {transaction_id} marqué comme COMPLETED.")
+                else:
+                    payment.mark_as_failed(reason=f"Statut M-PESA Callback : {response_desc} (Code: {response_code})")
+                    print(f"Paiement {transaction_id} marqué comme FAILED.")
+            except Payment.DoesNotExist:
+                print(f"Paiement {transaction_id} non trouvé pour le callback M-PESA.")
+        else:
+            print("ID de transaction manquant dans le callback M-PESA.")
 
-    # Répondre à M-PESA pour confirmer la réception
-    # return JsonResponse({'ResultCode': 0, 'ResultDesc': 'C2B Payment received successfully'})
-    pass
+        return JsonResponse({'ResultCode': 0, 'ResultDesc': 'C2B Payment received successfully'})
+    except json.JSONDecodeError:
+        print(f"Erreur de décodage JSON du callback M-PESA: {request.body}")
+        return JsonResponse({'ResultCode': 1, 'ResultDesc': 'Invalid JSON'}, status=400)
+    except Exception as e:
+        print(f"Erreur inattendue lors du traitement du callback M-PESA: {e}")
+        return JsonResponse({'ResultCode': 1, 'ResultDesc': 'Internal Error'}, status=500)

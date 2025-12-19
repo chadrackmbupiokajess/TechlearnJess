@@ -58,8 +58,11 @@
 
                     <!-- Champ pour le numéro de téléphone (pour Orange Money, etc.) -->
                     <div id="phone-number-field" class="mt-6" style="display: none;">
-                        <label for="phone_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Numéro de téléphone Orange Money</label>
+                        <label for="phone_number" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Numéro de téléphone</label>
                         <input type="text" name="phone_number" id="phone_number" class="mt-1 block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Ex: 0891234567">
+                        <p id="mpesa-test-note" class="mt-2 text-sm text-gray-500 dark:text-gray-400 hidden">
+                            Pour M-PESA en mode test, utilisez les numéros de test fournis par M-PESA (ex: 000000000001 pour un succès).
+                        </p>
                     </div>
 
                     <div class="mt-8">
@@ -81,25 +84,32 @@ document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('payment-form');
     const submitButton = document.getElementById('submit-button');
     const phoneField = document.getElementById('phone-number-field');
+    const phoneNumberInput = document.getElementById('phone_number');
+    const mpesaTestNote = document.getElementById('mpesa-test-note');
     const paymentMethodRadios = document.querySelectorAll('input[name="payment_method"]');
 
     function togglePhoneField() {
         const selectedRadio = document.querySelector('input[name="payment_method"]:checked');
         if (selectedRadio) {
             const paymentType = selectedRadio.dataset.type;
-            // Affiche le champ si le type est orange_money ou un autre paiement mobile
             if (paymentType === 'orange_money' || paymentType === 'airtel_money' || paymentType === 'mpesa') {
                 phoneField.style.display = 'block';
+                if (paymentType === 'mpesa') {
+                    mpesaTestNote.style.display = 'block';
+                    phoneNumberInput.placeholder = 'Ex: 000000000001'; // Suggestion pour M-PESA test
+                } else {
+                    mpesaTestNote.style.display = 'none';
+                    phoneNumberInput.placeholder = 'Ex: 0891234567';
+                }
             } else {
                 phoneField.style.display = 'none';
+                mpesaTestNote.style.display = 'none';
             }
         }
     }
 
-    // Afficher/cacher le champ au chargement de la page
     togglePhoneField();
 
-    // Afficher/cacher le champ lors du changement de sélection
     paymentMethodRadios.forEach(radio => {
         radio.addEventListener('change', togglePhoneField);
     });

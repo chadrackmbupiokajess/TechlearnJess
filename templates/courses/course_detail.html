@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ course.title }} - {{ course.category.name }} | Jessna TechLearn{% endblock %}
+{% block title %}{{ course.title }} - {{ course.category.name }} | Jessna Techlearn{% endblock %}
 {% block description %}{{ course.meta_description|default:course.short_description|truncatewords:25 }}{% endblock %}
-{% block og_title %}{{ course.title }} - Jessna TechLearn{% endblock %}
+{% block og_title %}{{ course.title }} - Jessna Techlearn{% endblock %}
 {% block og_description %}{{ course.short_description|truncatewords:25 }}{% endblock %}
 {% if course.thumbnail %}
 {% block og_image %}{{ course.thumbnail.url }}{% endblock %}
@@ -18,7 +18,7 @@
   "description": "{{ course.short_description }}",
   "provider": {
     "@type": "Organization",
-    "name": "Jessna TechLearn",
+    "name": "Jessna Techlearn",
     "sameAs": "{{ request.scheme }}://{{ request.get_host }}"
   },
   {% if course.reviews.all %}

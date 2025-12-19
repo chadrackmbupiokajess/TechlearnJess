@@ -73,16 +73,22 @@ def create_payment(request, course_slug):
         })
     elif payment_method.payment_type == 'orange_money':
         redirect_url = orange_money.initiate_payment(payment, request)
-        return JsonResponse({
-            'success': True,
-            'redirect_url': redirect_url
-        })
+        if redirect_url:
+            return JsonResponse({
+                'success': True,
+                'redirect_url': redirect_url
+            })
+        else:
+            return JsonResponse({'success': False, 'error': 'Échec de l\'initiation du paiement Orange Money.'}, status=500)
     elif payment_method.payment_type == 'mpesa':
         redirect_url = mpesa.initiate_payment(payment, request)
-        return JsonResponse({
-            'success': True,
-            'redirect_url': redirect_url
-        })
+        if redirect_url:
+            return JsonResponse({
+                'success': True,
+                'redirect_url': redirect_url
+            })
+        else:
+            return JsonResponse({'success': False, 'error': 'Échec de l\'initiation du paiement M-PESA.'}, status=500)
     else: # Pour "Espèces" et autres méthodes manuelles
         return JsonResponse({
             'success': True,
