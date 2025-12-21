@@ -342,7 +342,7 @@
                 <a href="{% url 'core:about' %}" class="block px-3 py-2 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors">
                     <i class="fas fa-info-circle mr-2"></i>À propos
                 </a>
-                
+
                 {% if user.is_authenticated %}
                     <hr class="my-2 border-gray-200 dark:border-gray-700">
                     <a href="{% url 'core:dashboard' %}" class="block px-3 py-2 text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors">
@@ -380,7 +380,7 @@
     {% if messages %}
         <div class="fixed top-20 right-4 z-50 space-y-2">
             {% for message in messages %}
-                <div x-data="{ show: true }" 
+                <div x-data="{ show: true }"
                      x-init="setTimeout(() => show = false, 5000)"
                      x-show="show"
                      x-transition:leave="transition ease-in duration-300"
@@ -453,7 +453,7 @@
                         </a>
                     </div>
                 </div>
-                
+
                 <div>
                     <h3 class="text-xl font-semibold font-heading mb-6 text-blue-400">Formation</h3>
                     <ul class="space-y-3">
@@ -471,7 +471,7 @@
                         </a></li>
                     </ul>
                 </div>
-                
+
                 <div>
                     <h3 class="text-xl font-semibold font-heading mb-6 text-blue-400">Support</h3>
                     <ul class="space-y-3">
@@ -490,7 +490,7 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="border-t border-gray-800 mt-12 pt-8">
                 <div class="flex flex-col md:flex-row justify-between items-center">
                     <div class="text-center md:text-left mb-4 md:mb-0">
@@ -517,7 +517,7 @@
         if (localStorage.getItem('darkMode') === 'true') {
             document.documentElement.classList.add('dark');
         }
-        
+
         document.addEventListener('alpine:init', () => {
             Alpine.data('darkMode', () => ({
                 darkMode: localStorage.getItem('darkMode') === 'true',
