@@ -1,7 +1,7 @@
 # 📊 Guide Google AdSense - TechLearnJess
 
 ## ✅ État actuel de l'intégration
-
+  d
 Votre compte Google AdSense est **correctement configuré** :
 - ✅ Compte approuvé
 - ✅ ads.txt validé
