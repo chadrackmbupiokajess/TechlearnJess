@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test AdSense - TechLearnJess</title>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5640124347001712"
+     crossorigin="anonymous"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .ad-container {
+            background: #e8f4f8;
+            border: 2px dashed #4a90e2;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            min-height: 100px;
+        }
+        h1 { color: #333; }
+        h2 { color: #4a90e2; }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Google AdSense - TechLearnJess</h1>
+
+    <div class="test-section">
+        <h2>📋 Informations de configuration</h2>
+        <div class="status info">
+            <strong>ID Publisher:</strong> <code>ca-pub-5640124347001712</code>
+        </div>
+        <div class="status info">
+            <strong>Date du test:</strong> <span id="date"></span>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Test 1 : Publicité Display Responsive</h2>
+        <p>Cette publicité devrait s'adapter à la taille de l'écran.</p>
+        <div class="ad-container">
+            <p style="margin-bottom: 10px; color: #666;">↓ Publicité Display ↓</p>
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-client="ca-pub-5640124347001712"
+                 data-ad-slot="7433322711"
+                 data-ad-format="auto"
+                 data-full-width-responsive="true"></ins>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Test 2 : Publicité In-Feed</h2>
+        <p>Cette publicité s'intègre dans le flux de contenu.</p>
+        <div class="ad-container">
+            <p style="margin-bottom: 10px; color: #666;">↓ Publicité In-Feed ↓</p>
+            <ins class="adsbygoogle"
+                 style="display:block"
+                 data-ad-format="fluid"
+                 data-ad-layout-key="-fb+5w+4e-db+86"
+                 data-ad-client="ca-pub-5640124347001712"
+                 data-ad-slot="7433322711"></ins>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🎯 Test 3 : Publicité In-Article</h2>
+        <p>Cette publicité apparaît dans les articles.</p>
+        <div class="ad-container">
+            <p style="margin-bottom: 10px; color: #666;">↓ Publicité In-Article ↓</p>
+            <ins class="adsbygoogle"
+                 style="display:block; text-align:center;"
+                 data-ad-layout="in-article"
+                 data-ad-format="fluid"
+                 data-ad-client="ca-pub-5640124347001712"
+                 data-ad-slot="7433322711"></ins>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>📊 Résultats du test</h2>
+        <div id="results">
+            <div class="status warning">
+                ⏳ <strong>Chargement des publicités en cours...</strong>
+            </div>
+            <p>Si vous voyez des publicités ci-dessus, AdSense fonctionne ! ✅</p>
+            <p>Si vous ne voyez rien :</p>
+            <ul>
+                <li>✅ Vérifiez que votre bloqueur de publicités est désactivé</li>
+                <li>✅ Attendez 24-48h après l'approbation de votre compte</li>
+                <li>✅ Ouvrez la console développeur (F12) pour voir les erreurs</li>
+                <li>✅ Testez en navigation privée</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔍 Vérifications techniques</h2>
+        <div id="technical-checks">
+            <div class="status info">
+                <strong>Script AdSense chargé:</strong> <span id="script-status">Vérification...</span>
+            </div>
+            <div class="status info">
+                <strong>Bloqueur de publicités détecté:</strong> <span id="adblocker-status">Vérification...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Afficher la date
+        document.getElementById('date').textContent = new Date().toLocaleString('fr-FR');
+
+        // Vérifier si le script AdSense est chargé
+        setTimeout(() => {
+            const scriptStatus = document.getElementById('script-status');
+            if (typeof adsbygoogle !== 'undefined') {
+                scriptStatus.textContent = '✅ Oui';
+                scriptStatus.parentElement.className = 'status success';
+            } else {
+                scriptStatus.textContent = '❌ Non';
+                scriptStatus.parentElement.className = 'status warning';
+            }
+        }, 1000);
+
+        // Détecter les bloqueurs de publicités
+        setTimeout(() => {
+            const adBlockerStatus = document.getElementById('adblocker-status');
+            const testAd = document.querySelector('.adsbygoogle');
+
+            if (testAd && testAd.offsetHeight === 0) {
+                adBlockerStatus.textContent = '⚠️ Oui (désactivez-le pour voir les publicités)';
+                adBlockerStatus.parentElement.className = 'status warning';
+            } else {
+                adBlockerStatus.textContent = '✅ Non';
+                adBlockerStatus.parentElement.className = 'status success';
+            }
+        }, 2000);
+
+        // Activer les publicités
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        (adsbygoogle = window.adsbygoogle || []).push({});
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</body>
+</html>
