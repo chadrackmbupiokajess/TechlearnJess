@@ -126,6 +126,11 @@ def dashboard(request):
     return render(request, 'core/dashboard.html', context)
 
 
+def privacy_policy(request):
+    """Page de politique de confidentialité"""
+    return render(request, 'core/privacy_policy.html')
+
+
 def faq_list(request):
     """Liste des FAQ"""
     settings = SiteSettings.get_settings()

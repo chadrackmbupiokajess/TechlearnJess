@@ -1,39 +1,228 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Politique de confidentialité - {{ settings.company_name }}{% endblock %}
+{% block title %}Politique de Confidentialité - TechLearnJess{% endblock %}
+
+{% block meta_description %}Politique de confidentialité de TechLearnJess. Découvrez comment nous collectons, utilisons et protégeons vos données personnelles.{% endblock %}
 
 {% block content %}
-<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-12">
+<div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-12">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- En-tête -->
         <div class="text-center mb-12">
-            <h1 class="text-4xl font-bold text-gray-900 mb-4">
-                Politique de confidentialité
+            <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                Politique de Confidentialité
             </h1>
-            <p class="text-lg text-gray-600">
-                Version {{ settings.privacy_policy_version }} - Mise à jour le {{ settings.privacy_policy_date|date:"d F Y" }}
+            <p class="text-lg text-gray-600 dark:text-gray-300">
+                Dernière mise à jour : 22 décembre 2025
             </p>
         </div>
 
         <!-- Contenu -->
-        <div class="bg-white rounded-2xl shadow-xl p-8 lg:p-12">
-            <div class="prose prose-lg max-w-none">
-                {% if settings.privacy_policy_content %}
-                    {{ settings.privacy_policy_content|safe }}
-                {% else %}
-                    <p>Le contenu de la politique de confidentialité est en cours de rédaction.</p>
-                {% endif %}
-            </div>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 md:p-12 space-y-8">
+
+            <!-- Introduction -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    1. Introduction
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    Bienvenue sur TechLearnJess. Nous respectons votre vie privée et nous nous engageons à protéger vos données personnelles.
+                    Cette politique de confidentialité vous informe sur la manière dont nous collectons, utilisons et protégeons vos informations
+                    lorsque vous utilisez notre site web <strong>techlearnjess.pythonanywhere.com</strong>.
+                </p>
+            </section>
+
+            <!-- Données collectées -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    2. Données que nous collectons
+                </h2>
+                <div class="space-y-4 text-gray-700 dark:text-gray-300">
+                    <p class="leading-relaxed">Nous pouvons collecter les types de données suivants :</p>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li><strong>Informations d'identification :</strong> Nom, prénom, adresse e-mail lors de l'inscription</li>
+                        <li><strong>Données de navigation :</strong> Adresse IP, type de navigateur, pages visitées, durée de visite</li>
+                        <li><strong>Cookies :</strong> Informations stockées sur votre appareil pour améliorer votre expérience</li>
+                        <li><strong>Données de paiement :</strong> Informations de transaction (via des services tiers sécurisés)</li>
+                        <li><strong>Contenu utilisateur :</strong> Messages sur le forum, commentaires, interactions</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Utilisation des données -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    3. Comment nous utilisons vos données
+                </h2>
+                <div class="space-y-4 text-gray-700 dark:text-gray-300">
+                    <p class="leading-relaxed">Nous utilisons vos données pour :</p>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li>Fournir et améliorer nos services éducatifs</li>
+                        <li>Personnaliser votre expérience d'apprentissage</li>
+                        <li>Traiter vos paiements et gérer votre compte</li>
+                        <li>Vous envoyer des notifications importantes (cours, certificats, etc.)</li>
+                        <li>Analyser l'utilisation du site pour améliorer nos services</li>
+                        <li>Respecter nos obligations légales</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Google AdSense -->
+            <section class="bg-blue-50 dark:bg-gray-700 p-6 rounded-lg">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    4. Google AdSense et publicités
+                </h2>
+                <div class="space-y-4 text-gray-700 dark:text-gray-300">
+                    <p class="leading-relaxed">
+                        <strong>TechLearnJess utilise Google AdSense</strong> pour afficher des publicités sur notre site.
+                        Google AdSense utilise des cookies et des technologies similaires pour :
+                    </p>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li>Afficher des publicités personnalisées en fonction de vos intérêts</li>
+                        <li>Mesurer l'efficacité des publicités</li>
+                        <li>Limiter le nombre de fois qu'une publicité vous est présentée</li>
+                    </ul>
+                    <p class="leading-relaxed mt-4">
+                        <strong>Cookies tiers :</strong> Google et ses partenaires peuvent utiliser des cookies pour diffuser des annonces
+                        basées sur vos visites antérieures sur notre site et d'autres sites web.
+                    </p>
+                    <p class="leading-relaxed">
+                        <strong>Désactiver la personnalisation des annonces :</strong> Vous pouvez désactiver les annonces personnalisées
+                        en visitant <a href="https://www.google.com/settings/ads" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Paramètres des annonces Google</a>.
+                    </p>
+                    <p class="leading-relaxed">
+                        Pour plus d'informations sur la manière dont Google utilise vos données, consultez la
+                        <a href="https://policies.google.com/privacy" target="_blank" class="text-blue-600 dark:text-blue-400 hover:underline">Politique de confidentialité de Google</a>.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Cookies -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    5. Cookies et technologies similaires
+                </h2>
+                <div class="space-y-4 text-gray-700 dark:text-gray-300">
+                    <p class="leading-relaxed">Nous utilisons des cookies pour :</p>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li><strong>Cookies essentiels :</strong> Nécessaires au fonctionnement du site (connexion, panier, etc.)</li>
+                        <li><strong>Cookies de performance :</strong> Analyser l'utilisation du site (Google Analytics)</li>
+                        <li><strong>Cookies publicitaires :</strong> Afficher des publicités pertinentes (Google AdSense)</li>
+                        <li><strong>Cookies de préférence :</strong> Mémoriser vos choix (langue, thème sombre/clair)</li>
+                    </ul>
+                    <p class="leading-relaxed mt-4">
+                        Vous pouvez gérer ou désactiver les cookies dans les paramètres de votre navigateur.
+                        Notez que la désactivation de certains cookies peut affecter le fonctionnement du site.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Partage des données -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    6. Partage de vos données
+                </h2>
+                <div class="space-y-4 text-gray-700 dark:text-gray-300">
+                    <p class="leading-relaxed">Nous ne vendons jamais vos données personnelles. Nous pouvons partager vos données avec :</p>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li><strong>Prestataires de services :</strong> Hébergement (PythonAnywhere), paiement (Orange Money, Airtel Money, M-Pesa)</li>
+                        <li><strong>Partenaires publicitaires :</strong> Google AdSense pour afficher des publicités</li>
+                        <li><strong>Autorités légales :</strong> Si requis par la loi ou pour protéger nos droits</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Sécurité -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    7. Sécurité de vos données
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    Nous mettons en œuvre des mesures de sécurité techniques et organisationnelles pour protéger vos données contre
+                    tout accès non autorisé, perte ou divulgation. Cependant, aucune méthode de transmission sur Internet n'est
+                    totalement sécurisée, et nous ne pouvons garantir une sécurité absolue.
+                </p>
+            </section>
+
+            <!-- Vos droits -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    8. Vos droits
+                </h2>
+                <div class="space-y-4 text-gray-700 dark:text-gray-300">
+                    <p class="leading-relaxed">Vous avez le droit de :</p>
+                    <ul class="list-disc list-inside space-y-2 ml-4">
+                        <li><strong>Accéder</strong> à vos données personnelles</li>
+                        <li><strong>Rectifier</strong> vos données si elles sont inexactes</li>
+                        <li><strong>Supprimer</strong> vos données (droit à l'oubli)</li>
+                        <li><strong>Limiter</strong> le traitement de vos données</li>
+                        <li><strong>Vous opposer</strong> au traitement de vos données</li>
+                        <li><strong>Portabilité</strong> de vos données</li>
+                    </ul>
+                    <p class="leading-relaxed mt-4">
+                        Pour exercer ces droits, contactez-nous à : <a href="mailto:contact@techlearnjess.com" class="text-blue-600 dark:text-blue-400 hover:underline">contact@techlearnjess.com</a>
+                    </p>
+                </div>
+            </section>
+
+            <!-- Conservation des données -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    9. Conservation des données
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    Nous conservons vos données personnelles aussi longtemps que nécessaire pour fournir nos services et respecter
+                    nos obligations légales. Lorsque vous supprimez votre compte, vos données sont supprimées dans un délai de 30 jours,
+                    sauf si nous sommes légalement tenus de les conserver plus longtemps.
+                </p>
+            </section>
+
+            <!-- Liens externes -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    10. Liens vers des sites tiers
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    Notre site peut contenir des liens vers des sites web tiers. Nous ne sommes pas responsables des pratiques de
+                    confidentialité de ces sites. Nous vous encourageons à lire leurs politiques de confidentialité.
+                </p>
+            </section>
+
+            <!-- Modifications -->
+            <section>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    11. Modifications de cette politique
+                </h2>
+                <p class="text-gray-700 dark:text-gray-300 leading-relaxed">
+                    Nous pouvons mettre à jour cette politique de confidentialité de temps en temps. Nous vous informerons de tout
+                    changement important en publiant la nouvelle politique sur cette page et en mettant à jour la date de "Dernière mise à jour".
+                </p>
+            </section>
+
+            <!-- Contact -->
+            <section class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-600 p-6 rounded-lg">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+                    12. Nous contacter
+                </h2>
+                <div class="text-gray-700 dark:text-gray-300 space-y-2">
+                    <p class="leading-relaxed">
+                        Si vous avez des questions concernant cette politique de confidentialité, contactez-nous :
+                    </p>
+                    <ul class="space-y-2">
+                        <li><strong>Email :</strong> <a href="mailto:contact@techlearnjess.com" class="text-blue-600 dark:text-blue-400 hover:underline">contact@techlearnjess.com</a></li>
+                        <li><strong>Site web :</strong> <a href="https://techlearnjess.pythonanywhere.com" class="text-blue-600 dark:text-blue-400 hover:underline">techlearnjess.pythonanywhere.com</a></li>
+                        <li><strong>Responsable :</strong> Chadrack Mbu Jess</li>
+                    </ul>
+                </div>
+            </section>
+
         </div>
 
         <!-- Bouton retour -->
         <div class="text-center mt-8">
-            <a href="{% url 'core:home' %}" 
-               class="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
-                </svg>
+            <a href="{% url 'core:home' %}" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                <i class="fas fa-arrow-left mr-2"></i>
                 Retour à l'accueil
             </a>
         </div>
