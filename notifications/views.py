@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.humanize.templatetags.humanize import naturaltime
 from django.utils import timezone
 
-from .models import Notification, NotificationSettings
+from .models import Notification, NotificationSettings, GlobalAlert
 
 
 @login_required
@@ -143,3 +143,9 @@ def get_latest_notifications(request):
         'unread_count': unread_count,
         'notifications': notification_data,
     })
+
+def check_global_alert(request):
+    """API pour vérifier si l'alerte globale est active."""
+    alert = GlobalAlert.objects.first()
+    is_active = alert.is_active if alert else False
+    return JsonResponse({'alert_active': is_active})

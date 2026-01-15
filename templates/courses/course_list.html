@@ -212,7 +212,7 @@
                     {% for num in page_obj.paginator.page_range %}
                         {% if page_obj.number == num %}
                             <span class="px-4 py-2 bg-blue-600 text-white rounded-lg">{{ num }}</span>
-                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
                             <a href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.difficulty %}&difficulty={{ request.GET.difficulty }}{% endif %}{% if request.GET.free %}&free={{ request.GET.free }}{% endif %}{% if request.GET.sort %}&sort={{ request.GET.sort }}{% endif %}" class="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">{{ num }}</a>
                         {% endif %}
                     {% endfor %}

@@ -1,6 +1,5 @@
 from django.contrib import admin
-from .models import Notification, NotificationSettings
-
+from .models import Notification, NotificationSettings, GlobalAlert
 
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
@@ -28,3 +27,15 @@ class NotificationSettingsAdmin(admin.ModelAdmin):
     list_display = ['user', 'email_course_new', 'email_message', 'push_course_new', 'push_message']
     search_fields = ['user__username']
     list_filter = ['email_course_new', 'email_message', 'push_course_new', 'push_message']
+
+@admin.register(GlobalAlert)
+class GlobalAlertAdmin(admin.ModelAdmin):
+    list_display = ('is_active', 'updated_at')
+    
+    def has_add_permission(self, request):
+        # Empêche la création de nouvelles instances si une existe déjà.
+        return not GlobalAlert.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        # Empêche la suppression de l'instance.
+        return False

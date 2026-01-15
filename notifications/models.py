@@ -111,3 +111,24 @@ class NotificationSettings(models.Model):
 
     def __str__(self):
         return f"Paramètres de {self.user.username}"
+
+
+class GlobalAlert(models.Model):
+    """Modèle pour une alerte globale sur tout le site."""
+    is_active = models.BooleanField(default=False, verbose_name="Alerte activée")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Alerte Globale"
+        verbose_name_plural = "Alerte Globale"
+
+    def __str__(self):
+        return "Alerte Globale"
+
+    def save(self, *args, **kwargs):
+        """S'assure qu'il n'y a qu'une seule instance de ce modèle."""
+        if not self.pk and GlobalAlert.objects.exists():
+            # Ne pas créer une nouvelle instance si une existe déjà
+            raise ValidationError('Il ne peut y avoir qu\'une seule instance de GlobalAlert.')
+        return super(GlobalAlert, self).save(*args, **kwargs)

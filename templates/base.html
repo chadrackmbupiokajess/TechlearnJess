@@ -108,7 +108,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Alpine.js -->
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.10/dist/cdn.min.js"></script>
 
     <!-- Jitsi External API -->
     <script src="https://8x8.vc/vpaas-magic-cookie-81789623447a44518155995183d6395e/external_api.js" async></script>
@@ -679,6 +679,60 @@
     });
     </script>
     {% endif %}
+    
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Global Alert System ---
+        const alertAudio = new Audio("{% static 'sounds/global_alert.mp3' %}");
+        alertAudio.loop = true;
+        let isSoundPlaying = false;
+        let alertCheckInterval;
+
+        function checkGlobalAlert() {
+            // We don't want the sound to play on admin pages
+            if (window.location.pathname.startsWith('/admin/')) {
+                return;
+            }
+
+            fetch("{% url 'notifications:check_global_alert' %}")
+                .then(response => response.json())
+                .then(data => {
+                    if (data.alert_active && !isSoundPlaying) {
+                        // Attempt to play the sound
+                        const playPromise = alertAudio.play();
+                        if (playPromise !== undefined) {
+                            playPromise.then(_ => {
+                                // Autoplay started!
+                                isSoundPlaying = true;
+                                document.body.addEventListener('click', stopAlertSound, { once: true });
+                                document.body.addEventListener('touchstart', stopAlertSound, { once: true });
+                            }).catch(error => {
+                                // Autoplay was prevented.
+                                console.warn("Global alert sound was blocked by the browser. User interaction is required to play sound.");
+                            });
+                        }
+                    } else if (!data.alert_active && isSoundPlaying) {
+                        // The admin turned off the alert, so we should stop the sound.
+                        stopAlertSound();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking for global alert:', error);
+                });
+        }
+
+        function stopAlertSound() {
+            if (isSoundPlaying) {
+                alertAudio.pause();
+                alertAudio.currentTime = 0; // Rewind to the start
+                isSoundPlaying = false;
+            }
+        }
+
+        // Start checking for the global alert every 10 seconds
+        alertCheckInterval = setInterval(checkGlobalAlert, 10000);
+    });
+    </script>
     {% endblock %}
 </body>
 </html>
