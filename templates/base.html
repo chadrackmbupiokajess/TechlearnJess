@@ -165,6 +165,18 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body class="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300" x-data="{ darkMode: false }" :class="{ 'dark': darkMode }">
+    
+    <!-- Global Alert Notification Banner -->
+    <div id="global-alert-banner" style="display: none;" class="fixed top-20 left-1/2 -translate-x-1/2 w-11/12 max-w-lg bg-yellow-400 border-l-4 border-yellow-600 text-yellow-800 p-4 rounded-lg shadow-lg z-[100] flex items-center justify-between">
+        <div>
+            <p class="font-bold">Notification importante</p>
+            <p class="text-sm">Une annonce importante a été publiée. Veuillez consulter le site.</p>
+        </div>
+        <button id="stop-alert-button" class="ml-4 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+            Arrêter
+        </button>
+    </div>
+
     <!-- Bouton d'installation PWA -->
     <button id="install-button" style="display: none;" class="fixed bottom-4 right-4 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold flex items-center z-50">
         <i class="fas fa-download mr-2"></i>
@@ -688,6 +700,9 @@
         let isSoundPlaying = false;
         let alertCheckInterval;
 
+        const alertBanner = document.getElementById('global-alert-banner');
+        const stopButton = document.getElementById('stop-alert-button');
+
         function checkGlobalAlert() {
             // We don't want the sound to play on admin pages
             if (window.location.pathname.startsWith('/admin/')) {
@@ -698,14 +713,17 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.alert_active && !isSoundPlaying) {
+                        // Show the banner
+                        if (alertBanner) {
+                            alertBanner.style.display = 'flex';
+                        }
+
                         // Attempt to play the sound
                         const playPromise = alertAudio.play();
                         if (playPromise !== undefined) {
                             playPromise.then(_ => {
                                 // Autoplay started!
                                 isSoundPlaying = true;
-                                document.body.addEventListener('click', stopAlertSound, { once: true });
-                                document.body.addEventListener('touchstart', stopAlertSound, { once: true });
                             }).catch(error => {
                                 // Autoplay was prevented.
                                 console.warn("Global alert sound was blocked by the browser. User interaction is required to play sound.");
@@ -722,11 +740,21 @@
         }
 
         function stopAlertSound() {
+            // Stop the sound
             if (isSoundPlaying) {
                 alertAudio.pause();
                 alertAudio.currentTime = 0; // Rewind to the start
                 isSoundPlaying = false;
             }
+            // Hide the banner
+            if (alertBanner) {
+                alertBanner.style.display = 'none';
+            }
+        }
+
+        // Add listener to the specific button
+        if (stopButton) {
+            stopButton.addEventListener('click', stopAlertSound);
         }
 
         // Start checking for the global alert every 10 seconds
