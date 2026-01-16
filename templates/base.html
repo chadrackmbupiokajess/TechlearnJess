@@ -172,7 +172,7 @@
             <p class="font-bold">Notification importante</p>
             <p class="text-sm">Une annonce importante a été publiée. Veuillez consulter le site.</p>
         </div>
-        <button id="stop-alert-button" class="ml-4 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
+        <button id="dismiss-alert-button" class="ml-4 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
             Arrêter
         </button>
     </div>
@@ -701,7 +701,7 @@
         let alertCheckInterval;
 
         const alertBanner = document.getElementById('global-alert-banner');
-        const stopButton = document.getElementById('stop-alert-button');
+        const dismissButton = document.getElementById('dismiss-alert-button');
 
         function checkGlobalAlert() {
             // We don't want the sound to play on admin pages
@@ -712,26 +712,26 @@
             fetch("{% url 'notifications:check_global_alert' %}")
                 .then(response => response.json())
                 .then(data => {
-                    if (data.alert_active && !isSoundPlaying) {
-                        // Show the banner
-                        if (alertBanner) {
+                    if (data.alert_active) {
+                        // Always show the banner if the alert is active
+                        if (alertBanner && alertBanner.style.display === 'none') {
                             alertBanner.style.display = 'flex';
                         }
 
-                        // Attempt to play the sound
-                        const playPromise = alertAudio.play();
-                        if (playPromise !== undefined) {
-                            playPromise.then(_ => {
-                                // Autoplay started!
-                                isSoundPlaying = true;
-                            }).catch(error => {
-                                // Autoplay was prevented.
-                                console.warn("Global alert sound was blocked by the browser. User interaction is required to play sound.");
-                            });
+                        // Only play sound if the page is hidden (not the active tab) and sound is not already playing
+                        if (document.hidden && !isSoundPlaying) {
+                            const playPromise = alertAudio.play();
+                            if (playPromise !== undefined) {
+                                playPromise.then(_ => {
+                                    isSoundPlaying = true;
+                                }).catch(error => {
+                                    console.warn("Global alert sound was blocked by the browser.");
+                                });
+                            }
                         }
                     } else if (!data.alert_active && isSoundPlaying) {
-                        // The admin turned off the alert, so we should stop the sound.
-                        stopAlertSound();
+                        // The admin turned off the alert, so we should stop the sound and hide the banner.
+                        dismissAlert();
                     }
                 })
                 .catch(error => {
@@ -739,7 +739,7 @@
                 });
         }
 
-        function stopAlertSound() {
+        function dismissAlert() {
             // Stop the sound
             if (isSoundPlaying) {
                 alertAudio.pause();
@@ -752,9 +752,19 @@
             }
         }
 
-        // Add listener to the specific button
-        if (stopButton) {
-            stopButton.addEventListener('click', stopAlertSound);
+        // Listen for visibility changes
+        document.addEventListener('visibilitychange', function() {
+            // If the page becomes visible and the sound is playing, stop the sound.
+            // The banner remains visible for the user to see.
+            if (!document.hidden && isSoundPlaying) {
+                alertAudio.pause();
+                isSoundPlaying = false;
+            }
+        });
+
+        // Add listener to the specific button to dismiss the alert completely
+        if (dismissButton) {
+            dismissButton.addEventListener('click', dismissAlert);
         }
 
         // Start checking for the global alert every 10 seconds
