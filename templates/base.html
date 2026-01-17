@@ -685,6 +685,7 @@
     document.addEventListener('DOMContentLoaded', function() {
         // --- Global Alert System (Desktop Notification Only) ---
         const alertAudio = new Audio("{% static 'sounds/global_alert.mp3' %}");
+        let alertWasShown = false;
 
         // 1. Ask for Notification Permissions on load if not already set
         if ('Notification' in window && Notification.permission === 'default') {
@@ -726,20 +727,25 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.alert_active) {
-                        const COOLDOWN_PERIOD = 6 * 60 * 60 * 1000; // 6 hours
-                        const lastShownTimestamp = localStorage.getItem('globalAlertLastShown');
-                        const now = new Date().getTime();
-
-                        if (!lastShownTimestamp || (now - parseInt(lastShownTimestamp)) > COOLDOWN_PERIOD) {
-                            if (Notification.permission === 'granted' && document.hidden) {
-                                showDesktopNotification();
-                                localStorage.setItem('globalAlertLastShown', now.toString());
-                            }
+                        // Check conditions: permission granted, tab is hidden, and alert hasn't been shown yet in this "hidden" session
+                        if (Notification.permission === 'granted' && document.hidden && !alertWasShown) {
+                            showDesktopNotification();
+                            alertWasShown = true; // Mark as shown to prevent repeats while still hidden
                         }
+                    } else {
+                        // Reset the flag if the admin turns the alert off
+                        alertWasShown = false;
                     }
                 })
                 .catch(error => console.error('Error checking for global alert:', error));
         }
+
+        // When the user comes back to the tab, reset the flag so the alert can be shown again if they leave.
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                alertWasShown = false;
+            }
+        });
 
         setInterval(checkGlobalAlert, 15000); // Check every 15s
     });
