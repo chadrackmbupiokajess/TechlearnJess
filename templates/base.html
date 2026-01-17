@@ -165,17 +165,6 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body class="h-full bg-gray-50 dark:bg-gray-900 transition-colors duration-300" x-data="{ darkMode: false }" :class="{ 'dark': darkMode }">
-    
-    <!-- Global Alert Notification Banner -->
-    <div id="global-alert-banner" style="display: none;" class="fixed top-20 left-1/2 -translate-x-1/2 w-11/12 max-w-lg bg-yellow-400 border-l-4 border-yellow-600 text-yellow-800 p-4 rounded-lg shadow-lg z-[100] flex items-center justify-between">
-        <div>
-            <p class="font-bold">Notification importante</p>
-            <p class="text-sm">Une annonce importante a été publiée. Veuillez consulter le site.</p>
-        </div>
-        <button id="dismiss-alert-button" class="ml-4 bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded">
-            Arrêter
-        </button>
-    </div>
 
     <!-- Bouton d'installation PWA -->
     <button id="install-button" style="display: none;" class="fixed bottom-4 right-4 bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg font-semibold flex items-center z-50">
@@ -513,7 +502,7 @@
                             Créé avec ❤️ par <span class="text-blue-400">Chadrack Mbu Jess</span>
                         </p>
                     </div>
-                    <div class="flex space-x-6 text-sm">
+                    <div class="flex items-center space-x-6 text-sm">
                         <a href="{% url 'core:privacy_policy' %}" class="text-gray-400 hover:text-white transition-colors">Politique de confidentialité</a>
                         <a href="{% url 'core:terms_of_service' %}" class="text-gray-400 hover:text-white transition-colors">Conditions d'utilisation</a>
                         <a href="{% url 'core:legal_notice' %}" class="text-gray-400 hover:text-white transition-colors">Mentions légales</a>
@@ -694,81 +683,65 @@
     
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // --- Global Alert System ---
+        // --- Global Alert System (Desktop Notification Only) ---
         const alertAudio = new Audio("{% static 'sounds/global_alert.mp3' %}");
-        alertAudio.loop = true;
-        let isSoundPlaying = false;
-        let alertCheckInterval;
 
-        const alertBanner = document.getElementById('global-alert-banner');
-        const dismissButton = document.getElementById('dismiss-alert-button');
+        // 1. Ask for Notification Permissions on load if not already set
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
 
+        // 2. Function to show a persistent desktop notification with sound
+        function showDesktopNotification() {
+            const notification = new Notification('{{ settings.site_name }} - Alerte', {
+                body: 'Une annonce importante a été publiée. Cliquez ici pour voir.',
+                icon: '{% if settings.logo %}{{ settings.logo.url }}{% else %}{% static "images/logo.png" %}{% endif %}',
+                tag: 'global-alert',
+                requireInteraction: true // Makes the notification persistent
+            });
+
+            // Play our custom sound
+            alertAudio.play().catch(e => console.warn("Audio play failed:", e));
+
+            // Stop sound and focus window on click
+            notification.onclick = function() {
+                window.focus();
+                alertAudio.pause();
+                alertAudio.currentTime = 0;
+                this.close();
+            };
+
+            // Also stop sound if the user closes the notification manually
+            notification.onclose = function() {
+                alertAudio.pause();
+                alertAudio.currentTime = 0;
+            };
+        }
+
+        // 3. Main checking logic
         function checkGlobalAlert() {
-            // We don't want the sound to play on admin pages
-            if (window.location.pathname.startsWith('/admin/')) {
-                return;
-            }
+            if (window.location.pathname.startsWith('/admin/')) return;
 
             fetch("{% url 'notifications:check_global_alert' %}")
                 .then(response => response.json())
                 .then(data => {
                     if (data.alert_active) {
-                        // Always show the banner if the alert is active
-                        if (alertBanner && alertBanner.style.display === 'none') {
-                            alertBanner.style.display = 'flex';
-                        }
+                        const COOLDOWN_PERIOD = 6 * 60 * 60 * 1000; // 6 hours
+                        const lastShownTimestamp = localStorage.getItem('globalAlertLastShown');
+                        const now = new Date().getTime();
 
-                        // Only play sound if the page is hidden (not the active tab) and sound is not already playing
-                        if (document.hidden && !isSoundPlaying) {
-                            const playPromise = alertAudio.play();
-                            if (playPromise !== undefined) {
-                                playPromise.then(_ => {
-                                    isSoundPlaying = true;
-                                }).catch(error => {
-                                    console.warn("Global alert sound was blocked by the browser.");
-                                });
+                        if (!lastShownTimestamp || (now - parseInt(lastShownTimestamp)) > COOLDOWN_PERIOD) {
+                            if (Notification.permission === 'granted' && document.hidden) {
+                                showDesktopNotification();
+                                localStorage.setItem('globalAlertLastShown', now.toString());
                             }
                         }
-                    } else if (!data.alert_active && isSoundPlaying) {
-                        // The admin turned off the alert, so we should stop the sound and hide the banner.
-                        dismissAlert();
                     }
                 })
-                .catch(error => {
-                    console.error('Error checking for global alert:', error);
-                });
+                .catch(error => console.error('Error checking for global alert:', error));
         }
 
-        function dismissAlert() {
-            // Stop the sound
-            if (isSoundPlaying) {
-                alertAudio.pause();
-                alertAudio.currentTime = 0; // Rewind to the start
-                isSoundPlaying = false;
-            }
-            // Hide the banner
-            if (alertBanner) {
-                alertBanner.style.display = 'none';
-            }
-        }
-
-        // Listen for visibility changes
-        document.addEventListener('visibilitychange', function() {
-            // If the page becomes visible and the sound is playing, stop the sound.
-            // The banner remains visible for the user to see.
-            if (!document.hidden && isSoundPlaying) {
-                alertAudio.pause();
-                isSoundPlaying = false;
-            }
-        });
-
-        // Add listener to the specific button to dismiss the alert completely
-        if (dismissButton) {
-            dismissButton.addEventListener('click', dismissAlert);
-        }
-
-        // Start checking for the global alert every 10 seconds
-        alertCheckInterval = setInterval(checkGlobalAlert, 10000);
+        setInterval(checkGlobalAlert, 15000); // Check every 15s
     });
     </script>
     {% endblock %}

@@ -17,6 +17,7 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '192.168.27.241',
     'techlearnjess.pythonanywhere.com',
 
 ]
