@@ -21,7 +21,9 @@ urlpatterns = [
     path('ads.txt', ads_txt, name='ads_txt'),
 
     path('', include('core.urls')),
-    path('comptes/', include('accounts.urls')),
+    # Allauth URLs
+    path('accounts/', include('allauth.urls')), # Allauth URLs for social login, etc.
+    path('comptes/', include('accounts.urls')), # Your existing accounts app URLs
     path('cours/', include('courses.urls')),
     path('forum/', include('forum.urls')),
     path('chat/', include('chat.urls')),

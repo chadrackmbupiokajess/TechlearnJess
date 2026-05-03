@@ -27,13 +27,13 @@ ALLOWED_HOSTS = [
 # ------------------------------
 INSTALLED_APPS = [
     # Django apps
+    'django.contrib.sites', # Moved up as per allauth recommendation
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
     'django.contrib.humanize',
 
     # Third party apps
@@ -44,6 +44,12 @@ INSTALLED_APPS = [
     'corsheaders',
     'django_countries',
     'paypal.standard.ipn',
+
+    # Allauth apps
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
 
     # Local apps
     'core',
@@ -63,6 +69,17 @@ INSTALLED_APPS = [
 SITE_ID = 1
 
 # ------------------------------
+# AUTHENTICATION BACKENDS
+# ------------------------------
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
+# ------------------------------
 # MIDDLEWARE
 # ------------------------------
 MIDDLEWARE = [
@@ -73,6 +90,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'allauth.account.middleware.AccountMiddleware', # Added for allauth
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'accounts.middleware.UpdateLastActivityMiddleware',
@@ -107,6 +125,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'core.context_processors.site_settings',
                 'notifications.context_processors.unread_notifications',
+                # `allauth` context processors are NOT needed here.
+                # They are automatically added by allauth's middleware.
             ],
         },
     },
@@ -237,9 +257,35 @@ CKEDITOR_CONFIGS = {
 }
 
 # ------------------------------
+# ALLAUTH SETTINGS
+# ------------------------------
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory' # or 'optional' or 'none'
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+ACCOUNT_USERNAME_REQUIRED = False # Set to True if you want users to have a username
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'APP': {
+            'client_id': config('GOOGLE_CLIENT_ID'),
+            'secret': config('GOOGLE_CLIENT_SECRET'),
+            'key': '' # leave empty
+        },
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+        }
+    }
+}
+
+# ------------------------------
 # LOGIN URLS
 # ------------------------------
-LOGIN_URL = 'accounts:login'
+LOGIN_URL = 'accounts:login' # You might want to change this to 'account_login' from allauth
 LOGIN_REDIRECT_URL = 'core:dashboard'
 LOGOUT_REDIRECT_URL = 'core:home'
 
