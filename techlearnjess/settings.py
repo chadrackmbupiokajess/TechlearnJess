@@ -264,6 +264,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory' # or 'optional' or 'none'
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_USERNAME_REQUIRED = False # Set to True if you want users to have a username
+SOCIALACCOUNT_LOGIN_BY_CODE = True # Added to skip social account confirmation page
+SOCIALACCOUNT_EMAIL_VERIFICATION = 'none' # Added to skip email verification for social accounts
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
