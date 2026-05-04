@@ -19,19 +19,20 @@ def generate_jitsi_jwt(user, room_name, is_moderator=False):
                 'name': user.get_full_name() or user.username,
                 'avatar': user.userprofile.get_avatar_url(),
                 'email': user.email,
-                'moderator': is_moderator,  # CORRECTION: Utiliser un vrai booléen
+                'moderator': is_moderator,
             },
             'features': {
                 "livestreaming": is_moderator,
                 "recording": is_moderator,
                 "transcription": is_moderator,
                 "outbound-call": False,
+                "screensharing": True,  # Ajouté pour activer le partage d'écran
             }
         },
         'aud': 'jitsi',
         'iss': 'chat',
         'sub': settings.JAAS_APP_ID,
-        'room': '*',  # CORRECTION: Utiliser le wildcard '*'
+        'room': '*',
         'exp': datetime.utcnow() + timedelta(hours=3),
         'nbf': datetime.utcnow() - timedelta(minutes=5),
     }
