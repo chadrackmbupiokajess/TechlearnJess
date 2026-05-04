@@ -262,7 +262,7 @@ CKEDITOR_CONFIGS = {
 ACCOUNT_AUTHENTICATION_METHOD = 'email' # Changed from 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none' # Changed from 'mandatory' to 'none'
-ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
+ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = False # Changed to False for smoother social signup
 ACCOUNT_USERNAME_REQUIRED = False # Set to True if you want users to have a username
 # SOCIALACCOUNT_LOGIN_BY_CODE = True # Removed as it might interfere with auto-signup
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none' # Added to skip email verification for social accounts
@@ -297,7 +297,13 @@ LOGOUT_REDIRECT_URL = 'core:home'
 # ------------------------------
 # EMAIL
 # ------------------------------
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+DEFAULT_FROM_EMAIL = config('EMAIL_HOST_USER') # Utilisé comme expéditeur par défaut
 
 # ------------------------------
 # JITSI (JaaS 8x8)
