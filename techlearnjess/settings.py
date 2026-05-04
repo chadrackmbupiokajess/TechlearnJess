@@ -259,7 +259,7 @@ CKEDITOR_CONFIGS = {
 # ------------------------------
 # ALLAUTH SETTINGS
 # ------------------------------
-ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_AUTHENTICATION_METHOD = 'email' # Changed from 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none' # Changed from 'mandatory' to 'none'
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
@@ -268,7 +268,7 @@ ACCOUNT_USERNAME_REQUIRED = False # Set to True if you want users to have a user
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none' # Added to skip email verification for social accounts
 SOCIALACCOUNT_AUTO_SIGNUP = True # Added to automatically sign up social accounts
 ACCOUNT_SIGNUP_REDIRECT_URL = 'core:dashboard' # Added for explicit signup redirection
-# SOCIALACCOUNT_ADAPTER = 'accounts.adapters.MySocialAccountAdapter' # Removed custom adapter
+SOCIALACCOUNT_ADAPTER = 'allauth.socialaccount.adapter.DefaultSocialAccountAdapter' # Explicitly use default adapter
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
