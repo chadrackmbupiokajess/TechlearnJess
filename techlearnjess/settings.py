@@ -261,11 +261,14 @@ CKEDITOR_CONFIGS = {
 # ------------------------------
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory' # or 'optional' or 'none'
+ACCOUNT_EMAIL_VERIFICATION = 'none' # Changed from 'mandatory' to 'none'
 ACCOUNT_SIGNUP_PASSWORD_ENTER_TWICE = True
 ACCOUNT_USERNAME_REQUIRED = False # Set to True if you want users to have a username
-SOCIALACCOUNT_LOGIN_BY_CODE = True # Added to skip social account confirmation page
+# SOCIALACCOUNT_LOGIN_BY_CODE = True # Removed as it might interfere with auto-signup
 SOCIALACCOUNT_EMAIL_VERIFICATION = 'none' # Added to skip email verification for social accounts
+SOCIALACCOUNT_AUTO_SIGNUP = True # Added to automatically sign up social accounts
+ACCOUNT_SIGNUP_REDIRECT_URL = 'core:dashboard' # Added for explicit signup redirection
+# SOCIALACCOUNT_ADAPTER = 'accounts.adapters.MySocialAccountAdapter' # Removed custom adapter
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -309,3 +312,13 @@ JAAS_PRIVATE_KEY_PATH = config('JAAS_PRIVATE_KEY_PATH', default=os.path.join(BAS
 # ------------------------------
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
+
+# ------------------------------
+# IMPORTANT: ALLAUTH SITE CONFIGURATION
+# ------------------------------
+# For allauth to work correctly, especially with social logins,
+# you MUST ensure that your Django Site configuration in the admin panel
+# (http://127.0.0.1:8000/admin/sites/site/) is correctly set.
+# The 'Domain name' and 'Display name' should match your application's domain.
+# For local development, this is typically '127.0.0.1:8000' or 'localhost:8000'.
+# If this is incorrect, allauth will often return 'Unauthorized' errors.
